@@ -21,7 +21,7 @@ const LoginPage = () => {
             backgroundPosition: "center",
         }} */}
             <form onSubmit={handleSubmit} className="bg-white px-8 border pt-8 pb-14 rounded-lg shadow-md w-full max-w-sm z-20">
-                <FaUserCircle size={70} className="flex mx-auto text-[#056839] items-center justify-center" />
+                <FaUserCircle size={70} className="flex mx-auto text-[#1b3bf0] items-center justify-center" />
                 <br />
                 <TextField
                     fullWidth

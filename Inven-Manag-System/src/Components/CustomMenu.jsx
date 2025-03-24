@@ -14,16 +14,26 @@ import PriceCheckIcon from '@mui/icons-material/PriceCheck';
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import AddCardIcon from '@mui/icons-material/AddCard';
 import CreditScoreIcon from '@mui/icons-material/CreditScore';
-
+import InventoryIcon from '@mui/icons-material/Inventory';
+import CategoryIcon from '@mui/icons-material/Category';
+import ClassIcon from '@mui/icons-material/Class';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import SendAndArchiveIcon from '@mui/icons-material/SendAndArchive';
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import Inventory2TwoToneIcon from '@mui/icons-material/Inventory2TwoTone';
+import ShoppingCartSharpIcon from '@mui/icons-material/ShoppingCartSharp';
+import Shop2Icon from '@mui/icons-material/Shop2';
 const CustomMenu = (props) => {
     const [openFinancial, setOpenFinancial] = useState(true);
     const [openPlanBudget, setOpenPlanBudget] = useState(false);
     const [openCashflow, setOpenCashflow] = useState(false);
+    //inventory
+    const [openInventory, setOpenInventory] = useState(true);
 
     // Toggle Financial Menu
-    const handleFinancialToggle = (event) => {
+    const handleInventoryToggle = (event) => {
         event.preventDefault(); // Prevent navigation to `undefined`
-        setOpenFinancial(!openFinancial);
+        setOpenInventory(!openInventory);
     };
 
     // Toggle Plan & Budget Submenu
@@ -39,10 +49,89 @@ const CustomMenu = (props) => {
     };
 
     return (
-        <Menu {...props}>
+        <Menu {...props} >
             {/* Static Menu Items */}
             <MenuItemLink to="/" primaryText="Dashboard" leftIcon={<DashboardIcon />} />
-            <MenuItemLink to="/projects" primaryText="Projects" leftIcon={<GroupIcon />} />
+
+            {/**Collapsible Inventory */}
+
+            <MenuItemLink
+                to="#"
+                primaryText={
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        Inventory
+                        {openInventory ? <ExpandLess /> : <ExpandMore />}
+                    </div>
+                }
+                leftIcon={<InventoryIcon />}
+                onClick={handleInventoryToggle}
+                righticon={openInventory ? <ExpandLess /> : <ExpandMore />}
+            />
+            {openInventory && (
+                <>
+                    <MenuItemLink
+                        to="/category"
+                        primaryText="Product Category"
+                        leftIcon={<CategoryIcon />} // Left Icon for Income
+                        style={{ paddingLeft: 48 }}
+                    />
+                    <MenuItemLink
+                        to="/items"
+                        primaryText="Items"
+                        leftIcon={<ClassIcon />} // Left Icon for Income
+                        style={{ paddingLeft: 48 }}
+                    />
+
+                    <MenuItemLink
+                        to="/products/create"
+                        primaryText="Purchase"
+                        leftIcon={<Shop2Icon />} // Left Icon for Income
+                        style={{ paddingLeft: 48 }}
+                    />
+
+
+                    <MenuItemLink
+                        to="/stock"
+                        primaryText="Stock"
+                        leftIcon={<Inventory2TwoToneIcon />} // Left Icon for Income
+                        style={{ paddingLeft: 48 }}
+                    />
+
+
+                    <MenuItemLink
+                        to="/products"
+                        primaryText="Product List"
+                        leftIcon={<ViewListIcon />} // Left Icon for Income
+                        style={{ paddingLeft: 48 }}
+                    />
+                    <MenuItemLink
+                        to="/stockouts"
+                        primaryText="Sold Stock"
+                        leftIcon={<Inventory2OutlinedIcon />} // Left Icon for Income
+                        style={{ paddingLeft: 48 }}
+                    />
+                    <MenuItemLink
+                        to="/orders"
+                        primaryText="Orders"
+                        leftIcon={<ShoppingCartSharpIcon />} // Left Icon for Income
+                        style={{ paddingLeft: 48 }}
+                    />
+
+                    <MenuItemLink
+                        to="/supplier"
+                        primaryText="Suppliers"
+                        leftIcon={<SendAndArchiveIcon />} // Left Icon for Income
+                        style={{ paddingLeft: 48 }}
+                    />
+
+                    <MenuItemLink
+                        to="/customers"
+                        primaryText="Customers"
+                        leftIcon={<GroupIcon />} // Left Icon for Income
+                        style={{ paddingLeft: 48 }}
+                    />
+                </>
+            )}
 
 
 
