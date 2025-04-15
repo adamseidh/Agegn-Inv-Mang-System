@@ -3,11 +3,13 @@ import React, { useEffect, useState } from "react";
 import { FaXmark } from "react-icons/fa6";
 import FormattedDate from "../../../../helpers/functions/FormattedDate";
 
-const ProductDetail = ({ isOpen, close, product }) => {
+const ProductDetail = ({ isOpen, close, product, productId }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [productCosts, setProductCosts] = useState([]);
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
+  console.log("here what we want", productId);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -30,6 +32,35 @@ const ProductDetail = ({ isOpen, close, product }) => {
     };
 
     if (isOpen) fetchItems();
+  }, [isOpen, serverHost]);
+
+  //read a product costs
+  useEffect(() => {
+    console.log("shat");
+    const fetchProductCosts = async () => {
+      try {
+        const getToken = localStorage.getItem("token");
+        if (!getToken) throw new Error("No token found");
+
+        const token = JSON.parse(getToken).token;
+        const response = await axios.get(
+          `${serverHost}/productCostList/${productId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        console.log("product costs", response.data);
+        setProductCosts(response.data);
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductCosts();
   }, [isOpen, serverHost]);
 
   const getItemNameById = (id) => {
@@ -144,16 +175,16 @@ const ProductDetail = ({ isOpen, close, product }) => {
                 <div className="space-y-1">
                   <p className="text-gray-500 text-sm font-medium">Item Cost</p>
                   <p className="text-gray-700 font-semibold">
-                    {product?.itemCost || "N/A"}
+                    {product?.purchase_price || "N/A"}
                   </p>
                 </div>
               </div>
 
-              {product?.costs?.length > 0 && (
+              {
                 <div className="border rounded-lg p-6 shadow-md">
                   <h3 className="font-bold text-lg mb-4">Additional Costs</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {product.costs.map((cost, index) => (
+                    {productCosts.map((cost, index) => (
                       <div key={index} className="bg-gray-50 p-3 rounded-md">
                         <p className="text-gray-500 text-sm font-medium">
                           Cost Title
@@ -171,7 +202,7 @@ const ProductDetail = ({ isOpen, close, product }) => {
                     ))}
                   </div>
                 </div>
-              )}
+              }
 
               <div className="border rounded-lg p-6 shadow-md">
                 <h3 className="font-bold text-lg mb-4">Pricing Information</h3>
@@ -181,7 +212,7 @@ const ProductDetail = ({ isOpen, close, product }) => {
                       Selling Price
                     </p>
                     <p className="text-gray-700 font-semibold">
-                      {product?.sellingPrice || "N/A"}
+                      {product?.selling_price || "N/A"}
                     </p>
                   </div>
                 </div>

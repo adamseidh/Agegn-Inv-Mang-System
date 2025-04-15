@@ -129,6 +129,22 @@ const SinglePurchaseData = (req, res) => {
     }
   });
 };
+
+const aPurchasePayments = (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+        SELECT * FROM purchase_payment WHERE purchase_id = ? ORDER BY id DESC`;
+
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    } else {
+      res.setHeader("Access-Control-Expose-Headers", "Content-Range");
+      res.json(results);
+    }
+  });
+};
 const CreateItem = (req, res) => {
   const { name, low_level, category_id, type_id, description, serverHost } =
     req.body;
@@ -201,6 +217,25 @@ const EditItem = (req, res) => {
   );
 };
 
+const deletePayment = (req, res) => {
+  const { id } = req.params;
+  console.log("product id", id);
+
+  const query = "DELETE FROM purchase_payment WHERE id = ?";
+
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Data not found" });
+    }
+
+    res.json({ message: "Data deleted successfully" });
+  });
+};
+
 const deleteItem = (req, res) => {
   const { id } = req.params;
 
@@ -222,7 +257,9 @@ const deleteItem = (req, res) => {
 module.exports = {
   PurchaseList,
   SinglePurchaseData,
+  aPurchasePayments,
   CreateItem,
   EditItem,
   deleteItem,
+  deletePayment,
 };

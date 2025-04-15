@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import AddProduct from "./Modals/AddProduct";
 import AddPayment from "./Modals/AddPayment";
-import ProductDetail from "./Modals/ProductDetail";
-import EditProduct from "./Modals/EditProduct";
 import PaymentDetail from "./Modals/PaymentDetail";
 import EditPayment from "./Modals/EditPayment";
 import { FaEllipsisV } from "react-icons/fa";
 import { FormattedNumber } from "../../../helpers/functions/FormattedNumber";
 import FormattedDate from "../../../helpers/functions/FormattedDate";
+import ProductDetail from "./PrchsdPrdctModals/PchProductDetail";
+import EditProduct from "./PrchsdPrdctModals/pchProductEditModal";
 
-const AddPurchase = () => {
+const PurchasedProductList = () => {
+  const { id } = useParams();
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
   const [products, setProducts] = useState([]);
   const [payments, setPayments] = useState([]);
@@ -28,7 +29,9 @@ const AddPurchase = () => {
   const [items, setItems] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [supplier, setSupplier] = useState([]);
-  const [remark, setRemark] = useState([]);
+  const [remark, setRemark] = useState();
+  const [productId, setProductId] = useState();
+  console.log("purchase is", id);
 
   const navigate = useNavigate();
 
@@ -59,6 +62,69 @@ const AddPurchase = () => {
         },
       })
       .then((response) => setSuppliers(response.data))
+
+      .catch((error) => console.error("Error fetching data:", error));
+    console.log("here is the items data", items);
+  }, []);
+
+  // read product list under a purchase
+  useEffect(() => {
+    console.log("what");
+    const getToken = localStorage.getItem("token");
+    const token = JSON.parse(getToken)?.token;
+
+    axios
+      .get(`${serverHost}/purchasedProductList/${id}`, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      })
+      .then((response) => {
+        setProducts(response.data);
+        console.log("products here", response.data);
+      })
+
+      .catch((error) => console.error("Error fetching data:", error));
+    console.log("here is the items data", items);
+  }, []);
+
+  // read payment list under a purchase
+  useEffect(() => {
+    const getToken = localStorage.getItem("token");
+    const token = JSON.parse(getToken)?.token;
+
+    axios
+      .get(`${serverHost}/aPurchasePayments/${id}`, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      })
+      .then((response) => {
+        console.log("paymetn data", response.data);
+        setPayments(response.data);
+        console.log("paymetn data", response.data);
+      })
+
+      .catch((error) => console.error("Error fetching data:", error));
+    console.log("here is the items data", items);
+  }, []);
+
+  // read a purchase from purchases
+  useEffect(() => {
+    const getToken = localStorage.getItem("token");
+    const token = JSON.parse(getToken)?.token;
+
+    axios
+      .get(`${serverHost}/PurchaseList/${id}`, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      })
+      .then((response) => {
+        setSupplier(response.data.supplier_id);
+        setRemark(response.data.remark);
+        console.log("product list", response.data);
+      })
 
       .catch((error) => console.error("Error fetching data:", error));
     console.log("here is the items data", items);
@@ -95,11 +161,32 @@ const AddPurchase = () => {
   };
 
   const deleteProduct = (product) => {
+    console.log("product id", product.id);
+    //delete product from database.
+    const getToken = localStorage.getItem("token");
+    const token = JSON.parse(getToken)?.token;
+    axios.delete(`${serverHost}/deleteProduct/${product.id}`, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    });
+
     const newProducts = products.filter((p) => p !== product);
     setProducts(newProducts);
   };
 
   const deletePayment = (payment) => {
+    //delete payemnt from database
+    console.log("product id", payment.id);
+    //delete payment from database.
+    const getToken = localStorage.getItem("token");
+    const token = JSON.parse(getToken)?.token;
+    axios.delete(`${serverHost}/deletePayment/${payment.id}`, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    });
+
     const newPayments = payments.filter((p) => p !== payment);
     setPayments(newPayments);
   };
@@ -186,10 +273,6 @@ const AddPurchase = () => {
         payment.payment_option
       );
       formData.append(
-        `payments[${paymentIndex}][payment_date]`,
-        payment.payment_date
-      );
-      formData.append(
         `payments[${paymentIndex}][pre_notification_day]`,
         payment.pre_notification_day
       );
@@ -238,9 +321,8 @@ const AddPurchase = () => {
     <div className="flex-1 p-4">
       <div>
         <p className="flex items-center justify-center text-xl font-semibold text-gray-400">
-          Add Product List
+          Product List
         </p>
-
         <div className="flex flex-row justify-between items-center">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">Products</h2>
           <button
@@ -287,17 +369,17 @@ const AddPurchase = () => {
                     {productName(product.item_id)}
                   </td>
                   <td className="p-4 text-gray-700">
-                    {FormattedNumber(product.itemCost)}
+                    {FormattedNumber(product.purchase_price)}
                   </td>
                   <td className="p-4 text-gray-700">{product.unit}</td>
                   <td className="p-4 text-gray-700">
                     {FormattedNumber(product.quantity)}
                   </td>
                   <td className="p-4 text-gray-700">
-                    {FormattedNumber(product.quantity * product.itemCost)}
+                    {FormattedNumber(product.quantity * product.purchase_price)}
                   </td>
                   <td className="p-4 text-gray-700">
-                    {FormattedNumber(product.sellingPrice)}
+                    {FormattedNumber(product.selling_price)}
                   </td>
 
                   <td className="p-4 text-gray-700">
@@ -316,6 +398,7 @@ const AddPurchase = () => {
                           onClick={() => {
                             setSelectedProduct(product);
                             setProductDetailOpen(true);
+                            setProductId(product.id);
                             handleMenuToggle(index);
                           }}
                           className="block w-full px-4 py-2 text-sm text-primaryColor hover:bg-blue-100 hover:rounded-lg"
@@ -373,7 +456,7 @@ const AddPurchase = () => {
                           (sum, product) =>
                             sum +
                             parseFloat(product.quantity) *
-                              parseFloat(product.itemCost),
+                              parseFloat(product.purchase_price),
                           0
                         )
                       )}
@@ -553,7 +636,8 @@ const AddPurchase = () => {
                 products.reduce(
                   (sum, product) =>
                     sum +
-                    parseFloat(product.quantity) * parseFloat(product.itemCost),
+                    parseFloat(product.quantity) *
+                      parseFloat(product.purchase_price),
                   0
                 )
               )}
@@ -607,6 +691,7 @@ const AddPurchase = () => {
         isOpen={isProductDetailOpen}
         close={() => setProductDetailOpen(false)}
         product={selectedProduct}
+        productId={productId}
       />
       <EditProduct
         isOpen={isEditProductOpen}
@@ -629,4 +714,4 @@ const AddPurchase = () => {
   );
 };
 
-export default AddPurchase;
+export default PurchasedProductList;

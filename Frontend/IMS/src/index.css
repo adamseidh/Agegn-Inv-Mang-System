@@ -3,15 +3,15 @@
 @tailwind utilities;
 
 .primaryBtn {
-    @apply bg-primaryColor text-white rounded-lg text-lg px-4 py-1 my-2 hover:bg-secondaryColor transition duration-300;
+  @apply bg-primaryColor text-white rounded-lg text-lg px-4 py-1 my-2 hover:bg-secondaryColor transition duration-300;
 }
 
 .deleteBtn {
-    @apply bg-red-600 text-white rounded-lg text-lg px-2 md:px-4 py-1 my-2 hover:bg-red-800 transition duration-300;
+  @apply bg-red-600 text-white rounded-lg text-lg px-2 md:px-4 py-1 my-2 hover:bg-red-800 transition duration-300;
 }
 
 .primaryInput {
-    @apply border p-2 w-full mb-2 rounded focus:outline-none focus:border-primaryColor;
+  @apply border p-2 w-full mb-2 rounded focus:outline-none focus:border-primaryColor;
 }
 
 /* Number input without spinner */
@@ -32,18 +32,18 @@ Hide the spinner arrows in Firefox.primaryNumberInput {
 } */
 
 .inputLabel {
-    @apply absolute left-2 -top-2 px-1 bg-white rounded text-sm text-primaryColor transition-all duration-200 pointer-events-none peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2 peer-focus:text-sm peer-focus:text-primaryColor;
+  @apply absolute left-2 -top-4 px-1 bg-white rounded text-sm text-primaryColor transition-all duration-200 pointer-events-none peer-placeholder-shown:top-2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2 peer-focus:text-sm peer-focus:text-primaryColor;
 }
 
 .scrollable-column::-webkit-scrollbar {
-    width: 0;
-    /* Hide scrollbar for Chrome, Safari, and Edge */
-    height: 0;
+  width: 0;
+  /* Hide scrollbar for Chrome, Safari, and Edge */
+  height: 0;
 }
 
 .scrollable-column {
-    scrollbar-width: none;
-    /* Hide scrollbar for Firefox */
-    -ms-overflow-style: none;
-    /* Hide scrollbar for IE and Edge */
+  scrollbar-width: none;
+  /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none;
+  /* Hide scrollbar for IE and Edge */
 }

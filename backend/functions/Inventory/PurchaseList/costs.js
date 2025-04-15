@@ -129,6 +129,22 @@ const SinglePurchaseData = (req, res) => {
     }
   });
 };
+
+const productCostList = (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+        SELECT * FROM cost_list WHERE product_id = ? ORDER BY id DESC`;
+
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    } else {
+      res.setHeader("Access-Control-Expose-Headers", "Content-Range");
+      res.json(results);
+    }
+  });
+};
 const CreateItem = (req, res) => {
   const { name, low_level, category_id, type_id, description, serverHost } =
     req.body;
@@ -222,6 +238,7 @@ const deleteItem = (req, res) => {
 module.exports = {
   PurchaseList,
   SinglePurchaseData,
+  productCostList,
   CreateItem,
   EditItem,
   deleteItem,
