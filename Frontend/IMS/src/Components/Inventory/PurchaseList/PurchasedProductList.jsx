@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import AddProduct from "./Modals/AddProduct";
-import AddPayment from "./Modals/AddPayment";
-import PaymentDetail from "./Modals/PaymentDetail";
-import EditPayment from "./Modals/EditPayment";
 import { FaEllipsisV } from "react-icons/fa";
 import { FormattedNumber } from "../../../helpers/functions/FormattedNumber";
 import FormattedDate from "../../../helpers/functions/FormattedDate";
 import ProductDetail from "./PrchsdPrdctModals/PchProductDetail";
 import EditProduct from "./PrchsdPrdctModals/pchProductEditModal";
+import DeleteConfirm from "../../shared/deleteConfirm";
+import AddProduct from "./PrchsdPrdctModals/pchProductAddModal";
+import EditPayment from "./PrchsdPrdctModals/pchPrdctPymntEdModal";
+import PaymentDetail from "./PrchsdPrdctModals/puchPrdPaymentDetail";
+import AddPayment from "./PrchsdPrdctModals/pchprdAddPaymnt";
 
 const PurchasedProductList = () => {
   const { id } = useParams();
@@ -24,14 +25,20 @@ const PurchasedProductList = () => {
   const [isEditPaymentOpen, setEditPaymentOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const [openMenu, setOpenMenu] = useState(null); // Track open menu index for the product table
-  const [openPaymentTableMenu, setOpenPaymentTableMenu] = useState(null); // toggle for payment table
+  const [openMenu, setOpenMenu] = useState(null);
+  const [openPaymentTableMenu, setOpenPaymentTableMenu] = useState(null);
   const [items, setItems] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [supplier, setSupplier] = useState([]);
-  const [remark, setRemark] = useState();
+  const [remark, setRemark] = useState("");
   const [productId, setProductId] = useState();
-  console.log("purchase is", id);
+  const [originalSupplier, setOriginalSupplier] = useState(null);
+  const [originalRemark, setOriginalRemark] = useState("");
+
+  // Delete confirmation states
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [isProductDelete, setIsProductDelete] = useState(false);
 
   const navigate = useNavigate();
 
@@ -46,9 +53,7 @@ const PurchasedProductList = () => {
         },
       })
       .then((response) => setItems(response.data))
-
       .catch((error) => console.error("Error fetching data:", error));
-    console.log("here is the items data", items);
   }, []);
 
   useEffect(() => {
@@ -62,14 +67,10 @@ const PurchasedProductList = () => {
         },
       })
       .then((response) => setSuppliers(response.data))
-
       .catch((error) => console.error("Error fetching data:", error));
-    console.log("here is the items data", items);
   }, []);
 
-  // read product list under a purchase
   useEffect(() => {
-    console.log("what");
     const getToken = localStorage.getItem("token");
     const token = JSON.parse(getToken)?.token;
 
@@ -81,14 +82,10 @@ const PurchasedProductList = () => {
       })
       .then((response) => {
         setProducts(response.data);
-        console.log("products here", response.data);
       })
-
       .catch((error) => console.error("Error fetching data:", error));
-    console.log("here is the items data", items);
   }, []);
 
-  // read payment list under a purchase
   useEffect(() => {
     const getToken = localStorage.getItem("token");
     const token = JSON.parse(getToken)?.token;
@@ -100,16 +97,11 @@ const PurchasedProductList = () => {
         },
       })
       .then((response) => {
-        console.log("paymetn data", response.data);
         setPayments(response.data);
-        console.log("paymetn data", response.data);
       })
-
       .catch((error) => console.error("Error fetching data:", error));
-    console.log("here is the items data", items);
   }, []);
 
-  // read a purchase from purchases
   useEffect(() => {
     const getToken = localStorage.getItem("token");
     const token = JSON.parse(getToken)?.token;
@@ -122,16 +114,23 @@ const PurchasedProductList = () => {
       })
       .then((response) => {
         setSupplier(response.data.supplier_id);
+        setOriginalSupplier(response.data.supplier_id);
         setRemark(response.data.remark);
-        console.log("product list", response.data);
+        setOriginalRemark(response.data.remark);
       })
-
       .catch((error) => console.error("Error fetching data:", error));
-    console.log("here is the items data", items);
   }, []);
 
   const handleMenuToggle = (index) => {
     setOpenMenu(openMenu === index ? null : index);
+  };
+
+  const supplierChange = (value) => {
+    setSupplier(value);
+  };
+
+  const handleRemarkChange = (value) => {
+    setRemark(value);
   };
 
   const handlePaymentMenuToggle = (index) => {
@@ -160,9 +159,28 @@ const PurchasedProductList = () => {
     setPayments(newPayments);
   };
 
+  const handleDeleteClick = (item, isProduct) => {
+    setItemToDelete(item);
+    setIsProductDelete(isProduct);
+    setShowDeleteConfirm(true);
+    // Close the menu
+    if (isProduct) {
+      setOpenMenu(null);
+    } else {
+      setOpenPaymentTableMenu(null);
+    }
+  };
+
+  const confirmDelete = () => {
+    if (isProductDelete) {
+      deleteProduct(itemToDelete);
+    } else {
+      deletePayment(itemToDelete);
+    }
+    setShowDeleteConfirm(false);
+  };
+
   const deleteProduct = (product) => {
-    console.log("product id", product.id);
-    //delete product from database.
     const getToken = localStorage.getItem("token");
     const token = JSON.parse(getToken)?.token;
     axios.delete(`${serverHost}/deleteProduct/${product.id}`, {
@@ -176,9 +194,6 @@ const PurchasedProductList = () => {
   };
 
   const deletePayment = (payment) => {
-    //delete payemnt from database
-    console.log("product id", payment.id);
-    //delete payment from database.
     const getToken = localStorage.getItem("token");
     const token = JSON.parse(getToken)?.token;
     axios.delete(`${serverHost}/deletePayment/${payment.id}`, {
@@ -191,131 +206,48 @@ const PurchasedProductList = () => {
     setPayments(newPayments);
   };
 
-  // Function to get product name by id
   const productName = (id) => {
     const itemName = items.find((item) => parseInt(item.id) === parseInt(id));
     return itemName ? itemName.name : "Unknown";
   };
-  const handleSubmit = async (e) => {
+
+  const handleBack = (e) => {
     e.preventDefault();
+    navigate("/PurchaseList");
+  };
 
-    const formData = new FormData();
-    formData.append("serverHost", serverHost);
-    formData.append("supplier", supplier);
-    formData.append("remark", remark);
-
-    // Append products data
-    products.forEach((product, productIndex) => {
-      formData.append(`products[${productIndex}][item_id]`, product.item_id);
-      formData.append(`products[${productIndex}][brand]`, product.brand);
-      formData.append(
-        `products[${productIndex}][description]`,
-        product.description
-      );
-      formData.append(`products[${productIndex}][unit]`, product.unit);
-      formData.append(`products[${productIndex}][quantity]`, product.quantity);
-      formData.append(
-        `products[${productIndex}][expire_date]`,
-        product.expire_date
-      );
-      formData.append(
-        `products[${productIndex}][purchase_date]`,
-        product.purchase_date
-      );
-      formData.append(
-        `products[${productIndex}][serial_number]`,
-        product.serial_number
-      );
-      formData.append(
-        `products[${productIndex}][batch_number]`,
-        product.batch_number
-      );
-      formData.append(
-        `products[${productIndex}][purchase_price]`,
-        product.itemCost
-      );
-      formData.append(
-        `products[${productIndex}][additional_cost]`,
-        product.additionalCost
-      );
-      formData.append(
-        `products[${productIndex}][overall_cost]`,
-        product.totalCost
-      );
-      formData.append(
-        `products[${productIndex}][selling_price]`,
-        product.sellingPrice
-      );
-
-      if (product.image) {
-        formData.append("productsImages", product.image);
-      }
-      product.costs.forEach((cost, costIndex) => {
-        formData.append(
-          `products[${productIndex}][costs][${costIndex}][title]`,
-          cost.title
-        );
-        formData.append(
-          `products[${productIndex}][costs][${costIndex}][amount]`,
-          cost.amount
-        );
-      });
-    });
-
-    // Append payments data
-    payments.forEach((payment, paymentIndex) => {
-      formData.append(
-        `payments[${paymentIndex}][payment_type]`,
-        payment.payment_type
-      );
-      formData.append(
-        `payments[${paymentIndex}][payment_option]`,
-        payment.payment_option
-      );
-      formData.append(
-        `payments[${paymentIndex}][pre_notification_day]`,
-        payment.pre_notification_day
-      );
-      formData.append(
-        `payments[${paymentIndex}][bank_name]`,
-        payment.bank_name
-      );
-      formData.append(
-        `payments[${paymentIndex}][account_number]`,
-        payment.account_number
-      );
-      formData.append(`payments[${paymentIndex}][amount]`, payment.amount);
-      formData.append(`payments[${paymentIndex}][remark]`, payment.remark);
-      if (payment.paymentImage) {
-        formData.append("paymentImages", payment.paymentImage);
-      }
-    });
-
-    // Log FormData for debugging
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
+  const saveSupplyChange = async (e) => {
+    e.preventDefault();
 
     try {
       const getToken = localStorage.getItem("token");
       const token = JSON.parse(getToken).token;
 
-      const res = await axios.post(`${serverHost}/addPurchase`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      });
+      await axios.put(
+        `${serverHost}/EditPurchase/${id}`,
+        { supplier, remark },
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
 
-      alert(res.data.message);
-      navigate("/PurchaseList");
+      alert("Changes saved successfully!");
+      // Update original values after successful save
+      setOriginalSupplier(supplier);
+      setOriginalRemark(remark);
     } catch (error) {
       console.error(
         "Error submitting form:",
         error.response ? error.response.data : error.message
       );
+      alert("Failed to save changes");
     }
   };
+
+  // Check if there are changes to show the save button
+  const hasChanges = supplier !== originalSupplier || remark !== originalRemark;
 
   return (
     <div className="flex-1 p-4">
@@ -376,12 +308,14 @@ const PurchasedProductList = () => {
                     {FormattedNumber(product.quantity)}
                   </td>
                   <td className="p-4 text-gray-700">
-                    {FormattedNumber(product.quantity * product.purchase_price)}
+                    {FormattedNumber(
+                      parseFloat(product.quantity) *
+                        parseFloat(product.purchase_price)
+                    )}
                   </td>
                   <td className="p-4 text-gray-700">
                     {FormattedNumber(product.selling_price)}
                   </td>
-
                   <td className="p-4 text-gray-700">
                     {FormattedDate(product.expire_date)}
                   </td>
@@ -416,10 +350,7 @@ const PurchasedProductList = () => {
                           Edit
                         </button>
                         <button
-                          onClick={() => {
-                            deleteProduct(product);
-                            handleMenuToggle(index);
-                          }}
+                          onClick={() => handleDeleteClick(product, true)}
                           className="block w-full px-4 text-sm text-red-500 hover:bg-red-100 hover:rounded-lg"
                         >
                           Delete
@@ -430,7 +361,6 @@ const PurchasedProductList = () => {
                 </tr>
               ))}
             </tbody>
-            {/* Footer row for totals */}
             <tfoot>
               <tr className="bg-gray-200 font-semibold">
                 <td className="p-4 text-gray-800"></td>
@@ -550,10 +480,7 @@ const PurchasedProductList = () => {
                           Edit
                         </button>
                         <button
-                          onClick={() => {
-                            deletePayment(payment);
-                            handlePaymentMenuToggle(index);
-                          }}
+                          onClick={() => handleDeleteClick(payment, false)}
                           className="block w-full px-4  text-sm  text-red-500 hover:bg-red-100 hover:rounded-lg"
                         >
                           Delete
@@ -564,8 +491,6 @@ const PurchasedProductList = () => {
                 </tr>
               ))}
             </tbody>
-
-            {/* Footer row for totals */}
             <tfoot>
               <tr className="bg-gray-200 font-semibold">
                 <td className="p-4 text-gray-800"></td>
@@ -601,7 +526,7 @@ const PurchasedProductList = () => {
             <label className="inputLabel">Supplier</label>
             <select
               value={supplier}
-              onChange={(e) => setSupplier(e.target.value)}
+              onChange={(e) => supplierChange(e.target.value)}
               className="primaryInput peer"
               required
             >
@@ -620,13 +545,21 @@ const PurchasedProductList = () => {
               className="primaryInput peer"
               placeholder=" "
               value={remark}
-              onChange={(e) => setRemark(e.target.value)}
+              onChange={(e) => handleRemarkChange(e.target.value)}
               required
             />
             <label className="inputLabel">Purchase Remark</label>
           </div>
+          {hasChanges && (
+            <button
+              type="button"
+              onClick={saveSupplyChange}
+              className="primaryBtn mt-8"
+            >
+              Save Change
+            </button>
+          )}
         </div>
-
         <div className="space-y-2 border p-2 rounded-lg">
           <div className="flex flex-row gap-1">
             <p>Overall Total Price amount:</p>
@@ -671,9 +604,8 @@ const PurchasedProductList = () => {
           </div>
         </div>
       </div>
-
-      <button type="button" onClick={handleSubmit} className="primaryBtn mt-8">
-        Submit
+      <button type="button" onClick={handleBack} className="primaryBtn mt-8">
+        Back
       </button>
 
       {/* Modals */}
@@ -681,11 +613,13 @@ const PurchasedProductList = () => {
         isOpen={isAddProductOpen}
         close={() => setAddProductOpen(false)}
         addProduct={addProduct}
+        purchaseId={id}
       />
       <AddPayment
         isOpen={isAddPaymentOpen}
         close={() => setAddPaymentOpen(false)}
         addPayment={addPayment}
+        purchaseId={id}
       />
       <ProductDetail
         isOpen={isProductDetailOpen}
@@ -709,6 +643,18 @@ const PurchasedProductList = () => {
         close={() => setEditPaymentOpen(false)}
         payment={selectedPayment}
         updatePayment={updatePayment}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirm
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDelete}
+        itemName={
+          isProductDelete
+            ? productName(itemToDelete?.item_id)
+            : `Payment (${itemToDelete?.amount} ETB)`
+        }
       />
     </div>
   );

@@ -46,7 +46,7 @@ const AddPurchase = (req, res) => {
       product.overall_cost,
       product.selling_price,
       req.files["productsImages"] && req.files["productsImages"][index]
-        ? `${serverHost}/${path.basename(
+        ? `${serverHost}/images/${path.basename(
             req.files["productsImages"][index].path
           )}`
         : null, // Save only the file name
@@ -92,7 +92,7 @@ const AddPurchase = (req, res) => {
           payment.remark,
           payment.payment_type == "Paid" ? "Completed" : "Not Completed",
           req.files["paymentImages"] && req.files["paymentImages"][index]
-            ? `${serverHost}/${path.basename(
+            ? `${serverHost}/images/${path.basename(
                 req.files["paymentImages"][index].path
               )}`
             : null, // Save only the file name

@@ -1,4 +1,5 @@
 const db = require("../../../db");
+const path = require("path");
 
 const PurchaseList = (req, res) => {
   let { _sort, _order, _page, _limit, q, filter, range, sort } = req.query;
@@ -145,74 +146,170 @@ const aPurchasePayments = (req, res) => {
     }
   });
 };
-const CreateItem = (req, res) => {
-  const { name, low_level, category_id, type_id, description, serverHost } =
-    req.body;
 
-  console.log("categroy id", category_id);
-  console.log("server host", serverHost);
-  const image = req.file ? req.file.filename : null;
-  console.log("here is uploading image: ", image);
+const addPayment = async (req, res) => {
+  try {
+    const {
+      amount,
+      remark,
+      payment_type,
+      payment_option,
+      payment_date,
+      pre_notification_day = 3,
+      bank_name,
+      account_number,
+      purchase_id,
+      serverHost,
+    } = req.body;
 
-  const fullPath = `${serverHost}/images/${image}`;
+    console.log("serv", serverHost);
 
-  const query = `
-        INSERT INTO items (name,low_level, category_id, type_id, description, image)
-        VALUES (?, ?, ?, ?,?,?)
+    const image = req.file ? req.file.filename : null;
+    const payment_status =
+      payment_type === "Paid" ? "Completed" : "Not Completed";
+
+    const imagePath = image
+      ? `${serverHost}/images/${path.basename(req.file.path)}`
+      : null;
+
+    const query = `
+      INSERT INTO purchase_payment 
+      (purchase_id, amount, remark, payment_type, payment_option, 
+       payment_date, pre_notification_day, bank_name, account_number, 
+       payment_status, payment_image) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-  const values = [
-    name,
-    low_level,
-    category_id || "",
-    type_id || "",
-    description || "",
-    fullPath,
-  ];
+    db.query(
+      query,
+      [
+        purchase_id,
+        amount,
+        remark,
+        payment_type,
+        payment_option,
+        payment_date,
+        pre_notification_day,
+        bank_name,
+        account_number,
+        payment_status,
+        imagePath,
+      ],
+      (err, result) => {
+        if (err) {
+          console.error("Error adding payment:", err);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to add payment",
+          });
+        }
 
-  db.query(query, values, (err, result) => {
-    if (err) {
-      console.log("error", err);
-      return res.status(500).json({ error: err });
-    }
-
-    res.json({ id: result.insertId });
-  });
+        res.json({
+          success: true,
+          message: "Payment added successfully",
+          payment: {
+            id: result.insertId,
+            amount,
+            remark,
+            payment_type,
+            payment_option,
+            payment_date,
+            pre_notification_day,
+            bank_name,
+            account_number,
+            payment_status,
+            payment_image: imagePath,
+          },
+        });
+      }
+    );
+  } catch (error) {
+    console.error("Error in addPayment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 };
 
-const EditItem = (req, res) => {
+const updatePayment = (req, res) => {
   const {
-    name,
-    low_level,
-    category_id,
-    type_id,
-    description,
-    serverHost,
+    amount,
+    remark,
+    payment_type,
+    payment_option,
+    payment_date,
+    pre_notification_day,
+    payment_status,
+    bank_name,
+    account_number,
     oldImage,
+    serverHost,
   } = req.body;
-  const image = req.file ? req.file.filename : null;
-  const { id } = req.params;
 
-  const fullPath = image ? `${serverHost}/images/${image}` : oldImage;
+  const { id } = req.params;
+  console.log("payment id", id);
+  const image = req.file ? req.file.filename : null;
+
+  // Determine the image path
+  const imagePath = image
+    ? `${serverHost}/images/${path.basename(req.file.path)}`
+    : oldImage;
 
   const query = `
-        UPDATE items 
-        SET name = ?, low_level = ?,  category_id = ?,type_id = ?, description = ?,image = ?
-        WHERE id = ?`;
+    UPDATE purchase_payment 
+    SET 
+      amount = ?,
+      remark = ?,
+      payment_type = ?,
+      payment_option = ?,
+      payment_date = ?,
+      pre_notification_day = ?,
+      bank_name = ?,
+      account_number = ?,
+      payment_image = ?,
+      payment_status = ?
+    WHERE id = ?
+  `;
+
+  // Determine payment status based on type
 
   db.query(
     query,
-    [name, low_level, category_id, type_id, description, fullPath, id],
+    [
+      amount,
+      remark,
+      payment_type,
+      payment_option,
+      payment_date,
+      pre_notification_day,
+      bank_name,
+      account_number,
+      imagePath,
+      payment_status,
+      id,
+    ],
     (err, result) => {
       if (err) {
-        return res.status(500).json({ error: err });
+        console.error("Error updating payment:", err);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to update payment",
+        });
       }
 
       if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Data not found" });
+        return res.status(404).json({
+          success: false,
+          message: "Payment not found",
+        });
       }
 
-      res.json({ id: result.insertId });
+      res.json({
+        success: true,
+        message: "Payment updated successfully",
+        updatedImage: imagePath,
+      });
     }
   );
 };
@@ -258,8 +355,8 @@ module.exports = {
   PurchaseList,
   SinglePurchaseData,
   aPurchasePayments,
-  CreateItem,
-  EditItem,
+  addPayment,
+  updatePayment,
   deleteItem,
   deletePayment,
 };

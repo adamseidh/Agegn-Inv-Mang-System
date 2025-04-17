@@ -164,41 +164,27 @@ const CreateItem = (req, res) => {
   });
 };
 
-const EditItem = (req, res) => {
-  const {
-    name,
-    low_level,
-    category_id,
-    type_id,
-    description,
-    serverHost,
-    oldImage,
-  } = req.body;
-  const image = req.file ? req.file.filename : null;
+const EditPurchase = (req, res) => {
+  const { supplier, remark } = req.body;
   const { id } = req.params;
-
-  const fullPath = image ? `${serverHost}/images/${image}` : oldImage;
+  console.log("supplire", supplier);
+  console.log("remark", remark);
 
   const query = `
-        UPDATE items 
-        SET name = ?, low_level = ?,  category_id = ?,type_id = ?, description = ?,image = ?
-        WHERE id = ?`;
+        UPDATE purchase_list 
+        SET supplier_id = ?, remark = ? WHERE id = ?`;
 
-  db.query(
-    query,
-    [name, low_level, category_id, type_id, description, fullPath, id],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: err });
-      }
-
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Data not found" });
-      }
-
-      res.json({ id: result.insertId });
+  db.query(query, [supplier, remark, id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err });
     }
-  );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Data not found" });
+    }
+
+    res.json({ id: result.insertId });
+  });
 };
 
 const deleteItem = (req, res) => {
@@ -223,6 +209,6 @@ module.exports = {
   PurchaseList,
   SinglePurchaseData,
   CreateItem,
-  EditItem,
+  EditPurchase,
   deleteItem,
 };

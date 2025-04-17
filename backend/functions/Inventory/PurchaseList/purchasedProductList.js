@@ -16,6 +16,110 @@ const PurchasedProductList = (req, res) => {
   });
 };
 
+const addProduct = async (req, res) => {
+  try {
+    const {
+      item_id,
+      brand,
+      unit,
+      quantity,
+      expire_date,
+      purchase_date,
+      batch_number,
+      description,
+      purchase_price,
+      additional_cost,
+      overall_cost,
+      selling_price,
+      costs,
+      purchase_id,
+    } = req.body;
+
+    // Parse the costs if it's a string
+    const parsedCosts = typeof costs === "string" ? JSON.parse(costs) : costs;
+
+    // Insert product
+    const productQuery = `
+      INSERT INTO product_list 
+      (item_id,purchase_id, brand, unit, quantity, expire_date, purchase_date, batch_number, 
+       description, purchase_price, additional_cost, overall_cost, selling_price, image) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+    `;
+
+    const imagePath = req.file ? `${req.file.filename}` : null;
+
+    db.query(
+      productQuery,
+      [
+        item_id,
+        purchase_id,
+        brand,
+        unit,
+        quantity,
+        expire_date,
+        purchase_date,
+        batch_number,
+        description,
+        purchase_price,
+        additional_cost,
+        overall_cost,
+        selling_price,
+        imagePath,
+      ],
+      (err, productResult) => {
+        if (err) {
+          console.error("Error adding product:", err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Failed to add product" });
+        }
+
+        const productId = productResult.insertId;
+
+        // Insert costs if they exist
+        if (parsedCosts && parsedCosts.length > 0) {
+          const costQuery = `
+            INSERT INTO cost_list 
+            (product_id, title, amount) 
+            VALUES ?
+          `;
+
+          const costValues = parsedCosts.map((cost) => [
+            productId,
+            cost.title,
+            cost.amount,
+          ]);
+
+          db.query(costQuery, [costValues], (err, costResult) => {
+            if (err) {
+              console.error("Error adding costs:", err);
+              return res.status(500).json({
+                success: false,
+                message: "Product added but failed to add costs",
+              });
+            }
+
+            res.json({
+              success: true,
+              message: "Product and costs added successfully",
+              productId,
+            });
+          });
+        } else {
+          res.json({
+            success: true,
+            message: "Product added successfully",
+            productId,
+          });
+        }
+      }
+    );
+  } catch (error) {
+    console.error("Error in addProduct:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 const AnItem = (req, res) => {
   const { id } = req.params;
   const query = `SELECT I.*, C.name as category, PT.name as type FROM items I
@@ -68,31 +172,72 @@ const CreateItem = (req, res) => {
   });
 };
 
-const EditItem = (req, res) => {
+const updateProduct = (req, res) => {
   const {
-    name,
-    low_level,
-    category_id,
-    type_id,
+    item_id,
+    brand,
     description,
+    unit,
+    quantity,
+    expire_date,
+    purchase_date,
+    serial_number,
+    batch_number,
+    purchase_price,
+    additional_cost,
+    overall_cost,
+    selling_price,
     serverHost,
     oldImage,
   } = req.body;
+
   const image = req.file ? req.file.filename : null;
   const { id } = req.params;
+  console.log("her ei s id", id);
 
   const fullPath = image ? `${serverHost}/images/${image}` : oldImage;
 
   const query = `
-        UPDATE items 
-        SET name = ?, low_level = ?,  category_id = ?,type_id = ?, description = ?,image = ?
-        WHERE id = ?`;
+  UPDATE product_list
+  SET 
+    item_id = ?, 
+    brand = ?, 
+    description = ?, 
+    unit = ?, 
+    quantity = ?, 
+    expire_date = ?, 
+    purchase_date = ?, 
+    serial_number = ?, 
+    batch_number = ?, 
+    purchase_price = ?, 
+    additional_cost = ?, 
+    overall_cost = ?, 
+    selling_price = ?, 
+    image = ?
+  WHERE id = ?`;
 
   db.query(
     query,
-    [name, low_level, category_id, type_id, description, fullPath, id],
+    [
+      item_id,
+      brand,
+      description,
+      unit,
+      quantity,
+      expire_date,
+      purchase_date,
+      serial_number,
+      batch_number,
+      purchase_price,
+      additional_cost,
+      overall_cost,
+      selling_price,
+      fullPath,
+      id,
+    ],
     (err, result) => {
       if (err) {
+        console.log(err);
         return res.status(500).json({ error: err });
       }
 
@@ -128,6 +273,7 @@ module.exports = {
   PurchasedProductList,
   AnItem,
   CreateItem,
-  EditItem,
+  updateProduct,
   deleteProduct,
+  addProduct,
 };

@@ -1,13 +1,15 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaXmark } from "react-icons/fa6";
 
 const EditProduct = ({ isOpen, close, product, updateProduct }) => {
   const [items, setItems] = useState([]);
   const [editedProduct, setEditedProduct] = useState({
+    id: "",
     item_id: "",
     brand: "",
     unit: "",
+    serial_number: "",
     quantity: "",
     expire_date: "",
     purchase_date: "",
@@ -15,40 +17,51 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
     description: "",
     purchase_price: "",
     profitPercent: 10,
-    costs: [{ title: "", amount: "" }],
+    costs: [{ id: "", title: "", amount: "" }],
     image: null,
   });
+  const [originalProduct, setOriginalProduct] = useState(null);
+  const [hasProductChanges, setHasProductChanges] = useState(false);
+  const [changedCosts, setChangedCosts] = useState({});
+  const fileInputRef = useRef(null);
+
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
 
   const fetchProductCosts = async () => {
     try {
       const getToken = localStorage.getItem("token");
       if (!getToken) throw new Error("No token found");
-
+      const productId = product.id
+        ? product.id
+        : sessionStorage.getItem("productId");
       const token = JSON.parse(getToken).token;
       const response = await axios.get(
-        `${serverHost}/productCostList/${product.id}`,
+        `${serverHost}/productCostList/${productId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      return response.data;
+      // Filter out costs with empty titles or amounts
+      return response.data.filter((cost) => cost.title && cost.amount);
     } catch (err) {
       console.error("Failed to fetch data:", err);
       return [];
     }
   };
 
+  console.log("product slist form edit", product);
   // Initialize form when product data becomes available
   useEffect(() => {
     const initializeProductData = async () => {
       if (product) {
         const costs = await fetchProductCosts();
-        setEditedProduct({
+        const initialProduct = {
+          id: product.id || "",
           item_id: product.item_id || "",
           brand: product.brand || "",
           unit: product.unit || "",
+          serial_number: product.serial_number || "",
           quantity: product.quantity || "",
           expire_date: product.expire_date || "",
           purchase_date: product.purchase_date || "",
@@ -60,10 +73,13 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
             ? costs.map((cost) => ({
                 title: cost.title,
                 amount: cost.amount,
+                id: cost.id,
               }))
-            : [{ title: "", amount: "" }],
+            : [],
           image: product.image || null,
-        });
+        };
+        setEditedProduct(initialProduct);
+        setOriginalProduct(initialProduct);
       }
     };
 
@@ -86,6 +102,17 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
     }
   }, []);
 
+  // Check for product changes
+  useEffect(() => {
+    if (originalProduct && editedProduct) {
+      const changesDetected = Object.keys(editedProduct).some((key) => {
+        if (key === "costs" || key === "image") return false;
+        return editedProduct[key] !== originalProduct[key];
+      });
+      setHasProductChanges(changesDetected);
+    }
+  }, [editedProduct, originalProduct]);
+
   const handleChange = (e, field) => {
     setEditedProduct({ ...editedProduct, [field]: e.target.value });
   };
@@ -94,22 +121,124 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
     const newCosts = [...editedProduct.costs];
     newCosts[index][field] = value;
     setEditedProduct({ ...editedProduct, costs: newCosts });
+    setChangedCosts({ ...changedCosts, [index]: true });
   };
 
-  const addCostField = () => {
+  const addNewCost = () => {
     setEditedProduct({
       ...editedProduct,
       costs: [...editedProduct.costs, { title: "", amount: "" }],
     });
+    setChangedCosts({ ...changedCosts, [editedProduct.costs.length]: true });
   };
 
-  const removeCostField = (index) => {
-    const newCosts = editedProduct.costs.filter((_, i) => i !== index);
-    setEditedProduct({ ...editedProduct, costs: newCosts });
+  const updateCost = async (index, cost) => {
+    // Don't save if title or amount is empty
+    if (!cost.title || !cost.amount) {
+      alert("Please fill in both title and amount before saving");
+      return;
+    }
+
+    try {
+      const getToken = localStorage.getItem("token");
+      const token = JSON.parse(getToken)?.token;
+
+      if (cost.id) {
+        // Update existing cost
+        await axios.put(
+          `${serverHost}/updateProductCost/${cost.id}`,
+          { title: cost.title, amount: cost.amount },
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : "",
+            },
+          }
+        );
+      } else {
+        // Create new cost
+        const response = await axios.post(
+          `${serverHost}/createProductCost`,
+          { ...cost, product_id: product.id },
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : "",
+            },
+          }
+        );
+        // Update the cost in state with the returned ID
+        const newCosts = [...editedProduct.costs];
+        newCosts[index] = { ...newCosts[index], id: response.data.id };
+        setEditedProduct({ ...editedProduct, costs: newCosts });
+      }
+
+      // Update original product to reflect the saved changes
+      const updatedOriginal = { ...originalProduct };
+      updatedOriginal.costs[index] = { ...cost };
+      setOriginalProduct(updatedOriginal);
+
+      // Remove from changed costs
+      setChangedCosts((prev) => {
+        const newChanged = { ...prev };
+        delete newChanged[index];
+        return newChanged;
+      });
+
+      alert("Cost saved successfully!");
+    } catch (error) {
+      console.error("Error saving cost:", error);
+      alert("Failed to save cost");
+    }
   };
+
+  const handleRemoveCostClick = (index, cost) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the cost "${cost.title}" (${cost.amount} ETB)?`
+    );
+
+    if (confirmDelete) {
+      if (cost.id) {
+        // Delete cost from database if it has an ID (existing cost)
+        const getToken = localStorage.getItem("token");
+        const token = JSON.parse(getToken)?.token;
+        axios.delete(`${serverHost}/deleteProductCost/${cost.id}`, {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        });
+      }
+
+      // Remove cost from local state
+      const newCosts = editedProduct.costs.filter((_, i) => i !== index);
+      setEditedProduct({ ...editedProduct, costs: newCosts });
+
+      // Update original product
+      const updatedOriginal = { ...originalProduct };
+      updatedOriginal.costs = updatedOriginal.costs.filter(
+        (_, i) => i !== index
+      );
+      setOriginalProduct(updatedOriginal);
+
+      // Remove from changed costs
+      setChangedCosts((prev) => {
+        const newChanged = { ...prev };
+        delete newChanged[index];
+        return newChanged;
+      });
+    }
+  };
+
+  function formatDateToInputValue(value) {
+    if (!value) return "";
+    const date = new Date(value);
+    const year = date.getFullYear();
+    const month = `0${date.getMonth() + 1}`.slice(-2);
+    const day = `0${date.getDate()}`.slice(-2);
+    return `${year}-${month}-${day}`;
+  }
 
   const handleImageChange = (e) => {
     setEditedProduct({ ...editedProduct, image: e.target.files[0] });
+    setHasProductChanges(true);
   };
 
   const calculateTotalCost = () => {
@@ -117,9 +246,9 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
       (sum, cost) => sum + parseFloat(cost.amount || 0),
       0
     );
-    return (parseFloat(editedProduct.itemCost || 0) + additionalCosts).toFixed(
-      2
-    );
+    return (
+      parseFloat(editedProduct.purchase_price || 0) + additionalCosts
+    ).toFixed(2);
   };
 
   const calculateProfit = () => {
@@ -133,16 +262,82 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
     return (parseFloat(totalCost) + parseFloat(profit)).toFixed(2);
   };
 
-  const handleSubmit = (e) => {
+  const saveProductChanges = async (e) => {
     e.preventDefault();
-    const totalCost = calculateTotalCost();
-    const sellingPrice = calculateSellingPrice();
-    updateProduct({
-      ...editedProduct,
-      totalCost,
-      sellingPrice,
-    });
-    close();
+
+    if (!hasProductChanges) {
+      alert("No changes detected to save");
+      return;
+    }
+
+    try {
+      const getToken = localStorage.getItem("token");
+      const token = JSON.parse(getToken)?.token;
+
+      const formData = new FormData();
+      // Add all product fields except costs and image
+      Object.keys(editedProduct).forEach((key) => {
+        if (
+          key !== "costs" &&
+          key !== "image" &&
+          key !== "selling_price" &&
+          key !== "expire_date" &&
+          key !== "purchase_date" &&
+          key !== "id"
+        ) {
+          formData.append(key, editedProduct[key]);
+        }
+      });
+
+      let additionalCost = editedProduct.costs
+        .reduce((sum, cost) => sum + parseFloat(cost.amount || 0), 0)
+        .toFixed(2);
+      formData.append("additional_cost", additionalCost);
+
+      let overAllCost = calculateTotalCost();
+      formData.append("overall_cost", overAllCost);
+
+      let SellingPrice = calculateSellingPrice();
+      formData.append("selling_price", SellingPrice);
+
+      let expireDate = formatDateToInputValue(editedProduct.expire_date);
+      let purchaseDate = formatDateToInputValue(editedProduct.purchase_date);
+      formData.append("expire_date", expireDate);
+      formData.append("purchase_date", purchaseDate);
+
+      formData.append("oldImage", product.image);
+      formData.append("serverHost", serverHost);
+
+      // Append image if it's a new file
+      if (editedProduct.image && typeof editedProduct.image !== "string") {
+        formData.append("image", editedProduct.image);
+      }
+
+      // Send the update request
+      await axios.put(`${serverHost}/updateProduct/${product.id}`, formData, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // Update the original product to reflect saved changes
+      setOriginalProduct(editedProduct);
+      setHasProductChanges(false);
+
+      // Call the parent component's update function
+      updateProduct({
+        ...editedProduct,
+        totalCost: calculateTotalCost(),
+        selling_price: calculateSellingPrice(),
+      });
+
+      alert("Product updated successfully!");
+      close();
+    } catch (error) {
+      console.error("Error updating product:", error);
+      alert("Failed to update product");
+    }
   };
 
   if (!isOpen || !product) return null;
@@ -170,7 +365,7 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
           </div>
 
           <form
-            onSubmit={handleSubmit}
+            onSubmit={saveProductChanges}
             className="space-y-6 flex-1 scrollable-column overflow-y-auto"
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-2 border rounded-lg p-6 shadow-md">
@@ -205,7 +400,7 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
                   className="primaryInput peer"
                   placeholder=" "
                   value={editedProduct.purchase_price}
-                  onChange={(e) => handleChange(e, "itemCost")}
+                  onChange={(e) => handleChange(e, "purchase_price")}
                   onWheel={(e) => e.target.blur()}
                   required
                 />
@@ -242,7 +437,7 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
                   type="date"
                   className="primaryInput peer"
                   placeholder=" "
-                  value={editedProduct.expire_date}
+                  value={formatDateToInputValue(editedProduct.expire_date)}
                   onChange={(e) => handleChange(e, "expire_date")}
                 />
                 <label className="inputLabel">Expire Date</label>
@@ -253,7 +448,7 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
                   type="date"
                   className="primaryInput peer"
                   placeholder=" "
-                  value={editedProduct.purchase_date}
+                  value={formatDateToInputValue(editedProduct.purchase_date)}
                   onChange={(e) => handleChange(e, "purchase_date")}
                 />
                 <label className="inputLabel">Purchase Date</label>
@@ -294,6 +489,7 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
               <div className="relative col-span-3">
                 <input
                   type="file"
+                  ref={fileInputRef}
                   onChange={handleImageChange}
                   className="primaryInput text-gray-700 w-full"
                   accept="image/*"
@@ -308,52 +504,71 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
             </div>
 
             <div className="mt-6 border rounded-lg p-6 shadow-md">
-              <h4 className="font-bold text-lg mb-4">Additional Costs</h4>
-              {editedProduct.costs.map((cost, index) => (
-                <div key={index} className="flex gap-4 mb-4 items-center">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      className="primaryInput peer"
-                      placeholder=" "
-                      value={cost.title}
-                      onChange={(e) =>
-                        handleCostChange(index, "title", e.target.value)
-                      }
-                      required
-                    />
-                    <label className="inputLabel">Cost Title</label>
-                  </div>
-                  <div className="relative flex-1">
-                    <input
-                      type="number"
-                      className="primaryInput peer"
-                      placeholder=" "
-                      value={cost.amount}
-                      onChange={(e) =>
-                        handleCostChange(index, "amount", e.target.value)
-                      }
-                      onWheel={(e) => e.target.blur()}
-                      required
-                    />
-                    <label className="inputLabel">Amount</label>
-                  </div>
-                  <button
-                    type="button"
-                    className="text-red-500 hover:text-red-700 text-xl"
-                    onClick={() => removeCostField(index)}
-                  >
-                    <FaXmark />
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                className="primaryBtn mt-4"
-                onClick={addCostField}
-              >
-                + Add Cost
-              </button>
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-bold text-lg">Additional Costs</h4>
+                {/* <button
+                  type="button"
+                  className="primaryBtn"
+                  onClick={addNewCost}
+                >
+                  + Add Cost
+                </button> */}
+              </div>
+
+              {editedProduct.costs.filter((cost) => cost.title || cost.amount)
+                .length > 0 ? (
+                editedProduct.costs
+                  .filter((cost) => cost.title || cost.amount)
+                  .map((cost, index) => (
+                    <div key={index} className="flex gap-4 mb-4 items-center">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          className="primaryInput peer"
+                          placeholder=" "
+                          value={cost.title}
+                          onChange={(e) =>
+                            handleCostChange(index, "title", e.target.value)
+                          }
+                        />
+                        <label className="inputLabel">Cost Title</label>
+                      </div>
+                      <div className="relative flex-1">
+                        <input
+                          type="number"
+                          className="primaryInput peer"
+                          placeholder=" "
+                          value={cost.amount}
+                          onChange={(e) =>
+                            handleCostChange(index, "amount", e.target.value)
+                          }
+                          onWheel={(e) => e.target.blur()}
+                        />
+                        <label className="inputLabel">Amount</label>
+                      </div>
+                      {changedCosts[index] && (
+                        <button
+                          type="button"
+                          className="primaryBtn"
+                          onClick={() => updateCost(index, cost)}
+                        >
+                          Save
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="text-red-500 hover:text-red-700 text-xl"
+                        onClick={() => handleRemoveCostClick(index, cost)}
+                      >
+                        <FaXmark />
+                      </button>
+                    </div>
+                  ))
+              ) : (
+                <p className="text-gray-500 text-center py-4">
+                  No additional costs
+                </p>
+              )}
             </div>
 
             <div className="bg-white border rounded-lg p-6 shadow-md">
@@ -361,7 +576,7 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
               <div className="flex flex-row items-center gap-2 mt-1">
                 <p className="text-gray-500 text-sm font-medium">Item Cost:</p>
                 <p className="text-gray-700 font-semibold">
-                  {editedProduct.itemCost}
+                  {editedProduct.purchase_price || "0.00"}
                 </p>
               </div>
 
@@ -421,9 +636,12 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
 
             <button
               type="submit"
-              className="primaryBtn mx-auto mt-6 py-3 text-lg"
+              className={`primaryBtn mx-auto mt-6 py-3 text-lg ${
+                !hasProductChanges ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={!hasProductChanges}
             >
-              Update Product
+              Save Changes
             </button>
           </form>
         </div>

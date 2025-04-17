@@ -145,6 +145,25 @@ const productCostList = (req, res) => {
     }
   });
 };
+
+const deleteProductCost = (req, res) => {
+  const { id } = req.params;
+  console.log(" id", id);
+
+  const query = "DELETE FROM cost_list WHERE id = ?";
+
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Data not found" });
+    }
+
+    res.json({ message: "Data deleted successfully" });
+  });
+};
 const CreateItem = (req, res) => {
   const { name, low_level, category_id, type_id, description, serverHost } =
     req.body;
@@ -180,41 +199,27 @@ const CreateItem = (req, res) => {
   });
 };
 
-const EditItem = (req, res) => {
-  const {
-    name,
-    low_level,
-    category_id,
-    type_id,
-    description,
-    serverHost,
-    oldImage,
-  } = req.body;
-  const image = req.file ? req.file.filename : null;
+const updateProductCost = (req, res) => {
+  const { title, amount } = req.body;
   const { id } = req.params;
-
-  const fullPath = image ? `${serverHost}/images/${image}` : oldImage;
+  console.log(title, id, amount);
 
   const query = `
-        UPDATE items 
-        SET name = ?, low_level = ?,  category_id = ?,type_id = ?, description = ?,image = ?
+        UPDATE cost_list 
+        SET title = ?, amount = ?
         WHERE id = ?`;
 
-  db.query(
-    query,
-    [name, low_level, category_id, type_id, description, fullPath, id],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: err });
-      }
-
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Data not found" });
-      }
-
-      res.json({ id: result.insertId });
+  db.query(query, [title, amount, id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err });
     }
-  );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Data not found" });
+    }
+
+    res.json({ id: result.insertId });
+  });
 };
 
 const deleteItem = (req, res) => {
@@ -239,7 +244,8 @@ module.exports = {
   PurchaseList,
   SinglePurchaseData,
   productCostList,
+  deleteProductCost,
   CreateItem,
-  EditItem,
+  updateProductCost,
   deleteItem,
 };

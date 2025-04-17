@@ -64,6 +64,7 @@ const {
 const {
   PurchaseList,
   SinglePurchaseData,
+  EditPurchase,
 } = require("./functions/Inventory/PurchaseList/purchaseList");
 const {
   AddPurchase,
@@ -71,12 +72,20 @@ const {
 const {
   PurchasedProductList,
   deleteProduct,
+  updateProduct,
+  addProduct,
 } = require("./functions/Inventory/PurchaseList/purchasedProductList");
 const {
   aPurchasePayments,
   deletePayment,
+  updatePayment,
+  addPayment,
 } = require("./functions/Inventory/PurchaseList/payments");
-const { productCostList } = require("./functions/Inventory/PurchaseList/costs");
+const {
+  productCostList,
+  deleteProductCost,
+  updateProductCost,
+} = require("./functions/Inventory/PurchaseList/costs");
 
 const app = express();
 const PORT = 3000;
@@ -259,6 +268,24 @@ app.put("/supplier/:id", verifyToken, EditSupplier);
 //read prduct list under a purchase
 app.get("/PurchasedProductList/:id", verifyToken, PurchasedProductList);
 
+app.put(
+  "/updateProduct/:id",
+  verifyToken,
+  upload.single("image"),
+  updateProduct
+);
+
+app.post("/addProduct", verifyToken, upload.single("image"), addProduct);
+
+app.post("/addPayment", verifyToken, upload.single("image"), addPayment);
+
+app.put(
+  "/updatePayment/:id",
+  verifyToken,
+  upload.single("image"),
+  updatePayment
+);
+
 app.delete("/deleteProduct/:id", verifyToken, deleteProduct);
 
 //delete purchase payment data
@@ -267,6 +294,10 @@ app.delete("/deletePayment/:id", verifyToken, deletePayment);
 //costs under a product.
 app.get("/productCostList/:id", verifyToken, productCostList);
 
+app.delete("/deleteProductCost/:id", verifyToken, deleteProductCost);
+
+app.put("/updateProductCost/:id", updateProductCost);
+
 // add purchase List
 app.post(
   "/addPurchase",
@@ -274,6 +305,9 @@ app.post(
   upload.fields([{ name: "productsImages" }, { name: "paymentImages" }]),
   AddPurchase
 );
+
+//edit purchae dta
+app.put("/EditPurchase/:id", EditPurchase);
 
 //delete purchase List
 app.delete("/supplier/:id", verifyToken, deleteSupplier);
