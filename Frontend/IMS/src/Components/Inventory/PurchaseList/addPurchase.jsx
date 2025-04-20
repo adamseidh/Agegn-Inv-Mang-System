@@ -109,6 +109,11 @@ const AddPurchase = () => {
     const itemName = items.find((item) => parseInt(item.id) === parseInt(id));
     return itemName ? itemName.name : "Unknown";
   };
+
+  const productUnit = (id) => {
+    const Item = items.find((item) => parseInt(item.id) === parseInt(id));
+    return Item ? Item.unit : "Unknown";
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -125,7 +130,6 @@ const AddPurchase = () => {
         `products[${productIndex}][description]`,
         product.description
       );
-      formData.append(`products[${productIndex}][unit]`, product.unit);
       formData.append(`products[${productIndex}][quantity]`, product.quantity);
       formData.append(
         `products[${productIndex}][expire_date]`,
@@ -289,7 +293,9 @@ const AddPurchase = () => {
                   <td className="p-4 text-gray-700">
                     {FormattedNumber(product.itemCost)}
                   </td>
-                  <td className="p-4 text-gray-700">{product.unit}</td>
+                  <td className="p-4 text-gray-700">
+                    {productUnit(product.item_id)}
+                  </td>
                   <td className="p-4 text-gray-700">
                     {FormattedNumber(product.quantity)}
                   </td>

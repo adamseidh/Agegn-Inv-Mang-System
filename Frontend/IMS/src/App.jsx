@@ -8,7 +8,6 @@ import Dashboard from "./Components/Dashboard/Dashboard";
 import customDataProvider from "./helpers/customDataProvider";
 import LoginPage from "./pages/auth/LoginPage";
 import { EditAccount, MyAccount, ShowAccount } from "./pages/auth/myAccount";
-import CustomMenu from "./Components/CustomeMenu";
 import {
   Articles,
   CreateArticle,
@@ -41,6 +40,24 @@ import {
 import { PurchaseList } from "./Components/Inventory/PurchaseList";
 import AddPurchase from "./Components/Inventory/PurchaseList/addPurchase";
 import PurchasedProductList from "./Components/Inventory/PurchaseList/PurchasedProductList";
+import { Products, ShowProduct } from "./Components/Inventory/stock/products";
+import { Stock } from "./Components/Inventory/stock/stock";
+import {
+  CreateCustomer,
+  Customer,
+  EditCustomer,
+  ShowCustomer,
+} from "./Components/Inventory/customers";
+import { SalesList } from "./Components/Inventory/Sales/SalesList";
+import SellProduct from "./Components/Inventory/Sales/sellProduct";
+import Checkout from "./Components/Inventory/Sales/checkout";
+import SalesListDetail from "./Components/Inventory/Sales/salesListDetail";
+import FinancialReport from "./Components/Financial/FinancialReport";
+import { OrdersList } from "./Components/Inventory/Orders/OrdersList";
+import OrdersDetail from "./Components/Inventory/Orders/OrdersDetail";
+import { CreateUser, EditUser, Users } from "./Components/Users";
+import MyLayout from "./customAppBar/Layout";
+import NotificationsList from "./Components/Notifications/NotificationsList";
 
 const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
 
@@ -125,21 +142,36 @@ const App = () => {
         theme={customTheme}
         loginPage={LoginPage}
         dashboard={Dashboard}
-        layout={(props) => (
-          <Layout
-            {...props}
-            menu={(menuProps) => <CustomMenu {...menuProps} />}
-          />
-        )}
+        layout={MyLayout}
       >
         <CustomRoutes>
           <Route path="/PurchaseList/create" element={<AddPurchase />} />
+        </CustomRoutes>
+        <CustomRoutes>
+          <Route path="/salesList/create" element={<SellProduct />} />
+        </CustomRoutes>
+        <CustomRoutes>
+          <Route path="/salesList/:id/show" element={<SalesListDetail />} />
+        </CustomRoutes>
+        <CustomRoutes>
+          <Route path="/orders/:id/show" element={<OrdersDetail />} />
+        </CustomRoutes>
+        <CustomRoutes>
+          <Route path="/checkout" element={<Checkout />} />
+        </CustomRoutes>
+
+        <CustomRoutes>
+          <Route path="/financialReport" element={<FinancialReport />} />
         </CustomRoutes>
         <CustomRoutes>
           <Route
             path="/PurchaseList/:id/show"
             element={<PurchasedProductList />}
           />
+        </CustomRoutes>
+
+        <CustomRoutes>
+          <Route path="/notifications" element={<NotificationsList />} />
         </CustomRoutes>
         <Resource
           name="articles"
@@ -153,6 +185,13 @@ const App = () => {
           list={MyAccount}
           edit={EditAccount}
           show={ShowAccount}
+        />
+
+        <Resource
+          name="users"
+          list={Users}
+          create={CreateUser}
+          edit={EditUser}
         />
         <Resource name="messages" list={Messages} show={ShowMessage} />
         <Resource
@@ -184,7 +223,29 @@ const App = () => {
           edit={EditSupplier}
           create={CreateSupplier}
         />
+
+        <Resource
+          name="customers"
+          list={Customer}
+          show={ShowCustomer}
+          edit={EditCustomer}
+          create={CreateCustomer}
+        />
+        <Resource
+          name="products"
+          list={Products}
+          show={ShowProduct}
+          options={{ label: "Available Products Detail" }}
+        />
+        <Resource
+          name="stock"
+          list={Stock}
+          options={{ label: "Available Stocks" }}
+        />
+
         <Resource name="PurchaseList" list={PurchaseList} />
+        <Resource name="salesList" list={SalesList} />
+        <Resource name="orders" list={OrdersList} />
       </Admin>
     </BrowserRouter>
   );

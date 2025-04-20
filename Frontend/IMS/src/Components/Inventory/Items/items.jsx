@@ -57,6 +57,7 @@ const Items = () => {
           rowClick="show"
         >
           <TextField source="name" label="Product Name" />
+          <TextField source="unit" label="Unit" />
           <NumberField source="low_level" label="Low Level Quantity" />
           <TextField source="category" label="Product Category" />
           <TextField source="type" label="Product Type" />
@@ -123,6 +124,7 @@ const CreateItem = (props) => {
     const formData = new FormData();
 
     formData.append("name", data.name);
+    formData.append("unit", data.unit);
     formData.append("serverHost", data.serverHost);
     formData.append("category_id", data.category_id);
     formData.append("type_id", data.type_id);
@@ -239,6 +241,9 @@ const CreateItem = (props) => {
             <TextInput source="name" label="Product Name" required fullWidth />
           </Grid>
           <Grid item xs={12} sm={4}>
+            <TextInput source="unit" label="Measurement Unit" fullWidth />
+          </Grid>
+          <Grid item xs={12} sm={4}>
             <NumberInput
               source="low_level"
               label="Low Level Quantity"
@@ -326,6 +331,7 @@ const EditItem = (props) => {
     const formData = new FormData();
 
     formData.append("name", data.name);
+    formData.append("unit", data.unit);
     formData.append("serverHost", data.serverHost);
     formData.append("category_id", data.category_id);
     formData.append("type_id", data.type_id);
@@ -419,6 +425,14 @@ const EditItem = (props) => {
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextInput source="name" label="Product Name" required fullWidth />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextInput
+              source="unit"
+              label="Measurement Unit"
+              required
+              fullWidth
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
             <NumberInput

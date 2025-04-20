@@ -21,7 +21,6 @@ const addProduct = async (req, res) => {
     const {
       item_id,
       brand,
-      unit,
       quantity,
       expire_date,
       purchase_date,
@@ -41,9 +40,9 @@ const addProduct = async (req, res) => {
     // Insert product
     const productQuery = `
       INSERT INTO product_list 
-      (item_id,purchase_id, brand, unit, quantity, expire_date, purchase_date, batch_number, 
+      (item_id,purchase_id, brand, quantity, expire_date, purchase_date, batch_number, 
        description, purchase_price, additional_cost, overall_cost, selling_price, image) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
     `;
 
     const imagePath = req.file ? `${req.file.filename}` : null;
@@ -54,7 +53,7 @@ const addProduct = async (req, res) => {
         item_id,
         purchase_id,
         brand,
-        unit,
+
         quantity,
         expire_date,
         purchase_date,
@@ -177,7 +176,6 @@ const updateProduct = (req, res) => {
     item_id,
     brand,
     description,
-    unit,
     quantity,
     expire_date,
     purchase_date,
@@ -203,7 +201,6 @@ const updateProduct = (req, res) => {
     item_id = ?, 
     brand = ?, 
     description = ?, 
-    unit = ?, 
     quantity = ?, 
     expire_date = ?, 
     purchase_date = ?, 
@@ -222,7 +219,6 @@ const updateProduct = (req, res) => {
       item_id,
       brand,
       description,
-      unit,
       quantity,
       expire_date,
       purchase_date,

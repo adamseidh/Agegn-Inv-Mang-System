@@ -8,7 +8,6 @@ const AddProduct = ({ isOpen, close, addProduct, purchaseId }) => {
   const [product, setProduct] = useState({
     item_id: "",
     brand: "",
-    unit: "",
     quantity: "",
     expire_date: "",
     purchase_date: "",
@@ -97,7 +96,6 @@ const AddProduct = ({ isOpen, close, addProduct, purchaseId }) => {
       // Add product data
       formData.append("item_id", product.item_id);
       formData.append("brand", product.brand);
-      formData.append("unit", product.unit);
       formData.append("quantity", product.quantity);
       formData.append("expire_date", product.expire_date);
       formData.append("purchase_date", product.purchase_date);
@@ -232,18 +230,6 @@ const AddProduct = ({ isOpen, close, addProduct, purchaseId }) => {
                   required
                 />
                 <label className="inputLabel">Purchase Price</label>
-              </div>
-
-              <div className="relative">
-                <input
-                  type="text"
-                  className="primaryInput peer"
-                  placeholder=" "
-                  value={product.unit}
-                  onChange={(e) => handleChange(e, "unit")}
-                  required
-                />
-                <label className="inputLabel">Measurement Unit</label>
               </div>
 
               <div className="relative">

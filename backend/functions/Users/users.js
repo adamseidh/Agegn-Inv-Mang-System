@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
-const db = require("../db");
-const { generateToken } = require("../middleware/jwt");
+const db = require("../../db");
+const { generateToken } = require("../../middleware/jwt");
 
 const FetchUsers = (req, res) => {
   const query = `SELECT * FROM users`;
@@ -130,12 +130,13 @@ const Users = (req, res) => {
 
   const query = `
         SELECT * FROM users
-        ${whereClause} 
+        ${whereClause} AND  role != 'Supper Admin'
         ORDER BY ${_sort} ${_order}
         LIMIT ${_limit} OFFSET ${offset}  `;
 
   db.query(query, (err, results) => {
     if (err) {
+      console.log("eror", err);
       res.status(500).json({ error: err });
     } else {
       const countQuery = `SELECT COUNT(*) AS total FROM users ${whereClause}`;
@@ -171,9 +172,37 @@ const Users = (req, res) => {
 };
 
 /// edit user
+const CreateUser = async (req, res) => {
+  const { name, email, phone, address, role, password } = req.body;
+
+  const saltRounds = 10;
+  const bcryptHashedPassword = await bcrypt.hash(password, saltRounds);
+
+  const query = `
+  INSERT INTO users (name, email, phone, address, role, password)
+  VALUES (?, ?, ?, ?, ?,?)`;
+
+  db.query(
+    query,
+    [name, email, phone, address, role, bcryptHashedPassword],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ error: err });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Data  not found" });
+      }
+
+      res.json({ id: result.insertId });
+    }
+  );
+};
+
 const EditUser = (req, res) => {
   const { id } = req.params;
-  const { name, email, phone, role } = req.body;
+  const { name, email, phone, role, address } = req.body;
 
   const query = `
         UPDATE users 
@@ -181,9 +210,10 @@ const EditUser = (req, res) => {
         email = ?,
         phone = ?,
         role = ?
+        address = ?,
         WHERE id = ?`;
 
-  db.query(query, [name, email, phone, role, id], (err, result) => {
+  db.query(query, [name, email, phone, role, address, id], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err });
     }
@@ -237,4 +267,5 @@ module.exports = {
   EditUser,
   DeleteUser,
   SigleUser,
+  CreateUser,
 };

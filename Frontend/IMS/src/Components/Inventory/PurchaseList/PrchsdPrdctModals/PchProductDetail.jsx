@@ -34,6 +34,13 @@ const ProductDetail = ({ isOpen, close, product, productId }) => {
     if (isOpen) fetchItems();
   }, [isOpen, serverHost]);
 
+  const ProductUnit = (id) => {
+    if (!id) return "No item selected";
+    if (loading) return "Loading...";
+    if (error) return "Error loading items";
+    const item = items.find((item) => item.id == id);
+    return item ? item.unit : "Unknown Item";
+  };
   //read a product costs
   useEffect(() => {
     console.log("shat");
@@ -130,7 +137,7 @@ const ProductDetail = ({ isOpen, close, product, productId }) => {
                 <div className="space-y-1">
                   <p className="text-gray-500 text-sm font-medium">Unit</p>
                   <p className="text-gray-700 font-semibold">
-                    {product?.unit || "N/A"}
+                    {ProductUnit(product?.item_id) || "N/A"}{" "}
                   </p>
                 </div>
 

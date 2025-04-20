@@ -29,13 +29,12 @@ const AddPurchase = (req, res) => {
 
     // Insert products
     const productQuery =
-      "INSERT INTO product_list (purchase_id,item_id, brand,description,unit, quantity,expire_date, purchase_date, serial_number,batch_number, purchase_price, additional_cost, overall_cost, selling_price, image) VALUES ?";
+      "INSERT INTO product_list (purchase_id,item_id, brand,description, quantity,expire_date, purchase_date, serial_number,batch_number, purchase_price, additional_cost, overall_cost, selling_price, image) VALUES ?";
     const productValues = products.map((product, index) => [
       purchaseId,
       product.item_id,
       product.brand,
       product.description,
-      product.unit,
       product.quantity,
       product.expire_date,
       product.purchase_date,

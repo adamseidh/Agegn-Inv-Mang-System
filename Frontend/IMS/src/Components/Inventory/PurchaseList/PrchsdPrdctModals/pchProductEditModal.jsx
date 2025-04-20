@@ -8,7 +8,6 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
     id: "",
     item_id: "",
     brand: "",
-    unit: "",
     serial_number: "",
     quantity: "",
     expire_date: "",
@@ -60,7 +59,6 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
           id: product.id || "",
           item_id: product.item_id || "",
           brand: product.brand || "",
-          unit: product.unit || "",
           serial_number: product.serial_number || "",
           quantity: product.quantity || "",
           expire_date: product.expire_date || "",
@@ -405,18 +403,6 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
                   required
                 />
                 <label className="inputLabel">Purchase Price</label>
-              </div>
-
-              <div className="relative">
-                <input
-                  type="text"
-                  className="primaryInput peer"
-                  placeholder=" "
-                  value={editedProduct.unit}
-                  onChange={(e) => handleChange(e, "unit")}
-                  required
-                />
-                <label className="inputLabel">Measurement Unit</label>
               </div>
 
               <div className="relative">

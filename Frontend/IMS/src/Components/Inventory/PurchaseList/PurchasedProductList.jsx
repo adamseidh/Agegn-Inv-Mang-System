@@ -140,7 +140,10 @@ const PurchasedProductList = () => {
   const addProduct = (product) => {
     setProducts([...products, product]);
   };
-
+  const productUnit = (id) => {
+    const Item = items.find((item) => parseInt(item.id) === parseInt(id));
+    return Item ? Item.unit : "Unknown";
+  };
   const addPayment = (payment) => {
     setPayments([...payments, payment]);
   };
@@ -303,7 +306,9 @@ const PurchasedProductList = () => {
                   <td className="p-4 text-gray-700">
                     {FormattedNumber(product.purchase_price)}
                   </td>
-                  <td className="p-4 text-gray-700">{product.unit}</td>
+                  <td className="p-4 text-gray-700">
+                    {productUnit(product.item_id)}
+                  </td>
                   <td className="p-4 text-gray-700">
                     {FormattedNumber(product.quantity)}
                   </td>

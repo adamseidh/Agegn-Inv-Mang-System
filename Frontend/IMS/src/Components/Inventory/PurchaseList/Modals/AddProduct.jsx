@@ -9,7 +9,6 @@ const AddProduct = ({ isOpen, close, addProduct }) => {
   const [product, setProduct] = useState({
     item_id: "",
     brand: "",
-    unit: "",
     quantity: "",
     expire_date: "",
     purchase_date: "",
@@ -163,18 +162,6 @@ const AddProduct = ({ isOpen, close, addProduct }) => {
                   required
                 />
                 <label className="inputLabel">Purchase Price</label>
-              </div>
-
-              <div className="relative">
-                <input
-                  type="text"
-                  className="primaryInput peer"
-                  placeholder=" "
-                  value={product.unit}
-                  onChange={(e) => handleChange(e, "unit")}
-                  required
-                />
-                <label className="inputLabel">Measurement Unit</label>
               </div>
 
               <div className="relative">

@@ -127,8 +127,15 @@ const AnItem = (req, res) => {
   });
 };
 const CreateItem = (req, res) => {
-  const { name, low_level, category_id, type_id, description, serverHost } =
-    req.body;
+  const {
+    name,
+    low_level,
+    category_id,
+    type_id,
+    unit,
+    description,
+    serverHost,
+  } = req.body;
 
   console.log("categroy id", category_id);
   console.log("server host", serverHost);
@@ -138,12 +145,13 @@ const CreateItem = (req, res) => {
   const fullPath = `${serverHost}/images/${image}`;
 
   const query = `
-        INSERT INTO items (name,low_level, category_id, type_id, description, image)
-        VALUES (?, ?, ?, ?,?,?)
+        INSERT INTO items (name,unit, low_level, category_id, type_id, description, image)
+        VALUES (?, ?, ?, ?,?,?,?)
     `;
 
   const values = [
     name,
+    unit,
     low_level,
     category_id || null,
     type_id || null,
@@ -164,6 +172,7 @@ const CreateItem = (req, res) => {
 const EditItem = (req, res) => {
   const {
     name,
+    unit,
     low_level,
     category_id,
     type_id,
@@ -171,6 +180,7 @@ const EditItem = (req, res) => {
     serverHost,
     oldImage,
   } = req.body;
+  console.log("unit", unit);
   const image = req.file ? req.file.filename : null;
   const { id } = req.params;
 
@@ -178,12 +188,12 @@ const EditItem = (req, res) => {
 
   const query = `
         UPDATE items 
-        SET name = ?, low_level = ?,  category_id = ?,type_id = ?, description = ?,image = ?
+        SET name = ?, unit = ?, low_level = ?,  category_id = ?,type_id = ?, description = ?,image = ?
         WHERE id = ?`;
 
   db.query(
     query,
-    [name, low_level, category_id, type_id, description, fullPath, id],
+    [name, unit, low_level, category_id, type_id, description, fullPath, id],
     (err, result) => {
       if (err) {
         return res.status(500).json({ error: err });

@@ -61,7 +61,7 @@ const PurchaseList = () => {
           <TextField source="not_completed_amount" label="Un-Paid Amount" />
           <TextField source="remark" label="Remark" />
           <DateField source="created_at" label="Created At" />
-          <ShowButton />
+          <ShowButton label="Detail" />
         </DatagridConfigurable>
       </List>
     </div>

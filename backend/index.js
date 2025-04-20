@@ -12,13 +12,14 @@ const {
   EditUser,
   DeleteUser,
   SigleUser,
-} = require("./functions/users");
+  CreateUser,
+} = require("./functions/Users/users");
 const {
   Account,
   EditAccount,
   showAccount,
   FetchUserName,
-} = require("./functions/account");
+} = require("./functions/Users/account");
 const {
   Articles,
   CreateArticle,
@@ -86,6 +87,48 @@ const {
   deleteProductCost,
   updateProductCost,
 } = require("./functions/Inventory/PurchaseList/costs");
+const {
+  Products,
+  singleProduct,
+  ClientProducts,
+} = require("./functions/Inventory/Stock/products");
+const { Stock, ClientStock } = require("./functions/Inventory/Stock/stock");
+const {
+  submitSale,
+  fetchSellsProducts,
+} = require("./functions/Inventory/Sells/sells");
+const {
+  Customers,
+  singleCustomer,
+  EditCustomer,
+  AddCustomer,
+  deleteCustomer,
+  customerSignUp,
+  customerLogin,
+  getCustomerProfile,
+  updateCustomerProfile,
+} = require("./functions/Inventory/customers");
+const {
+  SellsList,
+  CustomerOrders,
+  deleteOrder,
+} = require("./functions/Inventory/Sells/sellsList");
+const { otherExpenses } = require("./functions/Financial/otherExpense");
+const { otherIncome } = require("./functions/Financial/otherIncome");
+const {
+  soldProducts,
+  purchasedProducts,
+} = require("./functions/Financial/report");
+const {
+  CustomerOrdes,
+  CustomerSingleOrder,
+  UpdateSalesStatus,
+} = require("./functions/Inventory/Sells/customerOrders");
+const {
+  Notifications,
+  deleteNotification,
+  updateNotificationStatus,
+} = require("./functions/Notifications/allNotifications");
 
 const app = express();
 const PORT = 3000;
@@ -130,6 +173,8 @@ app.post("/getUserRole", verifyToken, GetUserRole);
 
 app.get("/users", verifyToken, Users);
 
+app.post("/users", verifyToken, CreateUser);
+
 // read a user data
 app.get("/users/:id", verifyToken, SigleUser);
 
@@ -173,6 +218,12 @@ app.get("/messages/:id", verifyToken, AMessage);
 
 app.delete("/messages/:id", verifyToken, deleteMessage);
 
+//******Notifications******** */
+app.get("/notifications", Notifications);
+
+app.delete("/deleteNotification/:id", deleteNotification);
+app.put("/updateNotification/:id", updateNotificationStatus);
+
 //****************Inventory*******************************/
 
 //******************************
@@ -198,6 +249,10 @@ app.delete("/category/:id", verifyToken, deleteCategory);
 //****productType ******/
 //read productType
 app.get("/productType", ProductType);
+
+app.get("/stock", verifyToken, Stock);
+
+app.get("/ClientStock", ClientStock);
 
 /// show a productType
 app.get("/productType/:id", singleProductType);
@@ -235,7 +290,7 @@ app.delete("/items/:id", verifyToken, deleteItem);
 //******************************
 //****Supplier ******/
 //read suplier
-app.get("/supplier", verifyToken, Supplier);
+app.get("/supplier", Supplier);
 
 /// show an supplier
 app.get("/supplier/:id", verifyToken, singleSupplier);
@@ -249,6 +304,35 @@ app.post("/supplier", verifyToken, AddSupplier);
 //delete supplier
 app.delete("/supplier/:id", verifyToken, deleteSupplier);
 //**** End of supplier ******/
+//******************************
+
+//******************************
+//****Supplier ******/
+//read suplier
+app.get("/customers", Customers);
+
+app.post("/customerLogin", customerLogin);
+
+app.post("/CustomerSignUp", customerSignUp);
+/// a custoemr orders
+app.get("/CustomerOrders/:id", verifyToken, CustomerOrders);
+
+app.get("/fetchAcustomer/:customerId", getCustomerProfile);
+
+app.put("/updateCustomer/:customerId", verifyToken, updateCustomerProfile);
+
+/// show an customer
+app.get("/customers/:id", verifyToken, singleCustomer);
+
+// edit supplier
+app.put("/customers/:id", verifyToken, EditCustomer);
+
+// add customer
+app.post("/customers", verifyToken, AddCustomer);
+
+//delete customer
+app.delete("/customers/:id", verifyToken, deleteCustomer);
+//**** End of customer ******/
 //******************************
 
 //******************************
@@ -267,6 +351,16 @@ app.put("/supplier/:id", verifyToken, EditSupplier);
 
 //read prduct list under a purchase
 app.get("/PurchasedProductList/:id", verifyToken, PurchasedProductList);
+
+//fetch product list
+app.get("/products", Products);
+
+//proucts to show on client side without backend pagination
+app.get("/ClientProducts", ClientProducts);
+
+app.get("/products/:id", singleProduct);
+
+app.delete("/products/:id", verifyToken, deleteProduct);
 
 app.put(
   "/updateProduct/:id",
@@ -307,13 +401,38 @@ app.post(
 );
 
 //edit purchae dta
-app.put("/EditPurchase/:id", EditPurchase);
+app.put("/EditPurchase/:id", verifyToken, EditPurchase);
 
 //delete purchase List
 app.delete("/supplier/:id", verifyToken, deleteSupplier);
+
 //**** End of purchase List ******/
 //******************************
 
+//**************Sells  */
+app.post("/addSells", verifyToken, submitSale);
+
+//fetch product lists under a sale
+app.get("/salesList/:id", fetchSellsProducts);
+
+//read sales list
+app.get("/salesList", SellsList);
+
+//update sales status
+app.put("/update_sells_status/:id", verifyToken, UpdateSalesStatus);
+//readcustoerm ordrs client side
+app.get("/orders", verifyToken, CustomerOrdes);
+app.get("/orders/:id", verifyToken, CustomerSingleOrder);
+
+app.delete("/deleteOrder/:id", verifyToken, deleteOrder);
+
+app.get("/soldProducts", verifyToken, soldProducts);
+
+app.get("/purchasedProducts", verifyToken, purchasedProducts);
+///Financial********************
+app.get("/otherExpenses", verifyToken, otherExpenses);
+
+app.get("/otherIncome", verifyToken, otherIncome);
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

@@ -1,0 +1,198 @@
+import React from "react";
+
+const PrintInvoiceTemplate = ({ sale }) => {
+  if (!sale || sale.length === 0) return null;
+
+  // Format date function
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString("en-US", options);
+  };
+
+  return (
+    <div
+      style={{
+        fontFamily: "Arial, sans-serif",
+        padding: "20px",
+        maxWidth: "800px",
+        margin: "0 auto",
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "30px",
+          borderBottom: "1px solid #eee",
+          paddingBottom: "20px",
+        }}
+      >
+        <div>
+          <h1
+            style={{
+              fontSize: "20px",
+              fontWeight: "bold",
+              marginBottom: "5px",
+            }}
+          >
+            Agen General Biomedical Engineering
+          </h1>
+          <p style={{ margin: "3px 0" }}>Jimma, Oromia, Ethiopia</p>
+          <p style={{ margin: "3px 0" }}>Phone: +251 123 456 789</p>
+          <p style={{ margin: "3px 0" }}>Email: info@agenbiomedical.com</p>
+          <p style={{ margin: "3px 0" }}>Website: www.agenbiomedical.com</p>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <h2
+            style={{ fontSize: "20px", fontWeight: "600", marginBottom: "5px" }}
+          >
+            INVOICE
+          </h2>
+          {/* Customer Info */}
+          <div style={{ marginBottom: "20px" }}>
+            <p style={{ fontSize: "18px" }}>Customer: {sale[0].customerName}</p>
+          </div>
+          <p style={{ margin: "3px 0" }}>
+            Date: {formatDate(sale[0].sellsDate)}
+          </p>
+          <p style={{ margin: "3px 0" }}>Invoice #: {sale[0].sells_id}</p>
+        </div>
+      </div>
+
+      {/* Customer Info
+      <div style={{ marginBottom: "20px" }}>
+        <h3 style={{ fontSize: "18px", fontWeight: "600" }}>
+          Customer: {sale[0].customerName}
+        </h3>
+      </div> */}
+
+      {/* Items Table */}
+      <table
+        style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          marginBottom: "30px",
+        }}
+      >
+        <thead style={{ backgroundColor: "#f5f5f5" }}>
+          <tr>
+            <th
+              style={{
+                padding: "10px",
+                textAlign: "left",
+                border: "1px solid #ddd",
+              }}
+            >
+              Product
+            </th>
+            <th
+              style={{
+                padding: "10px",
+                textAlign: "left",
+                border: "1px solid #ddd",
+              }}
+            >
+              Unit
+            </th>
+            <th
+              style={{
+                padding: "10px",
+                textAlign: "left",
+                border: "1px solid #ddd",
+              }}
+            >
+              Qty
+            </th>
+            <th
+              style={{
+                padding: "10px",
+                textAlign: "left",
+                border: "1px solid #ddd",
+              }}
+            >
+              Unit Price
+            </th>
+            <th
+              style={{
+                padding: "10px",
+                textAlign: "left",
+                border: "1px solid #ddd",
+              }}
+            >
+              Amount
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sale.map((item, index) => (
+            <tr key={index}>
+              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                {item.productName}
+              </td>
+              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                {item.measurementUnit}
+              </td>
+              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                {item.quantity}
+              </td>
+              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                {item.unit_price.toFixed(2)} birr
+              </td>
+              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                {item.total_price.toFixed(2)} birr
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Totals */}
+      <div style={{ textAlign: "right", marginBottom: "40px" }}>
+        <p style={{ fontSize: "16px", margin: "5px 0" }}>
+          <strong>Subtotal:</strong>{" "}
+          {sale.reduce((sum, item) => sum + item.total_price, 0).toFixed(2)}{" "}
+          birr
+        </p>
+      </div>
+
+      {/* Footer */}
+      <div
+        style={{
+          borderTop: "1px solid #eee",
+          paddingTop: "20px",
+          marginTop: "40px",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div>
+            <p style={{ margin: "5px 0" }}>Thank you for your business!</p>
+            <p style={{ margin: "5px 0", fontWeight: "600" }}>
+              Agen General Biomedical Engineering
+            </p>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <p style={{ margin: "5px 0" }}>Authorized Signature</p>
+            <div
+              style={{
+                height: "50px",
+                borderBottom: "1px solid #999",
+                width: "200px",
+                margin: "10px 0",
+              }}
+            ></div>
+            {/* <p style={{ margin: "5px 0" }}>Date: ________________</p> */}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PrintInvoiceTemplate;
