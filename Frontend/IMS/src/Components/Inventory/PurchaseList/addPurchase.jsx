@@ -53,7 +53,7 @@ const AddPurchase = () => {
     const token = JSON.parse(getToken)?.token;
 
     axios
-      .get(`${serverHost}/supplier`, {
+      .get(`${serverHost}/supplierCount`, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
         },

@@ -43,7 +43,7 @@ const FinancialReport = () => {
         ] = await Promise.all([
           axios.get(`${serverHost}/purchasedProducts`, config),
           axios.get(`${serverHost}/soldProducts`, config),
-          axios.get(`${serverHost}/otherIncome`, config),
+          axios.get(`${serverHost}/otherIncomes`, config),
           axios.get(`${serverHost}/otherExpenses`, config),
         ]);
 
@@ -64,6 +64,8 @@ const FinancialReport = () => {
     fetchData();
   }, [serverHost]);
 
+  console.log("sold products,", data.soldProducts);
+  console.log("sold otherIncome,", data.otherIncome);
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">

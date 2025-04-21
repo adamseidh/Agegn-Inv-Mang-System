@@ -23,6 +23,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { format } from "date-fns";
 import axios from "axios";
+import NotificationDescription from "./NotificationDescription";
 
 const NotificationsTable = ({ notifications }) => {
   const dataProvider = useDataProvider();
@@ -33,6 +34,7 @@ const NotificationsTable = ({ notifications }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [notificationToDelete, setNotificationToDelete] = useState(null);
+  const [selectedNotification, setSelectedNotification] = useState(null);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -52,8 +54,7 @@ const NotificationsTable = ({ notifications }) => {
         previousData: notifications.find((n) => n.id === id),
       });
       notify("Notification marked as read", { type: "success" });
-      refresh(); // Refresh the page after update
-      location.reload();
+      refresh();
     } catch (error) {
       notify(`Error: ${error.message}`, { type: "error" });
     } finally {
@@ -79,8 +80,7 @@ const NotificationsTable = ({ notifications }) => {
       });
       notify("Notification deleted", { type: "success" });
       setDeleteDialogOpen(false);
-      refresh(); // Refresh the page after delete
-      location.reload();
+      refresh();
     } catch (error) {
       notify(`Error: ${error.message}`, { type: "error" });
     } finally {
@@ -97,6 +97,21 @@ const NotificationsTable = ({ notifications }) => {
     setNotificationToDelete(null);
   };
 
+  const handleShowDescription = (notification) => {
+    setSelectedNotification(notification);
+  };
+
+  const handleCloseDescription = () => {
+    setSelectedNotification(null);
+  };
+
+  const truncateDescription = (description) => {
+    if (description.length > 50) {
+      return `${description.substring(0, 50)}...`;
+    }
+    return description;
+  };
+
   return (
     <>
       <TableContainer component={Paper} sx={{ marginTop: 2 }}>
@@ -107,6 +122,7 @@ const NotificationsTable = ({ notifications }) => {
               <TableCell sx={{ fontWeight: "bold" }}>Description</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Date</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Details</TableCell>
               <TableCell sx={{ fontWeight: "bold" }} align="center">
                 Actions
               </TableCell>
@@ -118,16 +134,8 @@ const NotificationsTable = ({ notifications }) => {
               .map((notification) => (
                 <TableRow key={notification.id}>
                   <TableCell>{notification.title}</TableCell>
-                  <TableCell sx={{ maxWidth: 300 }}>
-                    <div
-                      style={{
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {notification.description}
-                    </div>
+                  <TableCell sx={{ maxWidth: 200 }}>
+                    {truncateDescription(notification.description)}
                   </TableCell>
                   <TableCell>
                     <span
@@ -144,6 +152,15 @@ const NotificationsTable = ({ notifications }) => {
                   </TableCell>
                   <TableCell>
                     {format(new Date(notification.date), "MMM dd, yyyy HH:mm")}
+                  </TableCell>
+                  <TableCell>
+                    <MuiButton
+                      variant="outlined"
+                      size="small"
+                      onClick={() => handleShowDescription(notification)}
+                    >
+                      Read More
+                    </MuiButton>
                   </TableCell>
                   <TableCell align="center">
                     <div
@@ -223,6 +240,18 @@ const NotificationsTable = ({ notifications }) => {
         </DialogActions>
       </Dialog>
 
+      {/* Notification Description Dialog */}
+      {selectedNotification && (
+        <NotificationDescription
+          open={Boolean(selectedNotification)}
+          onClose={handleCloseDescription}
+          title={selectedNotification.title}
+          description={selectedNotification.description}
+          date={selectedNotification.date}
+          status={selectedNotification.status}
+        />
+      )}
+
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
@@ -243,6 +272,7 @@ const NotificationsTable = ({ notifications }) => {
     </>
   );
 };
+
 const NotificationsList = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -276,7 +306,7 @@ const NotificationsList = () => {
   if (error) return <div>Error: {error}</div>;
   if (!notifications.length)
     return (
-      <div className="flex items-center  h-screen justify-center">
+      <div className="flex items-center h-screen justify-center">
         No notifications found
       </div>
     );

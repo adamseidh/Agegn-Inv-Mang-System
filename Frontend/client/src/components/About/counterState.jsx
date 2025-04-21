@@ -16,8 +16,10 @@ export default function CounterState() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const customersResponse = await axios.get(`${serverHost}/customers`);
-        const partnersResponse = await axios.get(`${serverHost}/supplier`);
+        const customersResponse = await axios.get(
+          `${serverHost}/customersCount`
+        );
+        const partnersResponse = await axios.get(`${serverHost}/supplierCount`);
 
         setCustomersCount(customersResponse.data.length);
         setPartnersCount(partnersResponse.data.length);

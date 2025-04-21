@@ -54,10 +54,8 @@ const Notifications = (req, res) => {
   }
 
   const query = `
-    SELECT * FROM notifications
-    ${whereClause}
-    ORDER BY ${_sort} ${_order}
-    LIMIT ${_limit} OFFSET ${offset}`;
+    SELECT * FROM notifications 
+    ${whereClause} ORDER BY date DESC`;
 
   db.query(query, (err, results) => {
     if (err) {

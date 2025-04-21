@@ -58,6 +58,21 @@ import OrdersDetail from "./Components/Inventory/Orders/OrdersDetail";
 import { CreateUser, EditUser, Users } from "./Components/Users";
 import MyLayout from "./customAppBar/Layout";
 import NotificationsList from "./Components/Notifications/NotificationsList";
+import { ExpiredProductsList } from "./Components/Notifications/ExpiredProductsList";
+import { EmptyProductsList } from "./Components/Notifications/EmptyProductsList";
+import { underStockProductsList } from "./Components/Notifications/underStockProducts";
+import { ReachDuePayemtsList } from "./Components/Notifications/reachedDuePaymentsList";
+import { UpcamingPaymentsList } from "./Components/Notifications/upcamingPayments";
+import {
+  EditOtherIncome,
+  OtherIncome,
+  showOtherIncome,
+} from "./Components/Financial/otherIncome";
+import {
+  EditOtherExpense,
+  otherExpenses,
+} from "./Components/Financial/otherExpense";
+import AnalysisPage from "./Components/SalesAnalysis/analysisPage";
 
 const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
 
@@ -163,9 +178,26 @@ const App = () => {
         <CustomRoutes>
           <Route path="/financialReport" element={<FinancialReport />} />
         </CustomRoutes>
+
+        <CustomRoutes>
+          <Route path="/FinancialAnalaysis" element={<AnalysisPage />} />
+        </CustomRoutes>
+
         <CustomRoutes>
           <Route
             path="/PurchaseList/:id/show"
+            element={<PurchasedProductList />}
+          />
+        </CustomRoutes>
+        <CustomRoutes>
+          <Route
+            path="/reachedDuePayments/:id/show"
+            element={<PurchasedProductList />}
+          />
+        </CustomRoutes>
+        <CustomRoutes>
+          <Route
+            path="/UpcamingPayments/:id/show"
             element={<PurchasedProductList />}
           />
         </CustomRoutes>
@@ -208,6 +240,19 @@ const App = () => {
           show={ShowProductType}
           edit={EditProductType}
         />
+
+        <Resource
+          name="otherIncomes"
+          options={{ label: "Other Income" }}
+          list={OtherIncome}
+          edit={EditOtherIncome}
+        />
+        <Resource
+          name="otherExpenses"
+          options={{ label: "Other Expenses" }}
+          list={otherExpenses}
+          edit={EditOtherExpense}
+        />
         <Resource
           name="items"
           options={{ label: "Product  Names" }}
@@ -236,6 +281,35 @@ const App = () => {
           list={Products}
           show={ShowProduct}
           options={{ label: "Available Products Detail" }}
+        />
+
+        <Resource
+          name="expiredProducts"
+          list={ExpiredProductsList}
+          options={{ label: "Expired Products" }}
+        />
+
+        <Resource
+          name="emptyProducts"
+          list={EmptyProductsList}
+          options={{ label: "Finished Products From Stock" }}
+        />
+
+        <Resource
+          name="understockProducts"
+          list={underStockProductsList}
+          options={{ label: "Products Available Bellow Low Level" }}
+        />
+        <Resource
+          name="reachedDuePayments"
+          list={ReachDuePayemtsList}
+          options={{ label: "Reached Due Payments List" }}
+        />
+
+        <Resource
+          name="upcamingPayments"
+          list={UpcamingPaymentsList}
+          options={{ label: "Upcoming Payments Date" }}
         />
         <Resource
           name="stock"

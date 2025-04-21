@@ -40,7 +40,7 @@ const IncomeExpenseChart = () => {
         ] = await Promise.all([
           axios.get(`${serverHost}/soldProducts`, config),
           axios.get(`${serverHost}/purchasedProducts`, config),
-          axios.get(`${serverHost}/otherIncome`, config),
+          axios.get(`${serverHost}/otherIncomes`, config),
           axios.get(`${serverHost}/otherExpenses`, config),
         ]);
 

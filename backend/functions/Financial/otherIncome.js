@@ -118,21 +118,20 @@ const specificCashInflows = (req, res) => {
   });
 };
 
-const CreateCashInflows = (req, res) => {
-  const { source, amount, user_id } = req.body;
+const addOtherIncome = (req, res) => {
+  const { source, amount } = req.body;
+  console.log(source, amount);
 
-  name = userData.name;
-  user_address = userData.user_address;
-  console.log("here is the name of the user", name);
   const query = `
-  INSERT INTO cashinflows (source, amount, user_name, user_address)
-  VALUES (?, ?,?,?)
+  INSERT INTO otherIncome (source, amount)
+  VALUES (?,?)
 `;
 
-  const values = [source, amount, name, user_address];
+  const values = [source, amount];
 
   db.query(query, values, (err, result) => {
     if (err) {
+      console.log(err);
       return res.status(500).json({ error: err });
     }
 
@@ -140,12 +139,12 @@ const CreateCashInflows = (req, res) => {
   });
 };
 
-const EditCashInflows = (req, res) => {
+const EditOtherIncome = (req, res) => {
   const { id } = req.params;
   const { source, amount } = req.body;
 
   const query = `
-        UPDATE cashinflows 
+        UPDATE otherIncome 
         SET source = ?, amount = ?
         WHERE id = ?`;
 
@@ -155,30 +154,39 @@ const EditCashInflows = (req, res) => {
     }
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Cash Inflows not found" });
+      return res.status(404).json({ message: "data not found" });
     }
 
     res.json({ id: result.insertId });
   });
 };
 
-const deleteCashInflows = (req, res) => {
+const showOtherIncomes = (req, res) => {
+  const { id } = req.params;
+  const query = `SELECT * FROM otherIncome  WHERE id = ?`;
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: "data not found" });
+    } else {
+      res.json(results[0]);
+    }
+  });
+};
+const deleteOtherIncome = (req, res) => {
   const { id } = req.params;
 
-  // Ensure the ID is provided
-  if (!id) {
-    return res.status(400).json({ error: "Cash Inflows ID is required" });
-  }
-
-  const query = "DELETE FROM cashinflows WHERE id = ?";
+  const query = "DELETE FROM otherIncome WHERE id = ?";
 
   db.query(query, [id], (err, result) => {
     if (err) {
+      console.log(err);
       return res.status(500).json({ error: err });
     }
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Cash Inflows not found" });
+      return res.status(404).json({ message: "Data not found" });
     }
 
     res.json({ message: "Cash Inflows deleted successfully" });
@@ -188,7 +196,8 @@ const deleteCashInflows = (req, res) => {
 module.exports = {
   otherIncome,
   specificCashInflows,
-  CreateCashInflows,
-  EditCashInflows,
-  deleteCashInflows,
+  addOtherIncome,
+  EditOtherIncome,
+  showOtherIncomes,
+  deleteOtherIncome,
 };

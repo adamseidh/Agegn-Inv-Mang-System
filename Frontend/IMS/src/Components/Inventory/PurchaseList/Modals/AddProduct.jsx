@@ -93,7 +93,7 @@ const AddProduct = ({ isOpen, close, addProduct }) => {
     const token = JSON.parse(getToken).token;
 
     axios
-      .get(`${serverHost}/items`, {
+      .get(`${serverHost}/ItemsList`, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
         },

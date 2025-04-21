@@ -151,7 +151,75 @@ const purchasedProducts = (req, res) => {
   });
 };
 
+const FinancialAnalaysis = (req, res) => {
+  const { range, sort, filter } = req.query;
+  const [from, to] = range ? JSON.parse(range) : [0, 100];
+  const [sortField, sortOrder] = sort ? JSON.parse(sort) : ["id", "ASC"];
+
+  const query = `
+    SELECT sp.*, sl.created_at as salesDate, i.name as productName, pl.overall_cost as productCost 
+    FROM sells_product sp
+    LEFT JOIN sells_list sl ON sp.sells_id = sl.id
+    LEFT JOIN product_list pl ON sp.product_id = pl.id
+    LEFT JOIN items i ON pl.item_id = i.id
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Query error:", err);
+      res.status(500).json({ error: "Database error" });
+      return;
+    }
+
+    // Filter out rows with null ID
+    const filtered = results.filter((row) => row.id !== null);
+
+    // Summarize by productName + dateOnly
+    const summarized = Object.values(
+      filtered.reduce((acc, row) => {
+        const dateOnly = new Date(row.salesDate).toISOString().split("T")[0];
+        const key = `${row.productName}_${dateOnly}`;
+
+        if (!acc[key]) {
+          acc[key] = {
+            ...row,
+            quantity: Number(row.quantity) || 0,
+            total_price: Number(row.total_price) || 0,
+            productCost: Number(row.productCost) || 0,
+          };
+        } else {
+          acc[key].quantity += Number(row.quantity) || 0;
+          acc[key].total_price += Number(row.total_price) || 0;
+          acc[key].productCost += Number(row.productCost) || 0;
+        }
+
+        return acc;
+      }, {})
+    );
+
+    // Apply sorting
+    const sorted = summarized.sort((a, b) => {
+      if (sortOrder === "ASC") {
+        return a[sortField] > b[sortField] ? 1 : -1;
+      } else {
+        return a[sortField] < b[sortField] ? 1 : -1;
+      }
+    });
+
+    // Apply pagination
+    const paginated = sorted.slice(from, to + 1);
+
+    res.setHeader(
+      "Content-Range",
+      `saledproducts ${from}-${to}/${summarized.length}`
+    );
+    res.setHeader("Access-Control-Expose-Headers", "Content-Range");
+    res.json(paginated);
+  });
+};
+
 module.exports = {
   soldProducts,
   purchasedProducts,
+  FinancialAnalaysis,
 };

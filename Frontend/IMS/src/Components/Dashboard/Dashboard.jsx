@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Welcome from "./Welcom";
 import {
-  ExpiredProducts,
   TotalCustomersCard,
   TotalProductsCard,
   TotalSuppliersCard,
@@ -10,6 +9,11 @@ import axios from "axios";
 import IncomeExpenseChart from "./IncomeExpenseChart";
 import { usePermissions } from "react-admin";
 import Permission from "../../helpers/utils/permissions";
+import { ExpiredProducts } from "./NotificationCards/ExpiredProducts";
+import { EmptyProducts } from "./NotificationCards/EmptyProducts";
+import { UnderStrockProduct } from "./NotificationCards/underStockProduct";
+import { UpComingPaymentDates } from "./NotificationCards/upComingPaymentDates";
+import { ReachedDuePayments } from "./NotificationCards/ReachedDuePayments";
 
 const Dashboard = () => {
   const [userId, setUserId] = useState(null);
@@ -64,6 +68,10 @@ const Dashboard = () => {
           <TotalSuppliersCard />
           <TotalCustomersCard />
           <ExpiredProducts />
+          <EmptyProducts />
+          <UnderStrockProduct />
+          <UpComingPaymentDates />
+          <ReachedDuePayments />
         </div>
       )}
 

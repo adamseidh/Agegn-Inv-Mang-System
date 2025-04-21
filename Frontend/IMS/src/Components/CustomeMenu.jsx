@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Menu, MenuItemLink } from "react-admin";
+import { Menu, MenuItemLink, useDataProvider } from "react-admin";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import ArticleIcon from "@mui/icons-material/Article";
@@ -12,11 +12,10 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import GroupIcon from "@mui/icons-material/Group"; // Icon for Traders
-import ReportProblemIcon from "@mui/icons-material/ReportProblem"; // Icon for Complains
 import PriceCheckIcon from "@mui/icons-material/PriceCheck";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import AddCardIcon from "@mui/icons-material/AddCard";
-import CreditScoreIcon from "@mui/icons-material/CreditScore";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import CategoryIcon from "@mui/icons-material/Category";
 import ClassIcon from "@mui/icons-material/Class";
@@ -27,9 +26,11 @@ import Inventory2TwoToneIcon from "@mui/icons-material/Inventory2TwoTone";
 import ShoppingCartSharpIcon from "@mui/icons-material/ShoppingCartSharp";
 import Shop2Icon from "@mui/icons-material/Shop2";
 import TypeSpecimenOutlinedIcon from "@mui/icons-material/TypeSpecimenOutlined";
+import InsightsIcon from "@mui/icons-material/Insights";
 
 import axios from "axios";
 import Permission from "../helpers/utils/permissions";
+import { Badge } from "@mui/material";
 
 const CustomMenu = (props) => {
   const [openFinancial, setOpenFinancial] = useState(true);
@@ -39,6 +40,10 @@ const CustomMenu = (props) => {
   const [userId, setUserId] = useState(null);
   const [role, setRole] = useState(null);
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
+  const [unreadMessages, setUnreadMessage] = useState("");
+  const [processingOrders, setProcessingOrders] = useState("");
+
+  const dataProvider = useDataProvider();
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
@@ -71,6 +76,63 @@ const CustomMenu = (props) => {
         });
     }
   }, []);
+
+  ///bagdes data fetch
+
+  useEffect(() => {
+    const fetechUnseenMessage = async () => {
+      try {
+        const { data } = await dataProvider.getList("messages", {
+          sort: { field: "id", order: "ASC" },
+          filter: {},
+        });
+
+        // Filter unseen messages
+        const unseenMessages = data.filter(
+          (item) => item.message_status === "UnSeen"
+        );
+
+        const totalUnreadMessage = unseenMessages.length;
+        console.log(
+          "unread un seeen messagesssklsdsfkdsdkj ",
+          totalUnreadMessage
+        );
+        setUnreadMessage(totalUnreadMessage);
+      } catch (error) {
+        console.error("Error fetching unseen messages:", error);
+      }
+    };
+
+    fetechUnseenMessage();
+  }, [dataProvider]);
+
+  ///fetch badge data for ordrs
+  useEffect(() => {
+    const fetchProcessingOrder = async () => {
+      try {
+        const { data } = await dataProvider.getList("orders", {
+          sort: { field: "id", order: "ASC" },
+          filter: {},
+        });
+
+        // Filter unseen messages
+        const processingOrders = data.filter(
+          (item) => item.sells_status === "Processing"
+        );
+
+        const totalprocessingOrders = processingOrders.length;
+        console.log(
+          "unread un seeen messagesssklsdsfkdsdkj ",
+          totalprocessingOrders
+        );
+        setProcessingOrders(totalprocessingOrders);
+      } catch (error) {
+        console.error("Error fetching unseen messages:", error);
+      }
+    };
+
+    fetchProcessingOrder();
+  }, [dataProvider]);
 
   console.log("here is the user name", user.name);
   //inventory
@@ -193,10 +255,15 @@ const CustomMenu = (props) => {
                 leftIcon={<Inventory2OutlinedIcon />} // Left Icon for Income
                 style={{ paddingLeft: 48 }}
               />
+
               <MenuItemLink
                 to="/orders"
                 primaryText="Orders"
-                leftIcon={<ShoppingCartSharpIcon />} // Left Icon for Income
+                leftIcon={
+                  <Badge badgeContent={processingOrders} color="error">
+                    <ShoppingCartSharpIcon />{" "}
+                  </Badge>
+                }
                 style={{ paddingLeft: 48 }}
               />
             </>
@@ -251,7 +318,28 @@ const CustomMenu = (props) => {
             leftIcon={<MonetizationOnIcon />} // Left Icon for Income
             style={{ paddingLeft: 48 }}
           />
+
+          <MenuItemLink
+            to="/otherIncomes"
+            primaryText="Other Income"
+            leftIcon={<ArrowDownwardIcon />} // Left Icon for Income
+            style={{ paddingLeft: 48 }}
+          />
+          <MenuItemLink
+            to="/otherExpenses"
+            primaryText="Other Expense"
+            leftIcon={<ArrowUpwardIcon />} // Left Icon for Income
+            style={{ paddingLeft: 48 }}
+          />
         </>
+      )}
+
+      {permission1 && (
+        <MenuItemLink
+          to="/FinancialAnalaysis"
+          primaryText="Sales Analysis"
+          leftIcon={<InsightsIcon />}
+        />
       )}
 
       {/**End of financial report */}
@@ -265,7 +353,11 @@ const CustomMenu = (props) => {
         <MenuItemLink
           to="/messages"
           primaryText="Messages"
-          leftIcon={<ChatIcon />}
+          leftIcon={
+            <Badge badgeContent={unreadMessages} color="error">
+              <ChatIcon />
+            </Badge>
+          }
         />
       )}
 

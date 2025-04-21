@@ -29,7 +29,7 @@ function Checkout() {
     const token = JSON.parse(getToken)?.token;
 
     axios
-      .get(`${apiUrl}/customers`, {
+      .get(`${apiUrl}/customersCount`, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
         },

@@ -82,7 +82,7 @@ const otherExpenses = (req, res) => {
           // Calculate the summation for each column
           const totalRow = {
             id: null,
-            source: "Total",
+            reason: "Total",
             amount: results
               .reduce((sum, row) => sum + parseFloat(row.amount || 0), 0)
               .toString(),
@@ -104,94 +104,84 @@ const otherExpenses = (req, res) => {
   });
 };
 
-const specificCashInflows = (req, res) => {
+const addOtherExpense = (req, res) => {
+  const { reason, amount } = req.body;
+
+  const query = `
+  INSERT INTO otherExpense (reason, amount)
+  VALUES (?,?)
+`;
+
+  const values = [reason, amount];
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ error: err });
+    }
+
+    res.json({ id: result.insertId });
+  });
+};
+
+const EditOtherExpense = (req, res) => {
   const { id } = req.params;
-  const query = "SELECT * FROM cashinflows WHERE id = ?";
+  const { reason, amount } = req.body;
+
+  const query = `
+        UPDATE otherExpense 
+        SET reason = ?, amount = ?
+        WHERE id = ?`;
+
+  db.query(query, [reason, amount, id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "data not found" });
+    }
+
+    res.json({ id: result.insertId });
+  });
+};
+
+const showOtherExpense = (req, res) => {
+  const { id } = req.params;
+  const query = `SELECT * FROM otherExpense  WHERE id = ?`;
   db.query(query, [id], (err, results) => {
     if (err) {
       res.status(500).json({ error: err });
     } else if (results.length === 0) {
-      res.status(404).json({ message: "Cash Inflows not found" });
+      res.status(404).json({ message: "data not found" });
     } else {
-      res.json(results[0]); // Return the trader's data
+      res.json(results[0]);
     }
   });
 };
-
-const CreateCashInflows = (req, res) => {
-  const { source, amount, user_id } = req.body;
-
-  let name = "";
-  let user_address = "";
-
-  name = userData.name;
-  user_address = userData.user_address;
-  console.log("here is the name of the user", name);
-  const query = `
-  INSERT INTO cashinflows (source, amount, user_name, user_address)
-  VALUES (?, ?,?,?)
-`;
-
-  const values = [source, amount, name, user_address];
-
-  db.query(query, values, (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err });
-    }
-
-    res.json({ id: result.insertId });
-  });
-};
-
-const EditCashInflows = (req, res) => {
-  const { id } = req.params;
-  const { source, amount } = req.body;
-
-  const query = `
-        UPDATE cashinflows 
-        SET source = ?, amount = ?
-        WHERE id = ?`;
-
-  db.query(query, [source, amount, id], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err });
-    }
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Cash Inflows not found" });
-    }
-
-    res.json({ id: result.insertId });
-  });
-};
-
-const deleteCashInflows = (req, res) => {
+const deleteOtherExpense = (req, res) => {
   const { id } = req.params;
 
-  // Ensure the ID is provided
-  if (!id) {
-    return res.status(400).json({ error: "Cash Inflows ID is required" });
-  }
-
-  const query = "DELETE FROM cashinflows WHERE id = ?";
+  const query = "DELETE FROM otherExpense WHERE id = ?";
 
   db.query(query, [id], (err, result) => {
     if (err) {
+      console.log(err);
       return res.status(500).json({ error: err });
     }
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Cash Inflows not found" });
+      return res.status(404).json({ message: "Data not found" });
     }
 
-    res.json({ message: "Cash Inflows deleted successfully" });
+    res.json({ message: " deleted successfully" });
   });
 };
 
 module.exports = {
   otherExpenses,
-  specificCashInflows,
-  CreateCashInflows,
-  EditCashInflows,
-  deleteCashInflows,
+  addOtherExpense,
+  EditOtherExpense,
+  showOtherExpense,
+  deleteOtherExpense,
 };

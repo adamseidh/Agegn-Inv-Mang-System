@@ -54,6 +54,8 @@ const {
   EditItem,
   CreateItem,
   deleteItem,
+  ItemsCount,
+  ItemsList,
 } = require("./functions/Inventory/items");
 const {
   Supplier,
@@ -61,6 +63,7 @@ const {
   EditSupplier,
   AddSupplier,
   deleteSupplier,
+  SupplierCount,
 } = require("./functions/Inventory/suppliers");
 const {
   PurchaseList,
@@ -107,17 +110,31 @@ const {
   customerLogin,
   getCustomerProfile,
   updateCustomerProfile,
+  CustomersCount,
 } = require("./functions/Inventory/customers");
 const {
   SellsList,
   CustomerOrders,
   deleteOrder,
 } = require("./functions/Inventory/Sells/sellsList");
-const { otherExpenses } = require("./functions/Financial/otherExpense");
-const { otherIncome } = require("./functions/Financial/otherIncome");
+const {
+  otherExpenses,
+  addOtherExpense,
+  EditOtherExpense,
+  showOtherExpense,
+  deleteOtherExpense,
+} = require("./functions/Financial/otherExpense");
+const {
+  otherIncome,
+  addOtherIncome,
+  EditOtherIncome,
+  showOtherIncomes,
+  deleteOtherIncome,
+} = require("./functions/Financial/otherIncome");
 const {
   soldProducts,
   purchasedProducts,
+  FinancialAnalaysis,
 } = require("./functions/Financial/report");
 const {
   CustomerOrdes,
@@ -129,6 +146,29 @@ const {
   deleteNotification,
   updateNotificationStatus,
 } = require("./functions/Notifications/allNotifications");
+const {
+  ExpiredProducts,
+  deleteProductExpiredProduct,
+  checkExpiredProducts,
+  ExpiredProductCount,
+  expiredProductCount,
+} = require("./functions/Notifications/expiredProduts");
+const {
+  EmptyProductsCount,
+  EmptyProducts,
+} = require("./functions/Notifications/emptyProducts");
+const {
+  understockProductsCount,
+  understockProducts,
+} = require("./functions/Notifications/understockProducts");
+const {
+  reachedDuePayments,
+  checkPaymentDueDates,
+} = require("./functions/Notifications/reachedDuePayemnts");
+const {
+  upcamingPayments,
+  checkUpcamingPayments,
+} = require("./functions/Notifications/upcamingPayments");
 
 const app = express();
 const PORT = 3000;
@@ -210,7 +250,7 @@ app.put("/articles/:id", verifyToken, upload.single("image"), EditArticle);
 app.delete("/articles/:id", verifyToken, deleteArticle);
 
 //********Messages*******************/
-app.get("/messages", verifyToken, Messages);
+app.get("/messages", Messages);
 
 app.post("/messages", InsertMessage);
 
@@ -223,6 +263,13 @@ app.get("/notifications", Notifications);
 
 app.delete("/deleteNotification/:id", deleteNotification);
 app.put("/updateNotification/:id", updateNotificationStatus);
+
+///payemnt due lists
+app.get("/reachedDuePayments", reachedDuePayments);
+
+//upcomiong payments.
+
+app.get("/upcamingPayments", upcamingPayments);
 
 //****************Inventory*******************************/
 
@@ -272,6 +319,8 @@ app.delete("/productType/:id", verifyToken, deleteProductType);
 //****items ******/
 //read items
 app.get("/items", Items);
+//this will ftch items with out pagination
+app.get("/ItemsList", ItemsList);
 
 /// show an item
 app.get("/items/:id", AnItem);
@@ -292,6 +341,9 @@ app.delete("/items/:id", verifyToken, deleteItem);
 //read suplier
 app.get("/supplier", Supplier);
 
+//this fetch suppliers without limit. of pagination
+app.get("/supplierCount", SupplierCount);
+
 /// show an supplier
 app.get("/supplier/:id", verifyToken, singleSupplier);
 
@@ -310,6 +362,9 @@ app.delete("/supplier/:id", verifyToken, deleteSupplier);
 //****Supplier ******/
 //read suplier
 app.get("/customers", Customers);
+
+//this fetch custoemr without pagination
+app.get("/customersCount", CustomersCount);
 
 app.post("/customerLogin", customerLogin);
 
@@ -338,7 +393,7 @@ app.delete("/customers/:id", verifyToken, deleteCustomer);
 //******************************
 //****Purchase List ******/
 //read purchase List
-app.get("/purchaseList", verifyToken, PurchaseList);
+app.get("/purchaseList", PurchaseList);
 
 app.get("/purchaseList/:id", verifyToken, SinglePurchaseData);
 /// show an purchase List
@@ -418,21 +473,69 @@ app.get("/salesList/:id", fetchSellsProducts);
 //read sales list
 app.get("/salesList", SellsList);
 
+//fetch expired products
+app.get("/expiredProducts", ExpiredProducts);
+
+app.get("/expiredProductCount", expiredProductCount);
+
+///empty products
+app.get("/EmptyProducts", EmptyProducts);
+///empty products count
+app.get("/EmptyProductsCount", EmptyProductsCount);
+
+//
+app.get("/understockProducts", understockProducts);
+
+app.get("/understockProductsCount", understockProductsCount);
+
+//delete expired product
+app.delete("/expiredProducts/:id", deleteProductExpiredProduct);
+
 //update sales status
 app.put("/update_sells_status/:id", verifyToken, UpdateSalesStatus);
 //readcustoerm ordrs client side
-app.get("/orders", verifyToken, CustomerOrdes);
+app.get("/orders", CustomerOrdes);
+
 app.get("/orders/:id", verifyToken, CustomerSingleOrder);
 
 app.delete("/deleteOrder/:id", verifyToken, deleteOrder);
 
-app.get("/soldProducts", verifyToken, soldProducts);
+app.get("/soldProducts", soldProducts);
 
 app.get("/purchasedProducts", verifyToken, purchasedProducts);
 ///Financial********************
 app.get("/otherExpenses", verifyToken, otherExpenses);
 
-app.get("/otherIncome", verifyToken, otherIncome);
+app.get("/otherExpenses", verifyToken, otherIncome);
+
+app.post("/addotherExpenses", verifyToken, addOtherExpense);
+
+app.put("/otherExpenses/:id", verifyToken, EditOtherExpense);
+
+app.get("/otherExpenses/:id", verifyToken, showOtherExpense);
+
+app.delete("/otherExpenses/:id", verifyToken, deleteOtherExpense);
+
+/// other incomes
+
+app.get("/otherIncomes", verifyToken, otherIncome);
+
+app.post("/addOtherIncome", verifyToken, addOtherIncome);
+
+app.put("/otherIncomes/:id", verifyToken, EditOtherIncome);
+
+app.get("/otherIncomes/:id", verifyToken, showOtherIncomes);
+
+app.delete("/otherIncomes/:id", verifyToken, deleteOtherIncome);
+
+//sales anlysis
+app.get("/FinancialAnalaysis", FinancialAnalaysis);
+setInterval(() => {
+  checkExpiredProducts();
+  checkPaymentDueDates();
+  checkUpcamingPayments();
+}, 24 * 60 * 60 * 1000);
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
