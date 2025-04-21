@@ -16,7 +16,7 @@ const ProductDetail = ({ isOpen, close, product }) => {
         if (!getToken) throw new Error("No token found");
 
         const token = JSON.parse(getToken).token;
-        const response = await axios.get(`${serverHost}/items`, {
+        const response = await axios.get(`${serverHost}/ItemsList`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

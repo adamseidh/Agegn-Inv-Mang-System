@@ -265,7 +265,6 @@ const AddProduct = ({ isOpen, close, addProduct }) => {
                       onChange={(e) =>
                         handleCostChange(index, "title", e.target.value)
                       }
-                      required
                     />
                     <label className="inputLabel">Cost Title</label>
                   </div>
@@ -281,7 +280,6 @@ const AddProduct = ({ isOpen, close, addProduct }) => {
                       onWheel={(e) => {
                         e.target.blur();
                       }}
-                      required
                     />
                     <label className="inputLabel">Amount</label>
                   </div>

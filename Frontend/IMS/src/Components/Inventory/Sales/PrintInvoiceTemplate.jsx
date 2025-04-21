@@ -42,12 +42,12 @@ const PrintInvoiceTemplate = ({ sale }) => {
               marginBottom: "5px",
             }}
           >
-            Agen General Biomedical Engineering
+            Agegn General Biomedical Engineering
           </h1>
           <p style={{ margin: "3px 0" }}>Jimma, Oromia, Ethiopia</p>
           <p style={{ margin: "3px 0" }}>Phone: +251 123 456 789</p>
           <p style={{ margin: "3px 0" }}>Email: info@agenbiomedical.com</p>
-          <p style={{ margin: "3px 0" }}>Website: www.agenbiomedical.com</p>
+          <p style={{ margin: "3px 0" }}>Website: www.agegnbiomedical.com</p>
         </div>
         <div style={{ textAlign: "right" }}>
           <h2

@@ -276,7 +276,6 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
                       onChange={(e) =>
                         handleCostChange(index, "title", e.target.value)
                       }
-                      required
                     />
                     <label className="inputLabel">Cost Title</label>
                   </div>
@@ -290,7 +289,6 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
                         handleCostChange(index, "amount", e.target.value)
                       }
                       onWheel={(e) => e.target.blur()}
-                      required
                     />
                     <label className="inputLabel">Amount</label>
                   </div>

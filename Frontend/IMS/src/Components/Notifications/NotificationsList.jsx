@@ -54,6 +54,7 @@ const NotificationsTable = ({ notifications }) => {
         previousData: notifications.find((n) => n.id === id),
       });
       notify("Notification marked as read", { type: "success" });
+      location.reload();
       refresh();
     } catch (error) {
       notify(`Error: ${error.message}`, { type: "error" });
@@ -79,6 +80,7 @@ const NotificationsTable = ({ notifications }) => {
         id: notificationToDelete,
       });
       notify("Notification deleted", { type: "success" });
+      location.reload();
       setDeleteDialogOpen(false);
       refresh();
     } catch (error) {

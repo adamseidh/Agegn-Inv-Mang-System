@@ -11,13 +11,6 @@ const AddPurchase = (req, res) => {
     payments,
   });
 
-  // Validate required fields
-  if (!products || !Array.isArray(products) || products.length === 0) {
-    return res
-      .status(400)
-      .json({ message: "At least one product is required" });
-  }
-
   // Insert purchase
   const purchaseQuery =
     "INSERT INTO purchase_list (remark,supplier_id) VALUES (?,?)";
@@ -93,13 +86,6 @@ const AddPurchase = (req, res) => {
         }
 
         function processPayments() {
-          // Handle undefined or empty payments
-          if (!payments || !Array.isArray(payments) || payments.length === 0) {
-            return res.json({
-              message: "Purchase and products added successfully (no payments)",
-            });
-          }
-
           // Process payments with proper null handling
           const paymentQuery =
             "INSERT INTO purchase_payment (purchase_id, amount,payment_type, payment_option,payment_date, pre_notification_day, bank_name,account_number,remark, payment_status , payment_image) VALUES ?";
