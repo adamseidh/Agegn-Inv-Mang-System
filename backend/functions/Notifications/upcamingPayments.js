@@ -63,11 +63,7 @@ const checkUpcamingPayments = async (req, res) => {
           const notificationDescription = `Payment of ${payment.amount} ETB for supplier ${payment.supplierName} is after ${payment.pre_notification_day} day, on (${payment.payment_date}). Please prepare the payment.`;
 
           // Send email
-          sendToEmail(
-            "adamseidh@gmail.com",
-            notificationTitle,
-            notificationDescription
-          );
+          sendToEmail(notificationTitle, notificationDescription);
 
           // Insert notification
           const insertQuery = `

@@ -65,7 +65,7 @@ const Welcome = () => {
               gutterBottom
               sx={{ fontWeight: 600 }}
             >
-              Agegn Biomedical Engineering Inventory System
+              Agegn Biomedical Engineering Inventory Management System
             </Typography>
             <Box maxWidth="60em" mb={3}>
               <Typography variant="h5" component="p" gutterBottom>

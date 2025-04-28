@@ -175,7 +175,6 @@ function Checkout() {
                         <div className="mt-2 text-sm text-gray-500">
                           <p>Brand: {item.brand || "N/A"}</p>
                           <p>Category: {item.categoryName}</p>
-                          <p>Available: {item.available_product}</p>
                         </div>
                       </div>
 

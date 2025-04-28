@@ -1,4 +1,5 @@
 const db = require("../../db");
+const { insertUserHistory } = require("../Users/history");
 
 const otherExpenses = (req, res) => {
   let { _sort, _order, _page, _limit, q, filter, range, sort } = req.query;
@@ -63,7 +64,9 @@ const otherExpenses = (req, res) => {
   }
 
   const query = `
-        SELECT * FROM otherExpense
+        SELECT OE.*, u.name createdBy FROM otherExpense OE
+          LEFT JOIN users u ON OE.userId = u.id 
+
         ${whereClause}
         ORDER BY ${_sort} ${_order}
         LIMIT ${_limit} OFFSET ${offset}`;
@@ -105,21 +108,22 @@ const otherExpenses = (req, res) => {
 };
 
 const addOtherExpense = (req, res) => {
-  const { reason, amount } = req.body;
+  const { reason, amount, userId } = req.body;
 
   const query = `
-  INSERT INTO otherExpense (reason, amount)
-  VALUES (?,?)
+  INSERT INTO otherExpense (reason, amount, userId)
+  VALUES (?,?,?)
 `;
 
-  const values = [reason, amount];
+  const values = [reason, amount, userId];
+  console.log("userd id", userId);
 
   db.query(query, values, (err, result) => {
     if (err) {
       console.log(err);
       return res.status(500).json({ error: err });
     }
-
+    insertUserHistory(userId, "Inserted other Expense");
     res.json({ id: result.insertId });
   });
 };

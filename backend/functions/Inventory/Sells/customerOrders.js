@@ -1,4 +1,5 @@
 const db = require("../../../db");
+const { insertUserHistory } = require("../../Users/history");
 
 const CustomerOrdes = (req, res) => {
   let { _sort, _order, _page, _limit, q, filter, range, sort } = req.query;
@@ -65,9 +66,10 @@ const CustomerOrdes = (req, res) => {
   const query = `
     SELECT 
       SL.*, 
-      c.name AS customerName
+      c.name AS customerName, u.name as changedBy
     FROM sells_list SL 
     LEFT JOIN customers c ON SL.customer_id = c.id 
+    LEFT JOIN users u ON SL.userId = u.id
     ${whereClause}
     GROUP BY SL.id
     ORDER BY SL.created_at DESC`;
@@ -193,16 +195,17 @@ const CustomerSingleOrder = (req, res) => {
 
 const UpdateSalesStatus = (req, res) => {
   const { id } = req.params;
-  const { newStatus } = req.body;
+  const { newStatus, userId } = req.body;
   console.log("sells id", id);
   console.log("sells status", newStatus);
 
   const query = `
         UPDATE sells_list 
-        SET sells_status = ?
+        SET sells_status = ?,
+        userId  = ?
         WHERE id = ?`;
 
-  db.query(query, [newStatus, id], (err, result) => {
+  db.query(query, [newStatus, userId, id], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err });
     }
@@ -211,6 +214,7 @@ const UpdateSalesStatus = (req, res) => {
       return res.status(404).json({ message: "data not found" });
     }
 
+    insertUserHistory(userId, "Changed customer order status");
     res.json({ id: result.insertId });
   });
 };

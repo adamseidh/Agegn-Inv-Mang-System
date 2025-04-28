@@ -134,7 +134,7 @@ const CustomMenu = (props) => {
     fetchProcessingOrder();
   }, [dataProvider]);
 
-  console.log("here is the user name", user.name);
+  console.log("here is the user name", user);
   //inventory
   const [openInventory, setOpenInventory] = useState(true);
 
@@ -364,7 +364,7 @@ const CustomMenu = (props) => {
       {permission1 && (
         <MenuItemLink
           to="/users"
-          primaryText=" System Users"
+          primaryText="Users"
           leftIcon={<PeopleAltOutlinedIcon />} // Left Icon for Income
         />
       )}

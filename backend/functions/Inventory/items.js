@@ -1,4 +1,5 @@
 const db = require("../../db");
+const { insertUserHistory } = require("../Users/history");
 
 const Items = (req, res) => {
   let { _sort, _order, _page, _limit, q, filter, range, sort } = req.query;
@@ -243,12 +244,14 @@ const CreateItem = (req, res) => {
     unit,
     description,
     serverHost,
+    userId,
   } = req.body;
 
   console.log("categroy id", category_id);
   console.log("server host", serverHost);
   const image = req.file ? req.file.filename : null;
   console.log("here is uploading image: ", image);
+  console.log("user id", userId);
 
   const fullPath = `${serverHost}/images/${image}`;
 
@@ -272,6 +275,8 @@ const CreateItem = (req, res) => {
       console.log("error", err);
       return res.status(500).json({ error: err });
     }
+
+    insertUserHistory(userId, `Inserted Product Item: ${name}`);
 
     res.json({ id: result.insertId });
   });

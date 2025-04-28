@@ -1,6 +1,7 @@
 const db = require("../../db");
 const bcrypt = require("bcryptjs");
 const { generateToken } = require("../../middleware/jwt");
+const { insertUserHistory } = require("../Users/history");
 const Customers = (req, res) => {
   let { _sort, _order, _page, _limit, q, filter, range, sort } = req.query;
 
@@ -256,6 +257,7 @@ const AddCustomer = (req, res) => {
     kebele,
     tin,
     letter_no,
+    userId,
   } = req.body;
   console.log("wreda", wereda_or_city);
 
@@ -282,6 +284,7 @@ const AddCustomer = (req, res) => {
       return res.status(500).json({ error: err });
     }
 
+    insertUserHistory(userId, `Inserted a customer: ${name}`);
     res.json({ id: result.insertId });
   });
 };

@@ -20,6 +20,7 @@ function Checkout() {
   const [customer, setCustomer] = useState();
 
   const [remark, setRemark] = useState();
+  const userId = JSON.parse(localStorage.getItem("userId")).userId;
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -66,6 +67,7 @@ function Checkout() {
           totalItems,
           customer,
           remark,
+          userId,
         },
         config
       );

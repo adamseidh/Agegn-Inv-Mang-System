@@ -68,7 +68,7 @@ const PurchaseList = (req, res) => {
   const query = `
 SELECT 
   PL.*, 
-  s.name AS supplierName,
+  s.name AS supplierName,u.name as user,
   CASE 
     WHEN SUM(CASE WHEN pp.payment_status != 'Completed' THEN 1 ELSE 0 END) > 0 THEN 'Not Completed'
     ELSE 'Completed'
@@ -77,6 +77,7 @@ SELECT
 FROM purchase_list PL 
 LEFT JOIN supplier s ON PL.supplier_id = s.id 
 LEFT JOIN purchase_payment pp ON PL.id = pp.purchase_id
+LEFT JOIN users u ON PL.userId = u.id
 ${whereClause}
 GROUP BY PL.id
 ORDER BY PL.created_at DESC
@@ -84,6 +85,7 @@ LIMIT ${_limit} OFFSET ${offset}`;
 
   db.query(query, (err, results) => {
     if (err) {
+      console.log(err);
       res.status(500).json({ error: err });
     } else {
       const countQuery = `SELECT COUNT(*) AS total FROM purchase_list ${whereClause}`;

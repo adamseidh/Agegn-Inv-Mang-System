@@ -87,6 +87,8 @@ const CreateSupplier = (props) => {
   const onSuccess = () => {
     redirect("list", "supplier");
   };
+  const userId = JSON.parse(localStorage.getItem("userId")).userId;
+
   return (
     <Create {...props} mutationOptions={{ onSuccess }}>
       <SimpleForm>
@@ -117,6 +119,14 @@ const CreateSupplier = (props) => {
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextInput source="website" label="Website" fullWidth />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextInput
+              source="userId"
+              defaultValue={userId}
+              style={{ display: "none" }}
+              fullWidth
+            />
           </Grid>
         </Grid>
       </SimpleForm>

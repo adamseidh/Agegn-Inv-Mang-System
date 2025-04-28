@@ -84,6 +84,8 @@ const Customer = () => {
 
 const CreateCustomer = (props) => {
   const redirect = useRedirect();
+  const userId = JSON.parse(localStorage.getItem("userId")).userId;
+
   const onSuccess = () => {
     redirect("list", "customers");
   };
@@ -117,6 +119,14 @@ const CreateCustomer = (props) => {
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextInput source="website" label="Website" fullWidth />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextInput
+              source="userId"
+              defaultValue={userId}
+              style={{ display: "none" }}
+              fullWidth
+            />
           </Grid>
         </Grid>
       </SimpleForm>

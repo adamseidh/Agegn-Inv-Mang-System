@@ -22,6 +22,8 @@ function OrdersDetail() {
   const getToken = localStorage.getItem("token");
   const token = JSON.parse(getToken)?.token;
 
+  const userId = JSON.parse(localStorage.getItem("userId")).userId;
+
   useEffect(() => {
     console.log("what is this ");
     const fetchSaleData = async () => {
@@ -71,7 +73,7 @@ function OrdersDetail() {
       setLoading(true);
       await axios.put(
         `${serverHost}/update_sells_status/${id}`,
-        { newStatus },
+        { newStatus, userId },
         {
           headers: {
             Authorization: token ? `Bearer ${token}` : "",

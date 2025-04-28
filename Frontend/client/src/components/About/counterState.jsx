@@ -11,7 +11,7 @@ export default function CounterState() {
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
 
   const currentYear = new Date().getFullYear();
-  const yearsInBusiness = currentYear - 2020;
+  const yearsInBusiness = currentYear - 2023;
 
   useEffect(() => {
     const fetchData = async () => {

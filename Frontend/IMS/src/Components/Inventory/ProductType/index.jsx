@@ -53,11 +53,12 @@ const ProductType = () => {
   const AddCategory = (event) => {
     event.preventDefault();
     const gettoken = localStorage.getItem("token");
+    const userId = JSON.parse(localStorage.getItem("userId")).userId;
     const token = JSON.parse(gettoken).token;
     axios
       .post(
         `${serverHost}/productType`,
-        { type },
+        { type, userId },
         {
           headers: {
             Authorization: `Bearer ${token}`,

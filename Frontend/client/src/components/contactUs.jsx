@@ -150,9 +150,9 @@ export default function ContactUs() {
                   <p className="text-gray-600">
                     Jimma, Oromica, Ethiopia
                     <br />
-                    Near Black Lion Hospital
+                    Ferenj Arada
                     <br />
-                    Post Office, 3rd Floor
+                    Jimma Postal Service Building 1<sup>st</sup> Floor
                   </p>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export default function ContactUs() {
                     Call Us
                   </h4>
 
-                  <p className="text-gray-600 mt-2">+251 115 678 900</p>
+                  <p className="text-gray-600 mt-2">+251 925 270 720</p>
                 </div>
               </div>
 
@@ -176,20 +176,20 @@ export default function ContactUs() {
                     Service Requests:
                     <br />
                     <a
-                      href="mailto:service@agegnbiomedical.com"
+                      href="mailto:agegngeneralbme@gmail.com"
                       className="text-blue-600 hover:underline"
                     >
-                      service@agegnbiomedical.com
+                      agegngeneralbme@gmail.com
                     </a>
                   </p>
                   <p className="text-gray-600 mt-2">
                     Technical Support:
                     <br />
                     <a
-                      href="mailto:support@agegnbiomedical.com"
+                      href="mailto:support@agegnbiomedicalengineering.com"
                       className="text-blue-600 hover:underline"
                     >
-                      support@agegnbiomedical.com
+                      support@agegnbiomedicalengineering.com
                     </a>
                   </p>
                 </div>

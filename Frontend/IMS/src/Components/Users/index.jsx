@@ -84,7 +84,8 @@ const Users = () => {
           <TextField source="address" label="Address" />
 
           <TextField source="role" Label="User Role" />
-          <EditButton />
+          <EditButton label="Edit" />
+          <ShowButton label="History" />
         </DatagridConfigurable>
       </List>
     </div>

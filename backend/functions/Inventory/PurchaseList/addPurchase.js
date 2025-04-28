@@ -1,7 +1,8 @@
 const db = require("../../../db");
 const path = require("path");
+const { insertUserHistory } = require("../../Users/history");
 const AddPurchase = (req, res) => {
-  const { supplier, remark, serverHost, products, payments } = req.body;
+  const { supplier, remark, userId, serverHost, products, payments } = req.body;
 
   console.log("Received data:", {
     supplier,
@@ -10,6 +11,8 @@ const AddPurchase = (req, res) => {
     products,
     payments,
   });
+
+  console.log("user id", userId);
 
   // Validate required fields
   if (!products || !Array.isArray(products) || products.length === 0) {
@@ -20,10 +23,10 @@ const AddPurchase = (req, res) => {
 
   // Insert purchase
   const purchaseQuery =
-    "INSERT INTO purchase_list (remark,supplier_id) VALUES (?,?)";
+    "INSERT INTO purchase_list (remark,supplier_id, userId) VALUES (?,?,?)";
   db.query(
     purchaseQuery,
-    [remark || null, supplier || null],
+    [remark || null, supplier || null, userId],
     (err, purchaseResult) => {
       if (err) {
         console.log("err", err);
@@ -31,6 +34,8 @@ const AddPurchase = (req, res) => {
       }
 
       const purchaseId = purchaseResult.insertId;
+
+      insertUserHistory(userId, "Insert Product Purchase");
 
       // Process products with proper null handling
       const productQuery =

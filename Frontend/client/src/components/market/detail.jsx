@@ -79,9 +79,6 @@ function Detail({ isDetailOpen, closeDetail, product, cart, setCart }) {
                   <p className="text-xl font-bold">
                     Price: {product.selling_price} birr
                   </p>
-                  <p className="text-sm text-gray-600">
-                    {product.available_product} available in stock
-                  </p>
                 </div>
 
                 <div className="flex items-center gap-4">

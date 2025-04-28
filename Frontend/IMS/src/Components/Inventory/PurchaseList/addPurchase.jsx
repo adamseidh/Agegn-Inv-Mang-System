@@ -115,12 +115,14 @@ const AddPurchase = () => {
     return Item ? Item.unit : "Unknown";
   };
   const handleSubmit = async (e) => {
+    const userId = JSON.parse(localStorage.getItem("userId")).userId;
     e.preventDefault();
 
     const formData = new FormData();
     formData.append("serverHost", serverHost);
     formData.append("supplier", supplier);
     formData.append("remark", remark);
+    formData.append("userId", userId);
 
     // Append products data
     products.forEach((product, productIndex) => {

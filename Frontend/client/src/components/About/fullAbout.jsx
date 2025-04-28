@@ -87,7 +87,7 @@ export default function FullAbout() {
               Agegn General Biomedical Engineering
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Established in 2020, Agegn Biomedical is Ethiopia's premier
+              Established in 2023, Agegn Biomedical is Ethiopia's premier
               provider of medical equipment, laboratory reagents, and biomedical
               engineering services. We specialize in installation, maintenance,
               and technical support for hospitals and diagnostic centers
@@ -162,9 +162,6 @@ export default function FullAbout() {
                   {member.name}
                 </h3>
                 <p className="text-primaryColor font-medium">{member.role}</p>
-                <p className="text-gray-500 text-sm mt-2">
-                  {member.specialization}
-                </p>
               </div>
             ))}
           </div>

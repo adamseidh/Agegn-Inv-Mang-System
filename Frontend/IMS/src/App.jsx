@@ -73,6 +73,7 @@ import {
   otherExpenses,
 } from "./Components/Financial/otherExpense";
 import AnalysisPage from "./Components/SalesAnalysis/analysisPage";
+import ActivityHistory from "./Components/Users/activityHistory";
 
 const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
 
@@ -170,6 +171,9 @@ const App = () => {
         </CustomRoutes>
         <CustomRoutes>
           <Route path="/orders/:id/show" element={<OrdersDetail />} />
+        </CustomRoutes>
+        <CustomRoutes>
+          <Route path="/users/:id/show" element={<ActivityHistory />} />
         </CustomRoutes>
         <CustomRoutes>
           <Route path="/checkout" element={<Checkout />} />

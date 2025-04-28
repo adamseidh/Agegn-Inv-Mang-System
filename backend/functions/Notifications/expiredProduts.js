@@ -315,7 +315,7 @@ const checkExpiredProducts = async (req, res) => {
       }
 
       if (products && products.length > 0) {
-        console.log("=== EXPIRED PRODUCTS FOUND ===");
+        console.log("=== EXPIRED PRODUCTS FOUND you have to maintian it ===");
 
         for (const product of products) {
           // Log to console
@@ -326,11 +326,7 @@ const checkExpiredProducts = async (req, res) => {
           // Create notification in database
           const notificationTitle = "Product Expired";
           const notificationDescription = `Product "${product.product_name}" expired on ${product.expire_date}. Please remove from stock.`;
-          sendToEmail(
-            "adamseidh@gmail.com",
-            notificationTitle,
-            notificationDescription
-          );
+          sendToEmail(notificationTitle, notificationDescription);
           const insertQuery = `
               INSERT INTO notifications 
               (title, description, status, date)

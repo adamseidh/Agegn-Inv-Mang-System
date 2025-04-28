@@ -50,6 +50,8 @@ const OtherIncome = () => {
   const refresh = useRefresh();
   const [source, setSource] = useState("");
   const [amount, setAmount] = useState("");
+  const userId = JSON.parse(localStorage.getItem("userId")).userId;
+  const role = JSON.parse(localStorage.getItem("role")).role;
 
   const AddOtherIncome = (event) => {
     event.preventDefault();
@@ -58,7 +60,7 @@ const OtherIncome = () => {
     axios
       .post(
         `${serverHost}/addOtherIncome`,
-        { amount, source },
+        { amount, source, userId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -106,19 +108,22 @@ const OtherIncome = () => {
           </form>
         </div>
         <div className="col-span-3">
-          <List>
-            <DatagridConfigurable
-              rowClick="edit"
-              bulkActionButtons={
-                <BulkDeleteButton mutationMode="pessimistic" />
-              }
-            >
-              <TextField source="source" label="Income Source" />
-              <NumberField source="amount" label="Amount" />
-              <DateField source="createdAt" label="Created At" />
-              <EditButton />
-            </DatagridConfigurable>
-          </List>
+          {role === "Supper Admin" && (
+            <List>
+              <DatagridConfigurable
+                rowClick="edit"
+                bulkActionButtons={
+                  <BulkDeleteButton mutationMode="pessimistic" />
+                }
+              >
+                <TextField source="source" label="Income Source" />
+                <NumberField source="amount" label="Amount" />
+                <TextField source="createdBy" label="Created By" />
+                <DateField source="createdAt" label="Created At" />
+                <EditButton />
+              </DatagridConfigurable>
+            </List>
+          )}
         </div>
       </div>
     </div>

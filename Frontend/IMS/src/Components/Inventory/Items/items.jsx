@@ -119,6 +119,8 @@ const CreateItem = (props) => {
   const [category, setCategory] = useState([]);
   const [type, setType] = useState([]);
 
+  const userId = JSON.parse(localStorage.getItem("userId")).userId;
+
   // Function to handle the form submission
   const handleSubmit = async (data) => {
     const formData = new FormData();
@@ -130,6 +132,7 @@ const CreateItem = (props) => {
     formData.append("type_id", data.type_id);
     formData.append("low_level", data.low_level);
     formData.append("description", data.description);
+    formData.append("userId", userId);
 
     console.log("Form data while creating:", formData);
 

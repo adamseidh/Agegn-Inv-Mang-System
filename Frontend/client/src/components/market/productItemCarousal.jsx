@@ -100,11 +100,6 @@ function ProductItemCarousel({ products, addToCart, cart, setCart }) {
                 <span className="font-bold">{product.selling_price} birr</span>
               </div>
 
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-700">Available:</span>
-                <span>{product.available_product}</span>
-              </div>
-
               <div className="flex justify-between mt-4">
                 <button
                   onClick={() => openDetail(product)}

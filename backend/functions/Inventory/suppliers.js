@@ -1,4 +1,5 @@
 const db = require("../../db");
+const { insertUserHistory } = require("../Users/history");
 
 const Supplier = (req, res) => {
   let { _sort, _order, _page, _limit, q, filter, range, sort } = req.query;
@@ -256,6 +257,7 @@ const AddSupplier = (req, res) => {
     kebele,
     tin,
     letter_no,
+    userId,
   } = req.body;
   console.log("wreda", wereda_or_city);
 
@@ -282,6 +284,7 @@ const AddSupplier = (req, res) => {
       return res.status(500).json({ error: err });
     }
 
+    insertUserHistory(userId, `Inserted a supplier: ${name}`);
     res.json({ id: result.insertId });
   });
 };

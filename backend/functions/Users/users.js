@@ -209,12 +209,13 @@ const EditUser = (req, res) => {
         SET name = ?,
         email = ?,
         phone = ?,
-        role = ?
-        address = ?,
+        role = ?,
+        address = ?
         WHERE id = ?`;
 
   db.query(query, [name, email, phone, role, address, id], (err, result) => {
     if (err) {
+      console.log("err", err);
       return res.status(500).json({ error: err });
     }
 

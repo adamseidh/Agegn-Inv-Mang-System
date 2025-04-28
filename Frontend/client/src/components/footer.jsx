@@ -112,9 +112,9 @@ export default function Footer() {
               <div className="flex items-start">
                 <FaMapMarkerAlt className="text-primaryColor mt-1 mr-3" />
                 <p className="text-gray-300">
-                  Jimma Posta Office 3rd Floor
+                  Ferenj Arada
                   <br />
-                  Near Ferenj Arada
+                  Jimma Postal Service Building, 1<sup>st</sup> Floor
                   <br />
                   Jimma, Oromia, Ethiopia
                 </p>
@@ -125,16 +125,16 @@ export default function Footer() {
                   href="tel:+251911123456"
                   className="text-gray-300 hover:text-white"
                 >
-                  +251 911 123 456
+                  +251 925 270 720
                 </a>
               </div>
               <div className="flex items-center">
                 <FaEnvelope className="text-primaryColor mr-3" />
                 <a
-                  href="mailto:info@agegnbiomedical.com"
+                  href="mailto:agegngeneralbme@gmail.com"
                   className="text-gray-300 hover:text-white"
                 >
-                  info@agegnbiomedical.com
+                  agegngeneralbme@gmail.com
                 </a>
               </div>
             </div>

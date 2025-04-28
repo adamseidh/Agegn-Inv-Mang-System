@@ -50,6 +50,8 @@ const otherExpenses = () => {
   const refresh = useRefresh();
   const [reason, setReason] = useState("");
   const [amount, setAmount] = useState("");
+  const userId = JSON.parse(localStorage.getItem("userId")).userId;
+  const role = JSON.parse(localStorage.getItem("role")).role;
 
   const AddOtherExpense = (event) => {
     event.preventDefault();
@@ -58,7 +60,7 @@ const otherExpenses = () => {
     axios
       .post(
         `${serverHost}/addOtherExpenses`,
-        { reason, amount },
+        { reason, amount, userId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -106,19 +108,22 @@ const otherExpenses = () => {
           </form>
         </div>
         <div className="col-span-3">
-          <List>
-            <DatagridConfigurable
-              rowClick="edit"
-              bulkActionButtons={
-                <BulkDeleteButton mutationMode="pessimistic" />
-              }
-            >
-              <TextField source="reason" label="Expense Reason" />
-              <NumberField source="amount" label="Amount" />
-              <DateField source="createdAt" label="Created At" />
-              <EditButton label="Edit" />
-            </DatagridConfigurable>
-          </List>
+          {role === "Supper Admin" && (
+            <List>
+              <DatagridConfigurable
+                rowClick="edit"
+                bulkActionButtons={
+                  <BulkDeleteButton mutationMode="pessimistic" />
+                }
+              >
+                <TextField source="reason" label="Expense Reason" />
+                <NumberField source="amount" label="Amount" />
+                <TextField source="createdBy" label="Created By" />
+                <DateField source="createdAt" label="Created At" />
+                <EditButton label="Edit" />
+              </DatagridConfigurable>
+            </List>
+          )}
         </div>
       </div>
     </div>

@@ -63,11 +63,7 @@ const checkPaymentDueDates = async (req, res) => {
           const notificationDescription = `Payment of ${payment.amount} ETB for supplier ${payment.supplierName} is due today (${payment.payment_date}). Please process the payment.`;
 
           // Send email
-          sendToEmail(
-            "adamseidh@gmail.com",
-            notificationTitle,
-            notificationDescription
-          );
+          sendToEmail(notificationTitle, notificationDescription);
 
           // Insert notification
           const insertQuery = `

@@ -169,6 +169,7 @@ const {
   upcamingPayments,
   checkUpcamingPayments,
 } = require("./functions/Notifications/upcamingPayments");
+const { fetchUsersHistory } = require("./functions/Users/history");
 
 const app = express();
 const PORT = 3000;
@@ -504,7 +505,7 @@ app.get("/soldProducts", soldProducts);
 
 app.get("/purchasedProducts", verifyToken, purchasedProducts);
 ///Financial********************
-app.get("/otherExpenses", verifyToken, otherExpenses);
+app.get("/otherExpenses", otherExpenses);
 
 app.get("/otherExpenses", verifyToken, otherIncome);
 
@@ -527,6 +528,8 @@ app.put("/otherIncomes/:id", verifyToken, EditOtherIncome);
 app.get("/otherIncomes/:id", verifyToken, showOtherIncomes);
 
 app.delete("/otherIncomes/:id", verifyToken, deleteOtherIncome);
+
+app.get("/fetchUsersHistory/:id", fetchUsersHistory);
 
 //sales anlysis
 app.get("/FinancialAnalaysis", FinancialAnalaysis);

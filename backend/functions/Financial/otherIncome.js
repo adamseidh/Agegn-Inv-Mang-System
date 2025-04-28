@@ -1,4 +1,5 @@
 const db = require("../../db");
+const { insertUserHistory } = require("../Users/history");
 
 const otherIncome = (req, res) => {
   let { _sort, _order, _page, _limit, q, filter, range, sort } = req.query;
@@ -63,7 +64,8 @@ const otherIncome = (req, res) => {
   }
 
   const query = `
-        SELECT * FROM otherIncome
+       SELECT OI.*,u.name as createdBy FROM otherIncome OI 
+  LEFT JOIN users u ON OI.userId = u.id 
         ${whereClause}
         ORDER BY ${_sort} ${_order}
         LIMIT ${_limit} OFFSET ${offset}`;
@@ -119,15 +121,15 @@ const specificCashInflows = (req, res) => {
 };
 
 const addOtherIncome = (req, res) => {
-  const { source, amount } = req.body;
+  const { source, amount, userId } = req.body;
   console.log(source, amount);
 
   const query = `
-  INSERT INTO otherIncome (source, amount)
-  VALUES (?,?)
+  INSERT INTO otherIncome (source, amount, userId)
+  VALUES (?,?,?)
 `;
 
-  const values = [source, amount];
+  const values = [source, amount, userId];
 
   db.query(query, values, (err, result) => {
     if (err) {
@@ -135,6 +137,7 @@ const addOtherIncome = (req, res) => {
       return res.status(500).json({ error: err });
     }
 
+    insertUserHistory(userId, "Inserted other income");
     res.json({ id: result.insertId });
   });
 };

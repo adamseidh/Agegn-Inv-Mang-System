@@ -30,7 +30,7 @@ export default function HomeAbout() {
             <p className="text-lg text-gray-700 mb-8 leading-relaxed">
               Agegn General Biomedical Engineering PLC is a leading provider of
               high-quality medical devices, laboratory reagents, and biomedical
-              engineering services in Ethiopia. Established in 2020, we
+              engineering services in Ethiopia. Established in 2023, we
               specialize in equipment maintenance, installation, and technical
               support for healthcare institutions, ensuring reliable and
               cutting-edge solutions for modern medical needs.

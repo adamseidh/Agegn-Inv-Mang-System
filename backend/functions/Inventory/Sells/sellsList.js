@@ -65,9 +65,10 @@ const SellsList = (req, res) => {
   const query = `
   SELECT 
     SL.*, 
-    c.name AS customerName
+    c.name AS customerName, u.name as created_by
   FROM sells_list SL 
   LEFT JOIN customers c ON SL.customer_id = c.id 
+  LEFT JOIN users u ON SL.userId = u.id
   ${whereClause}
   GROUP BY SL.id
   ORDER BY SL.created_at DESC`;

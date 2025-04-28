@@ -1,8 +1,16 @@
 const db = require("../../../db");
+const { insertUserHistory } = require("../../Users/history");
 
 const submitSale = (req, res) => {
-  const { items, totalPrice, totalItems, customer, remark, sales_source } =
-    req.body;
+  const {
+    items,
+    totalPrice,
+    totalItems,
+    customer,
+    remark,
+    sales_source,
+    userId,
+  } = req.body;
 
   console.log("custo", remark);
 
@@ -24,7 +32,7 @@ const submitSale = (req, res) => {
 
     // 1. Insert into sells_list
     db.query(
-      "INSERT INTO sells_list (customer_id, total_items, total_price, remark,sells_source,order_confirmation,sells_status) VALUES (?,?,?,?,?, ?, ?)",
+      "INSERT INTO sells_list (customer_id, total_items, total_price, remark,sells_source,order_confirmation,sells_status, userId) VALUES (?,?,?,?,?, ?, ?,?)",
       [
         customer,
         totalItems,
@@ -33,6 +41,7 @@ const submitSale = (req, res) => {
         sells_source,
         order_confirmation,
         sells_status,
+        userId,
       ],
       (insertErr, saleResult) => {
         if (insertErr) {
@@ -75,6 +84,8 @@ const submitSale = (req, res) => {
                 });
               }
 
+              insertUserHistory(userId, "Inserted Product Sells");
+
               res.json({
                 success: true,
                 message: "Sale recorded successfully",
@@ -92,7 +103,7 @@ const fetchSellsProducts = (req, res) => {
   const { id } = req.params;
 
   const query = `
-  SELECT sp.* , c.name as customerName,sl.created_at as sellsDate, i.name as productName, i.unit as measurementUnit FROM sells_product sp 
+  SELECT sp.* , c.name as customerName, c.phone, c.region as CustomerRegion, c.wereda_or_city as CustomerCity, c.tin, c.letter_no as  CustomerLetterNo, sl.created_at as sellsDate, i.name as productName, PL.expire_date as expireDate, PL.batch_number as batchNo , PL.serial_number as SerialNo, i.unit as measurementUnit FROM sells_product sp 
   LEFT JOIN sells_list sl
   ON sp.sells_id = sl.id
   LEFT JOIN customers c
@@ -105,6 +116,7 @@ const fetchSellsProducts = (req, res) => {
 
   db.query(query, [id], (err, results) => {
     if (err) {
+      console.log(err);
       res.status(500).json({ error: err });
     } else {
       res.setHeader("Access-Control-Expose-Headers", "Content-Range");

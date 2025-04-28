@@ -34,6 +34,7 @@ import {
   AutocompleteInput,
   NumberField,
   ShowButton,
+  localStorageStore,
 } from "react-admin";
 import { RichTextInput } from "ra-input-rich-text";
 import { useNavigate } from "react-router-dom";
@@ -43,6 +44,8 @@ import NumberInputStyle from "../../../helpers/functions/numberInputStyle";
 
 const SalesList = () => {
   const navigate = useNavigate();
+  const role = JSON.parse(localStorage.getItem("role")).role;
+
   const PostListActions = () => (
     <TopToolbar>
       {/**<SelectColumnsButton /> */}
@@ -60,6 +63,9 @@ const SalesList = () => {
           <TextField source="total_items" label="Total Products" />
           <TextField source="total_price" label="Total Price" />
           <TextField source="remark" label="Remark" />
+          {role === "Supper Admin" && (
+            <TextField source="created_by" label="Created By" />
+          )}
           <DateField source="created_at" label="Created At" />
           <ShowButton label="Detail" />
         </DatagridConfigurable>

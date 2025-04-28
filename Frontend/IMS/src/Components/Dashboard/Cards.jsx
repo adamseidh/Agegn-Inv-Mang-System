@@ -29,7 +29,12 @@ export const TotalProductsCard = (props) => {
     fetchdata();
   }, [dataProvider]);
   return (
-    <CardWithIcon icon={ViewListIcon} title="Stocks" subtitle={totalProducts} />
+    <CardWithIcon
+      icon={ViewListIcon}
+      title="Available Stocks"
+      subtitle={totalProducts}
+      link={"stock"}
+    />
   );
 };
 
@@ -60,6 +65,7 @@ export const TotalSuppliersCard = (props) => {
       icon={SendAndArchiveIcon}
       title="Total Suppliers"
       subtitle={totalSuppliers}
+      link={"supplier"}
     />
   );
 };
@@ -90,6 +96,7 @@ export const TotalCustomersCard = (props) => {
       icon={GroupIcon}
       title="Total Customers"
       subtitle={totalCustomers}
+      link={"customers"}
     />
   );
 };

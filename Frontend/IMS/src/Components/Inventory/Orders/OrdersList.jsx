@@ -43,6 +43,7 @@ import NumberInputStyle from "../../../helpers/functions/numberInputStyle";
 
 const OrdersList = () => {
   const navigate = useNavigate();
+  const role = JSON.parse(localStorage.getItem("role")).role;
   const PostListActions = () => (
     <TopToolbar>
       {/**<SelectColumnsButton /> */}
@@ -60,7 +61,11 @@ const OrdersList = () => {
           <TextField source="total_items" label="Total Products" />
           <TextField source="total_price" label="Total Price" />
           <TextField source="sells_status" label="Status" />
+          {role === "Supper Admin" && (
+            <TextField source="changedBy" label="Accepted By" />
+          )}
           <DateField source="created_at" label="Created At" />
+
           <ShowButton label="Detail" />
         </DatagridConfigurable>
       </List>
