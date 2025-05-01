@@ -105,13 +105,6 @@ const ProductDetail = ({ isOpen, close, product }) => {
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-gray-500 text-sm font-medium">Unit</p>
-                  <p className="text-gray-700 font-semibold">
-                    {ProductUnit(product?.item_id) || "N/A"}
-                  </p>
-                </div>
-
-                <div className="space-y-1">
                   <p className="text-gray-500 text-sm font-medium">Quantity</p>
                   <p className="text-gray-700 font-semibold">
                     {product?.quantity || "N/A"}

@@ -292,16 +292,16 @@ const WeeklyReport = ({
                     </p>
                   </div>
                   <div className="bg-white p-4 rounded shadow">
-                    <h4 className="font-medium text-gray-700">Net Profit</h4>
+                    <h4 className="font-medium text-gray-700">Profit</h4>
                     <p
                       className={`text-2xl font-bold ${
                         netProfit >= 0 ? "text-green-600" : "text-red-600"
                       }`}
                     >
-                      {netProfit.toFixed(2)}
+                      {netProfit.toFixed(2)}(Diff.)
                     </p>
                     <p className="text-sm text-gray-500">
-                      From Sales: {salesProfit.toFixed(2)}
+                      From Sales: {salesProfit.toFixed(2)} (Price-cost)
                     </p>
                     <p className="text-sm text-gray-500">
                       From Other: {(incomeTotal - expensesTotal).toFixed(2)}

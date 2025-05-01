@@ -5,6 +5,7 @@ import {
   faPrint,
   faArrowLeft,
   faDownload,
+  faEdit,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
@@ -87,6 +88,10 @@ function SalesListDetail() {
     html2pdf().set(opt).from(element).save();
   };
 
+  const handleEdit = () => {
+    navigate("/editSales", { state: { salesData: sale, saleId: id } });
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!sale) return <div>No sale data found</div>;
@@ -104,15 +109,14 @@ function SalesListDetail() {
             Back
           </button>
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-gray-800">Sale Details</h1>
             <div className="flex gap-2">
-              {/* <button
-                onClick={handlePrint}
+              <button
+                onClick={handleEdit}
                 className="flex items-center gap-2 bg-primaryColor text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
               >
-                <FontAwesomeIcon icon={faPrint} />
-                Print Invoice
-              </button> */}
+                <FontAwesomeIcon icon={faEdit} />
+                Edit Sales
+              </button>
               <button
                 onClick={handleDownload}
                 className="flex items-center gap-2 bg-primaryColor text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"

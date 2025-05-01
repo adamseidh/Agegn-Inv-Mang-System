@@ -11,7 +11,7 @@ import AddProduct from "./PrchsdPrdctModals/pchProductAddModal";
 import EditPayment from "./PrchsdPrdctModals/pchPrdctPymntEdModal";
 import PaymentDetail from "./PrchsdPrdctModals/puchPrdPaymentDetail";
 import AddPayment from "./PrchsdPrdctModals/pchprdAddPaymnt";
-
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 const PurchasedProductList = () => {
   const { id } = useParams();
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
@@ -47,7 +47,7 @@ const PurchasedProductList = () => {
     const token = JSON.parse(getToken)?.token;
 
     axios
-      .get(`${serverHost}/items`, {
+      .get(`${serverHost}/ItemsList`, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
         },
@@ -278,7 +278,6 @@ const PurchasedProductList = () => {
                 <th className="p-4 text-left text-white font-semibold">
                   Purch. Price
                 </th>
-                <th className="p-4 text-left text-white font-semibold">Unit</th>
                 <th className="p-4 text-left text-white font-semibold">
                   Quantity
                 </th>
@@ -306,9 +305,7 @@ const PurchasedProductList = () => {
                   <td className="p-4 text-gray-700">
                     {FormattedNumber(product.purchase_price)}
                   </td>
-                  <td className="p-4 text-gray-700">
-                    {productUnit(product.item_id)}
-                  </td>
+
                   <td className="p-4 text-gray-700">
                     {FormattedNumber(product.quantity)}
                   </td>
@@ -399,7 +396,6 @@ const PurchasedProductList = () => {
                     <p>ETB</p>
                   </div>
                 </td>
-                <td className="p-4 text-gray-800"></td>
                 <td className="p-4 text-gray-800"></td>
               </tr>
             </tfoot>
@@ -569,7 +565,6 @@ const PurchasedProductList = () => {
           <div className="flex flex-row gap-1">
             <p>Overall Total Price amount:</p>
             <p className="font-semibold">
-              {" "}
               {FormattedNumber(
                 products.reduce(
                   (sum, product) =>
@@ -582,31 +577,80 @@ const PurchasedProductList = () => {
             </p>
             <p className="font-semibold">ETB</p>
           </div>
+
           <div className="flex flex-row gap-1">
-            <p> Completed Payment:</p>
+            <p>Completed Payment:</p>
             <p className="font-semibold">
-              {payments.reduce((sum, payment) => {
-                if (payment.payment_type === "Paid") {
-                  return FormattedNumber(sum + parseFloat(payment.amount));
-                }
-                return FormattedNumber(sum);
-              }, 0)}{" "}
+              {FormattedNumber(
+                payments.reduce((sum, payment) => {
+                  if (payment.payment_type === "Paid") {
+                    return sum + parseFloat(payment.amount);
+                  }
+                  return sum;
+                }, 0)
+              )}{" "}
               ETB
             </p>
           </div>
+
           <div className="flex flex-row gap-1">
-            <p> Loan:</p>
+            <p>Loan:</p>
             <p className="font-semibold">
-              {" "}
-              {payments.reduce((sum, payment) => {
-                if (payment.payment_type === "Loan") {
-                  return FormattedNumber(sum + parseFloat(payment.amount));
-                }
-                return FormattedNumber(sum);
-              }, 0)}{" "}
+              {FormattedNumber(
+                payments.reduce((sum, payment) => {
+                  if (payment.payment_type === "Loan") {
+                    return sum + parseFloat(payment.amount);
+                  }
+                  return sum;
+                }, 0)
+              )}{" "}
               ETB
             </p>
           </div>
+
+          {/* Payment validation status - only shows if total required > 0 */}
+          {(() => {
+            const totalPaid = payments.reduce((sum, payment) => {
+              return sum + parseFloat(payment.amount);
+            }, 0);
+
+            const totalRequired = products.reduce((sum, product) => {
+              return (
+                sum +
+                parseFloat(product.quantity) *
+                  parseFloat(product.purchase_price)
+              );
+            }, 0);
+
+            // Only show validation if there's an actual required payment
+            if (totalRequired > 0) {
+              const isComplete = Math.abs(totalPaid - totalRequired) < 0.01;
+
+              return (
+                <div
+                  className={`flex items-center gap-2 ${
+                    isComplete ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {isComplete ? (
+                    <>
+                      <FaCheckCircle />
+                      <span>Payment completed Payment Data</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaTimesCircle />
+                      <span>
+                        Remaining Payment Data:{" "}
+                        {FormattedNumber(totalRequired - totalPaid)} ETB
+                      </span>
+                    </>
+                  )}
+                </div>
+              );
+            }
+            return null;
+          })()}
         </div>
       </div>
       <button type="button" onClick={handleBack} className="primaryBtn mt-8">

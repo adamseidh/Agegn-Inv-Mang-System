@@ -45,7 +45,7 @@ const PurchaseList = () => {
   const navigate = useNavigate();
   const PostListActions = () => (
     <TopToolbar>
-      {/**<SelectColumnsButton /> */}
+      {/* *<SelectColumnsButton /> */}
       {/**<FilterButton /> */}
       <CreateButton />
       {/** <ExportButton /> */}
@@ -57,7 +57,10 @@ const PurchaseList = () => {
   return (
     <div>
       <List actions={<PostListActions />}>
-        <DatagridConfigurable bulkActionButtons={false} rowClick="show">
+        <DatagridConfigurable
+          bulkActionButtons={<BulkDeleteButton mutationMode="pessimistic" />}
+          rowClick="show"
+        >
           <TextField source="supplierName" label="Supplier" />
           <TextField source="payment_status" label="Payment Status" />
           <TextField source="not_completed_amount" label="Un-Paid Amount" />

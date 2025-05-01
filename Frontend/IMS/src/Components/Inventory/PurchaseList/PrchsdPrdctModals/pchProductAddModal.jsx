@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaXmark } from "react-icons/fa6";
+import Permission from "../../../../helpers/utils/permissions";
 
 const AddProduct = ({ isOpen, close, addProduct, purchaseId }) => {
   if (!isOpen) return null;
@@ -153,6 +154,25 @@ const AddProduct = ({ isOpen, close, addProduct, purchaseId }) => {
       setIsSubmitting(false);
     }
   };
+
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    const storedRole = localStorage.getItem("role");
+    const storedToken = localStorage.getItem("token");
+
+    if (storedUserId && storedRole && storedToken) {
+      const parsedUserId = JSON.parse(storedUserId).userId;
+      const parsedRole = JSON.parse(storedRole).role;
+      const token = JSON.parse(storedToken).token;
+
+      setRole(parsedRole);
+
+      console.log("User Role:", parsedRole);
+    }
+  }, []);
+  const { permission1, permission2, permission3 } = Permission(role);
 
   useEffect(() => {
     const getToken = localStorage.getItem("token");
@@ -309,117 +329,121 @@ const AddProduct = ({ isOpen, close, addProduct, purchaseId }) => {
               </div>
             </div>
 
-            <div className="mt-6 border rounded-lg p-6 shadow-md">
-              <h4 className="font-bold text-lg mb-4">Additional Costs</h4>
-              {product.costs.map((cost, index) => (
-                <div key={index} className="flex gap-4 mb-4 items-center">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      className="primaryInput peer"
-                      placeholder=" "
-                      value={cost.title}
-                      onChange={(e) =>
-                        handleCostChange(index, "title", e.target.value)
-                      }
-                      required
-                    />
-                    <label className="inputLabel">Cost Title</label>
-                  </div>
-                  <div className="relative flex-1">
-                    <input
-                      type="number"
-                      className="primaryInput peer"
-                      placeholder=" "
-                      value={cost.amount}
-                      onChange={(e) =>
-                        handleCostChange(index, "amount", e.target.value)
-                      }
-                      onWheel={(e) => e.target.blur()}
-                      required
-                    />
-                    <label className="inputLabel">Amount</label>
-                  </div>
+            {permission1 && (
+              <>
+                <div className="mt-6 border rounded-lg p-6 shadow-md">
+                  <h4 className="font-bold text-lg mb-4">Additional Costs</h4>
+                  {product.costs.map((cost, index) => (
+                    <div key={index} className="flex gap-4 mb-4 items-center">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          className="primaryInput peer"
+                          placeholder=" "
+                          value={cost.title}
+                          onChange={(e) =>
+                            handleCostChange(index, "title", e.target.value)
+                          }
+                        />
+                        <label className="inputLabel">Cost Title</label>
+                      </div>
+                      <div className="relative flex-1">
+                        <input
+                          type="number"
+                          className="primaryInput peer"
+                          placeholder=" "
+                          value={cost.amount}
+                          onChange={(e) =>
+                            handleCostChange(index, "amount", e.target.value)
+                          }
+                          onWheel={(e) => e.target.blur()}
+                        />
+                        <label className="inputLabel">Amount</label>
+                      </div>
+                      <button
+                        type="button"
+                        className="text-red-500 hover:text-red-700 text-xl"
+                        onClick={() => removeCostField(index)}
+                      >
+                        <FaXmark />
+                      </button>
+                    </div>
+                  ))}
                   <button
                     type="button"
-                    className="text-red-500 hover:text-red-700 text-xl"
-                    onClick={() => removeCostField(index)}
+                    className="primaryBtn mt-4"
+                    onClick={addCostField}
                   >
-                    <FaXmark />
+                    + Add Cost
                   </button>
                 </div>
-              ))}
-              <button
-                type="button"
-                className="primaryBtn mt-4"
-                onClick={addCostField}
-              >
-                + Add Cost
-              </button>
-            </div>
 
-            <div className="bg-white border rounded-lg p-6 shadow-md">
-              <h4 className="font-bold text-lg mb-4">Price Estimation</h4>
-              <div className="flex flex-row items-center gap-2 mt-1">
-                <p className="text-gray-500 text-sm font-medium">Item Cost:</p>
-                <p className="text-gray-700 font-semibold">
-                  {product.purchase_price || "0.00"}
-                </p>
-              </div>
+                <div className="bg-white border rounded-lg p-6 shadow-md">
+                  <h4 className="font-bold text-lg mb-4">Price Estimation</h4>
+                  <div className="flex flex-row items-center gap-2 mt-1">
+                    <p className="text-gray-500 text-sm font-medium">
+                      Item Cost:
+                    </p>
+                    <p className="text-gray-700 font-semibold">
+                      {product.purchase_price || "0.00"}
+                    </p>
+                  </div>
 
-              <div className="flex flex-row items-center gap-2 mt-2">
-                <p className="text-gray-500 text-sm font-medium">
-                  Additional Costs:
-                </p>
-                <p className="text-gray-700 font-semibold">
-                  {product.costs
-                    .reduce(
-                      (sum, cost) => sum + parseFloat(cost.amount || 0),
-                      0
-                    )
-                    .toFixed(2)}
-                </p>
-              </div>
+                  <div className="flex flex-row items-center gap-2 mt-2">
+                    <p className="text-gray-500 text-sm font-medium">
+                      Additional Costs:
+                    </p>
+                    <p className="text-gray-700 font-semibold">
+                      {product.costs
+                        .reduce(
+                          (sum, cost) => sum + parseFloat(cost.amount || 0),
+                          0
+                        )
+                        .toFixed(2)}
+                    </p>
+                  </div>
 
-              <div className="flex flex-row items-center gap-2 mt-2">
-                <p className="text-gray-500 text-sm font-medium">
-                  Overall Cost:
-                </p>
-                <p className="text-gray-700 font-semibold">
-                  {calculateTotalCost()}
-                </p>
-              </div>
+                  <div className="flex flex-row items-center gap-2 mt-2">
+                    <p className="text-gray-500 text-sm font-medium">
+                      Overall Cost:
+                    </p>
+                    <p className="text-gray-700 font-semibold">
+                      {calculateTotalCost()}
+                    </p>
+                  </div>
 
-              <div className="flex flex-row items-center gap-2 py-2 border-t mt-3 pt-3">
-                <p className="text-gray-500 text-sm font-medium">Profit:</p>
-                <div className="relative">
-                  <input
-                    type="number"
-                    className="primaryInput peer"
-                    placeholder=" "
-                    value={product.profitPercent}
-                    onChange={(e) => handleChange(e, "profitPercent")}
-                    onWheel={(e) => e.target.blur()}
-                    required
-                  />
-                  <label className="inputLabel">Profit %</label>
+                  <div className="flex flex-row items-center gap-2 py-2 border-t mt-3 pt-3">
+                    <p className="text-gray-500 text-sm font-medium">Profit:</p>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        className="primaryInput peer"
+                        placeholder=" "
+                        value={product.profitPercent}
+                        onChange={(e) => handleChange(e, "profitPercent")}
+                        onWheel={(e) => e.target.blur()}
+                        required
+                      />
+                      <label className="inputLabel">Profit %</label>
+                    </div>
+                    <span className="text-gray-700 font-semibold">
+                      X {calculateTotalCost()}
+                    </span>
+                  </div>
+
+                  <div className="items-center gap-2 py-2 border-t mt-3 pt-3">
+                    <div className="flex flex-row items-center gap-2">
+                      <p className="text-gray-500 text-sm font-medium">
+                        Selling Price:
+                      </p>
+                      <p className="text-gray-700 font-semibold">
+                        {calculateSellingPrice()}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <span className="text-gray-700 font-semibold">
-                  X {calculateTotalCost()}
-                </span>
-              </div>
-
-              <div className="items-center gap-2 py-2 border-t mt-3 pt-3">
-                <div className="flex flex-row items-center gap-2">
-                  <p className="text-gray-500 text-sm font-medium">
-                    Selling Price:
-                  </p>
-                  <p className="text-gray-700 font-semibold">
-                    {calculateSellingPrice()}
-                  </p>
-                </div>
-              </div>
-            </div>
+              </>
+            )}
 
             <button
               type="submit"

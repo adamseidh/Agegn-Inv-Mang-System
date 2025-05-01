@@ -33,7 +33,7 @@ export const ReachedDuePayments = (props) => {
   return (
     <CardWithIcon
       icon={TodayIcon}
-      title="Reached Due Payments"
+      title="Purchase Payments"
       subtitle={expiredProducts}
       link={"reachedDuePayments"}
       passedColor={"red"}

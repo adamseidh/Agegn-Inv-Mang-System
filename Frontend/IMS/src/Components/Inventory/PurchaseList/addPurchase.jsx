@@ -10,6 +10,7 @@ import EditPayment from "./Modals/EditPayment";
 import { FaEllipsisV } from "react-icons/fa";
 import { FormattedNumber } from "../../../helpers/functions/FormattedNumber";
 import FormattedDate from "../../../helpers/functions/FormattedDate";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 const AddPurchase = () => {
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
@@ -37,7 +38,7 @@ const AddPurchase = () => {
     const token = JSON.parse(getToken)?.token;
 
     axios
-      .get(`${serverHost}/items`, {
+      .get(`${serverHost}/ItemsList`, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
         },
@@ -106,7 +107,10 @@ const AddPurchase = () => {
 
   // Function to get product name by id
   const productName = (id) => {
-    const itemName = items.find((item) => parseInt(item.id) === parseInt(id));
+    console.log("items", items);
+    console.log("passed id", id);
+
+    const itemName = items.find((item) => parseInt(item.id) == parseInt(id));
     return itemName ? itemName.name : "Unknown";
   };
 
@@ -240,6 +244,8 @@ const AddPurchase = () => {
     }
   };
 
+  console.log("products", products);
+
   return (
     <div className="flex-1 p-4">
       <div>
@@ -267,7 +273,6 @@ const AddPurchase = () => {
                 <th className="p-4 text-left text-white font-semibold">
                   Purch. Price
                 </th>
-                <th className="p-4 text-left text-white font-semibold">Unit</th>
                 <th className="p-4 text-left text-white font-semibold">
                   Quantity
                 </th>
@@ -295,9 +300,7 @@ const AddPurchase = () => {
                   <td className="p-4 text-gray-700">
                     {FormattedNumber(product.itemCost)}
                   </td>
-                  <td className="p-4 text-gray-700">
-                    {productUnit(product.item_id)}
-                  </td>
+
                   <td className="p-4 text-gray-700">
                     {FormattedNumber(product.quantity)}
                   </td>
@@ -389,7 +392,6 @@ const AddPurchase = () => {
                     <p>ETB</p>
                   </div>
                 </td>
-                <td className="p-4 text-gray-800"></td>
                 <td className="p-4 text-gray-800"></td>
               </tr>
             </tfoot>
@@ -556,7 +558,6 @@ const AddPurchase = () => {
           <div className="flex flex-row gap-1">
             <p>Overall Total Price amount:</p>
             <p className="font-semibold">
-              {" "}
               {FormattedNumber(
                 products.reduce(
                   (sum, product) =>
@@ -568,31 +569,77 @@ const AddPurchase = () => {
             </p>
             <p className="font-semibold">ETB</p>
           </div>
+
           <div className="flex flex-row gap-1">
-            <p> Completed Payment:</p>
+            <p>Completed Payment:</p>
             <p className="font-semibold">
-              {payments.reduce((sum, payment) => {
-                if (payment.payment_type === "Paid") {
-                  return FormattedNumber(sum + parseFloat(payment.amount));
-                }
-                return FormattedNumber(sum);
-              }, 0)}{" "}
-              ETB
+              {FormattedNumber(
+                payments.reduce((sum, payment) => {
+                  if (payment.payment_type === "Paid") {
+                    return sum + parseFloat(payment.amount);
+                  }
+                  return sum;
+                }, 0)
+              )}
             </p>
+            <p className="font-semibold">ETB</p>
           </div>
+
           <div className="flex flex-row gap-1">
-            <p> Loan:</p>
+            <p>Loan:</p>
             <p className="font-semibold">
-              {" "}
-              {payments.reduce((sum, payment) => {
-                if (payment.payment_type === "Loan") {
-                  return FormattedNumber(sum + parseFloat(payment.amount));
-                }
-                return FormattedNumber(sum);
-              }, 0)}{" "}
-              ETB
+              {FormattedNumber(
+                payments.reduce((sum, payment) => {
+                  if (payment.payment_type === "Loan") {
+                    return sum + parseFloat(payment.amount);
+                  }
+                  return sum;
+                }, 0)
+              )}
             </p>
+            <p className="font-semibold">ETB</p>
           </div>
+
+          {/* Payment validation status */}
+          {(() => {
+            const totalPaid = payments.reduce((sum, payment) => {
+              return sum + parseFloat(payment.amount);
+            }, 0);
+
+            const totalRequired = products.reduce((sum, product) => {
+              return (
+                sum +
+                parseFloat(product.quantity) * parseFloat(product.itemCost)
+              );
+            }, 0);
+
+            const isComplete = Math.abs(totalPaid - totalRequired) < 0.01; // Account for floating point
+
+            return (
+              <div
+                className={`flex items-center gap-2 ${
+                  isComplete ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {totalRequired === 0 ? (
+                  ""
+                ) : isComplete ? (
+                  <>
+                    <FaCheckCircle />
+                    <span>Payment Data Completed</span>
+                  </>
+                ) : (
+                  <>
+                    <FaTimesCircle />
+                    <span>
+                      Remaining Payment Data:{" "}
+                      {FormattedNumber(totalRequired - totalPaid)} ETB
+                    </span>
+                  </>
+                )}
+              </div>
+            );
+          })()}
         </div>
       </div>
 

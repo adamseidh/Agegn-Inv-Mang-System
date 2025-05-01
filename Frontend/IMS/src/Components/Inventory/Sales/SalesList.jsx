@@ -58,10 +58,13 @@ const SalesList = () => {
   return (
     <div>
       <List actions={<PostListActions />}>
-        <DatagridConfigurable bulkActionButtons={false} rowClick="show">
+        <DatagridConfigurable
+          bulkActionButtons={<BulkDeleteButton mutationMode="pessimistic" />}
+          rowClick="show"
+        >
           <TextField source="customerName" label="Customer" />
-          <TextField source="total_items" label="Total Products" />
-          <TextField source="total_price" label="Total Price" />
+          <TextField source="payment_status" label="Payemnt Status" />
+          <NumberField source="not_completed_amount" label="Un-Paid Amount" />
           <TextField source="remark" label="Remark" />
           {role === "Supper Admin" && (
             <TextField source="created_by" label="Created By" />

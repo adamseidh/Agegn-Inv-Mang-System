@@ -268,24 +268,19 @@ const CustomMenu = (props) => {
               />
             </>
           )}
+          <MenuItemLink
+            to="/supplier"
+            primaryText="Suppliers"
+            leftIcon={<SendAndArchiveIcon />} // Left Icon for Income
+            style={{ paddingLeft: 48 }}
+          />
 
-          {permission1 && (
-            <>
-              <MenuItemLink
-                to="/supplier"
-                primaryText="Suppliers"
-                leftIcon={<SendAndArchiveIcon />} // Left Icon for Income
-                style={{ paddingLeft: 48 }}
-              />
-
-              <MenuItemLink
-                to="/customers"
-                primaryText="Customers"
-                leftIcon={<GroupIcon />} // Left Icon for Income
-                style={{ paddingLeft: 48 }}
-              />
-            </>
-          )}
+          <MenuItemLink
+            to="/customers"
+            primaryText="Customers"
+            leftIcon={<GroupIcon />} // Left Icon for Income
+            style={{ paddingLeft: 48 }}
+          />
         </>
       )}
 

@@ -33,7 +33,7 @@ export const UpComingPaymentDates = (props) => {
   return (
     <CardWithIcon
       icon={DateRangeIcon}
-      title="Upcaming Payment "
+      title="Coming Purch. Payment "
       subtitle={expiredProducts}
       link={"upcamingPayments"}
       passedColor={"red"}

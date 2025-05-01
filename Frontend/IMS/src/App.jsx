@@ -74,6 +74,10 @@ import {
 } from "./Components/Financial/otherExpense";
 import AnalysisPage from "./Components/SalesAnalysis/analysisPage";
 import ActivityHistory from "./Components/Users/activityHistory";
+import EditSales from "./Components/Inventory/Sales/Edit/editSales";
+import AddProductOnEdit from "./Components/Inventory/Sales/Edit/addProductOnEdit";
+import { SalesUpcamingPaymentsList } from "./Components/Notifications/salesUpcamingPayment";
+import { SalesReachedaymentsList } from "./Components/Notifications/salesReachedPayment";
 
 const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
 
@@ -170,6 +174,19 @@ const App = () => {
           <Route path="/salesList/:id/show" element={<SalesListDetail />} />
         </CustomRoutes>
         <CustomRoutes>
+          <Route
+            path="/salesUpcamingPayments/:id/show"
+            element={<SalesListDetail />}
+          />
+        </CustomRoutes>
+
+        <CustomRoutes>
+          <Route
+            path="/SalesReachedaymentsList/:id/show"
+            element={<SalesListDetail />}
+          />
+        </CustomRoutes>
+        <CustomRoutes>
           <Route path="/orders/:id/show" element={<OrdersDetail />} />
         </CustomRoutes>
         <CustomRoutes>
@@ -177,6 +194,13 @@ const App = () => {
         </CustomRoutes>
         <CustomRoutes>
           <Route path="/checkout" element={<Checkout />} />
+        </CustomRoutes>
+        <CustomRoutes>
+          <Route path="/addProductOnEdit" element={<AddProductOnEdit />} />
+        </CustomRoutes>
+
+        <CustomRoutes>
+          <Route path="/editSales" element={<EditSales />} />
         </CustomRoutes>
 
         <CustomRoutes>
@@ -315,14 +339,29 @@ const App = () => {
           list={UpcamingPaymentsList}
           options={{ label: "Upcoming Payments Date" }}
         />
+
+        <Resource
+          name="salesUpcamingPayments"
+          list={SalesUpcamingPaymentsList}
+          options={{ label: "Sales Upcoming Payments Date" }}
+        />
+        <Resource
+          name="SalesReachedaymentsList"
+          list={SalesReachedaymentsList}
+          options={{ label: "Sales Reached Payments Date" }}
+        />
         <Resource
           name="stock"
           list={Stock}
           options={{ label: "Available Stocks" }}
         />
 
-        <Resource name="PurchaseList" list={PurchaseList} />
-        <Resource name="salesList" list={SalesList} />
+        <Resource
+          name="PurchaseList"
+          list={PurchaseList}
+          create={AddPurchase}
+        />
+        <Resource name="salesList" list={SalesList} create={SellProduct} />
         <Resource name="orders" list={OrdersList} />
       </Admin>
     </BrowserRouter>

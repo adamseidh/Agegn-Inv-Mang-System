@@ -14,6 +14,8 @@ import { EmptyProducts } from "./NotificationCards/EmptyProducts";
 import { UnderStrockProduct } from "./NotificationCards/underStockProduct";
 import { UpComingPaymentDates } from "./NotificationCards/upComingPaymentDates";
 import { ReachedDuePayments } from "./NotificationCards/ReachedDuePayments";
+import { SalesUpComingPaymentDates } from "./NotificationCards/salesUpcomingPayment";
+import { SalesReachedDuePayments } from "./NotificationCards/SalesReachedDuePayemnt";
 
 const Dashboard = () => {
   const [userId, setUserId] = useState(null);
@@ -72,6 +74,8 @@ const Dashboard = () => {
           <UnderStrockProduct />
           <UpComingPaymentDates />
           <ReachedDuePayments />
+          <SalesUpComingPaymentDates />
+          <SalesReachedDuePayments />
         </div>
       )}
 

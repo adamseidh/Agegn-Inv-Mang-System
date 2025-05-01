@@ -28,6 +28,7 @@ const ActivityHistory = () => {
   const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [userName, setUserName] = useState("");
   const { id } = useParams();
 
   useEffect(() => {
@@ -38,6 +39,8 @@ const ActivityHistory = () => {
           sort: { field: "created_at", order: "DESC" },
         });
         setActivities(data);
+        const name = data.length > 0 ? data[0].UserName : "";
+        setUserName(name);
         setFilteredActivities(data);
         setLoading(false);
       } catch (err) {
@@ -114,7 +117,7 @@ const ActivityHistory = () => {
   return (
     <Box sx={{ width: "100%", p: 2 }}>
       <Typography variant="h4" gutterBottom>
-        Activity History
+        {userName}, Activity History
       </Typography>
 
       <Box sx={{ display: "flex", gap: 2, mb: 3, flexWrap: "wrap" }}>
