@@ -249,10 +249,12 @@ const singleCustomer = (req, res) => {
 const AddCustomer = (req, res) => {
   const {
     name,
+    customer_name,
     phone,
     email,
     website,
     region,
+    zone,
     wereda_or_city,
     kebele,
     tin,
@@ -262,16 +264,18 @@ const AddCustomer = (req, res) => {
   console.log("wreda", wereda_or_city);
 
   const query = `
-        INSERT INTO customers (name, phone, email, website,region,wereda_or_city, kebele,tin,letter_no)
-        VALUES (?,?,?,?,?,?,?,?,?)
+        INSERT INTO customers (name,customer_name, phone, email, website,region,zone,wereda_or_city, kebele,tin,letter_no)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?)
     `;
 
   const values = [
     name,
+    customer_name,
     phone,
     email,
     website,
     region,
+    zone,
     wereda_or_city,
     kebele,
     tin,
@@ -292,10 +296,12 @@ const AddCustomer = (req, res) => {
 const customerSignUp = async (req, res) => {
   const {
     name,
+    customer_name,
     phone,
     email,
     website,
     region,
+    zone,
     wereda_or_city,
     kebele,
     tin,
@@ -305,9 +311,6 @@ const customerSignUp = async (req, res) => {
 
   try {
     // Validate required fields
-    if (!name || !phone || !region || !wereda_or_city || !kebele || !pin) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
 
     // First check if phone number already exists
     const checkQuery = `SELECT id FROM customers WHERE phone = ?`;
@@ -335,17 +338,19 @@ const customerSignUp = async (req, res) => {
 
         const insertQuery = `
           INSERT INTO customers 
-          (name, phone, email, website, region, wereda_or_city, kebele, tin, letter_no, pin)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          (name,customer_name, phone, email, website, region,zone, wereda_or_city, kebele, tin, letter_no, pin)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
         `;
 
         const values = [
           name,
+          customer_name || "",
           phone,
           email || null,
           website || null,
           region,
           wereda_or_city,
+          zone || "",
           kebele,
           tin || null,
           letter_no || null,
@@ -421,10 +426,12 @@ const EditCustomer = (req, res) => {
   const { id } = req.params;
   const {
     name,
+    customer_name,
     phone,
     email,
     website,
     region,
+    zone,
     wereda_or_city,
     kebele,
     tin,
@@ -434,20 +441,23 @@ const EditCustomer = (req, res) => {
   const query = `
         UPDATE customers
         SET name = ?,
+        customer_name = ?,
         phone = ?,
         email= ?,
         website = ?,
-        region= ?,wereda_or_city= ?, kebele= ?,tin= ?,letter_no= ?
+        region= ?,zone = ?, wereda_or_city= ?, kebele= ?,tin= ?,letter_no= ?
         WHERE id = ?`;
 
   db.query(
     query,
     [
       name,
+      customer_name,
       phone,
       email,
       website,
       region,
+      zone,
       wereda_or_city,
       kebele,
       tin || "",
@@ -472,7 +482,7 @@ const getCustomerProfile = (req, res) => {
   const customerId = req.params.customerId;
 
   const query = `
-    SELECT id, name, phone, email, website, region, wereda_or_city, kebele, tin, letter_no
+    SELECT id, name,customer_name, phone, email, website, region, zone, wereda_or_city, kebele, tin, letter_no
     FROM customers
     WHERE id = ?
   `;
@@ -494,11 +504,13 @@ const updateCustomerProfile = async (req, res) => {
   const customerId = req.params.customerId;
   const {
     name,
+    customer_name,
     phone,
     email,
     website,
     region,
     wereda_or_city,
+    zone,
     kebele,
     tin,
     letter_no,
@@ -508,11 +520,13 @@ const updateCustomerProfile = async (req, res) => {
   try {
     let updateFields = {
       name,
+      customer_name,
       phone,
       email: email || null,
       website: website || null,
       region,
       wereda_or_city,
+      zone: zone || null,
       kebele: kebele || null,
       tin: tin || null,
       letter_no: letter_no || null,

@@ -249,11 +249,13 @@ const singleSupplier = (req, res) => {
 const AddSupplier = (req, res) => {
   const {
     name,
+    supplier_name,
     phone,
     email,
     website,
     region,
     wereda_or_city,
+    zone,
     kebele,
     tin,
     letter_no,
@@ -262,16 +264,18 @@ const AddSupplier = (req, res) => {
   console.log("wreda", wereda_or_city);
 
   const query = `
-        INSERT INTO supplier (name, phone, email, website,region,wereda_or_city, kebele,tin,letter_no)
-        VALUES (?,?,?,?,?,?,?,?,?)
+        INSERT INTO supplier (name, supplier_name,phone, email, website,region,zone, wereda_or_city, kebele,tin,letter_no)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?)
     `;
 
   const values = [
     name,
+    supplier_name,
     phone,
     email,
     website,
     region,
+    zone,
     wereda_or_city,
     kebele,
     tin,
@@ -293,10 +297,12 @@ const EditSupplier = (req, res) => {
   const { id } = req.params;
   const {
     name,
+    supplier_name,
     phone,
     email,
     website,
     region,
+    zone,
     wereda_or_city,
     kebele,
     tin,
@@ -306,20 +312,23 @@ const EditSupplier = (req, res) => {
   const query = `
         UPDATE supplier 
         SET name = ?,
+        supplier_name =?,
         phone = ?,
         email= ?,
         website = ?,
-        region= ?,wereda_or_city= ?, kebele= ?,tin= ?,letter_no= ?
+        region= ?,zone = ?, wereda_or_city= ?, kebele= ?,tin= ?,letter_no= ?
         WHERE id = ?`;
 
   db.query(
     query,
     [
       name,
+      supplier_name,
       phone,
       email,
       website,
       region,
+      zone,
       wereda_or_city,
       kebele,
       tin || "",

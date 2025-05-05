@@ -28,6 +28,7 @@ import {
   useRefresh,
   BulkDeleteButton,
   useRedirect,
+  ShowButton,
 } from "react-admin";
 import { Grid } from "@mui/material";
 
@@ -66,14 +67,13 @@ const Supplier = () => {
           rowClick="show"
         >
           <TextField source="name" label="Suppliers" />
+          <TextField source="supplier_name" label="Supplier Name" />
           <TextField source="phone" label="Phone" />
           <TextField source="email" label="Email" />
           <TextField source="region" label="Region" />
+          <TextField source="zone" label="Zone" />
           <TextField source="wereda_or_city" label="Wereda/City" />
-          <TextField source="kebele" label="Kebele" />
-          <TextField source="tin" label="TIN" />
-          <TextField source="letter_no" label="Letter No." />
-          <TextField source="website" label="Website" />
+          <ShowButton label="Detail" />
 
           <EditButton />
         </DatagridConfigurable>
@@ -94,7 +94,10 @@ const CreateSupplier = (props) => {
       <SimpleForm>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
-            <TextInput source="name" label="Supplier Name" fullWidth />
+            <TextInput source="name" label="Supplier" fullWidth />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextInput source="supplier_name" label="Supplier Name" fullWidth />
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextInput source="phone" label="Phone" fullWidth />
@@ -104,6 +107,9 @@ const CreateSupplier = (props) => {
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextInput source="region" label="Region" fullWidth />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextInput source="zone" label="Zone" fullWidth />
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextInput source="wereda_or_city" label="Wereda/City" fullWidth />
@@ -141,6 +147,10 @@ const EditSupplier = (props) => (
         <Grid item xs={12} sm={4}>
           <TextInput source="name" label="Supplier" fullWidth />
         </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <TextInput source="supplier_name" label="Supplier Name" fullWidth />
+        </Grid>
         <Grid item xs={12} sm={4}>
           <TextInput source="phone" label="Phone" fullWidth />
         </Grid>
@@ -149,6 +159,9 @@ const EditSupplier = (props) => (
         </Grid>
         <Grid item xs={12} sm={4}>
           <TextInput source="region" label="Region" fullWidth />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextInput source="zone" label="Zone" fullWidth />
         </Grid>
         <Grid item xs={12} sm={4}>
           <TextInput source="wereda_or_city" label="Wereda/City" fullWidth />
@@ -175,8 +188,10 @@ const ShowSupplier = (props) => (
     <SimpleShowLayout>
       <TextField source="name" label="Suppliers" />
       <TextField source="phone" label="Phone" />
+      <TextField source="supplier_name" label="Supplier Name" />
       <TextField source="email" label="Email" />
       <TextField source="region" label="Region" />
+      <TextField source="zone" lablel="Zone" />
       <TextField source="wereda_or_city" label="Wereda/City" />
       <TextField source="kebele" label="Kebele" />
       <TextField source="tin" label="TIN" />
