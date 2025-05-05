@@ -36,7 +36,8 @@ function SalesListDetail() {
     fetchSaleData();
   }, [id, serverHost]);
 
-  console.log("sales data", sale);
+  console.log("sales data now", sale);
+  console.log("hie");
 
   const handlePrint = () => {
     const element = printRef.current;

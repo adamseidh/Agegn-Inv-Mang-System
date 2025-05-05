@@ -87,7 +87,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
       }
     }
 
-    return words.trim() + " birr";
+    return words.trim();
   };
 
   const subtotal = sale.reduce((sum, item) => sum + item.total_price, 0);
@@ -179,7 +179,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
             <p>Customer: {sale[0].customerName}</p>
           </div>
           <div style={{ marginBottom: "5px" }}>
-            <p>Phone: {sale[0].phone}</p>
+            <p>Phone: {sale[0].phone ? sale[0].phone : "__________"}</p>
           </div>
           <div style={{ marginBottom: "5px" }}>
             <p>
@@ -188,13 +188,22 @@ const PrintInvoiceTemplate = ({ sale }) => {
                 ? sale[0].tin
                 : sale[0].CustomerLetterNo
                 ? sale[0].CustomerLetterNo
-                : "______"}
+                : "__________"}
             </p>
           </div>
 
           <div style={{ marginBottom: "5px" }}>
             <p>
-              Address: {sale[0].CustomerRegion}, {sale[0].CustomerCity}
+              Region:{" "}
+              {sale[0].CustomerRegion ? sale[0].CustomerRegion : "__________"}
+            </p>
+          </div>
+          <div style={{ marginBottom: "5px" }}>
+            <p>Zone: {sale[0].zone ? sale[0].zone : "__________"}</p>
+          </div>
+          <div style={{ marginBottom: "5px" }}>
+            <p>
+              City: {sale[0].CustomerCity ? sale[0].CustomerCity : "__________"}
             </p>
           </div>
 
@@ -219,7 +228,16 @@ const PrintInvoiceTemplate = ({ sale }) => {
                 border: "1px solid #ddd",
               }}
             >
-              Product
+              Product ID
+            </th>
+            <th
+              style={{
+                padding: "10px",
+                textAlign: "left",
+                border: "1px solid #ddd",
+              }}
+            >
+              Product Name
             </th>
             <th
               style={{
@@ -281,6 +299,9 @@ const PrintInvoiceTemplate = ({ sale }) => {
           {sale.map((item, index) => (
             <tr key={index}>
               <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                {item.product_id}
+              </td>
+              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
                 {item.productName}
               </td>
               <td style={{ padding: "10px", border: "1px solid #ddd" }}>
@@ -318,7 +339,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
           <strong>Subtotal:</strong> {Math.floor(subtotal)} birr
         </p>
         <p style={{ margin: "5px 0", fontStyle: "italic" }}>
-          (Amount in words: {subtotalInWords})
+          (Amount in words: {subtotalInWords} birr)
         </p>
       </div>
 
@@ -331,8 +352,9 @@ const PrintInvoiceTemplate = ({ sale }) => {
         }}
       >
         <p style={{ marginBottom: "30px" }}>
-          I, _________________________, received the listed products above
-          happily. I confirm with my signature.
+          I, _________________________, hereby confirm that I have received the
+          above-listed products in good condition, and acknowledge receipt with
+          my signature.
         </p>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div>

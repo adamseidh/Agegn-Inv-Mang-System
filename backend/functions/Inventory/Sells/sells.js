@@ -236,7 +236,7 @@ const fetchSellsProducts = (req, res) => {
   const { id } = req.params;
 
   const query = `
-  SELECT sp.* , c.name as customerName, c.phone, c.region as CustomerRegion, c.wereda_or_city as CustomerCity, c.tin, c.letter_no as  CustomerLetterNo, sl.created_at as sellsDate, i.name as productName, PL.expire_date as expireDate, PL.batch_number as batchNo , PL.serial_number as SerialNo, i.unit as measurementUnit FROM sells_product sp 
+  SELECT sp.* , c.name as customerName, c.phone,c.zone , c.region as CustomerRegion, c.wereda_or_city as CustomerCity, c.tin, c.letter_no as  CustomerLetterNo, sl.created_at as sellsDate, i.name as productName, PL.expire_date as expireDate, PL.batch_number as batchNo , PL.serial_number as SerialNo, i.unit as measurementUnit FROM sells_product sp 
   LEFT JOIN sells_list sl
   ON sp.sells_id = sl.id
   LEFT JOIN customers c
