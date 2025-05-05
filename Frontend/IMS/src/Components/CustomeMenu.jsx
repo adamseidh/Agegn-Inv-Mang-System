@@ -197,28 +197,24 @@ const CustomMenu = (props) => {
       />
       {openInventory && (
         <>
-          {permission1 && (
-            <>
-              <MenuItemLink
-                to="/category"
-                primaryText="Product Category"
-                leftIcon={<CategoryIcon />} // Left Icon for Income
-                style={{ paddingLeft: 48 }}
-              />
-              <MenuItemLink
-                to="/productType"
-                primaryText="Product Type"
-                leftIcon={<TypeSpecimenOutlinedIcon />} // Left Icon for Income
-                style={{ paddingLeft: 48 }}
-              />
-              <MenuItemLink
-                to="/items"
-                primaryText="Product Items"
-                leftIcon={<ClassIcon />} // Left Icon for Income
-                style={{ paddingLeft: 48 }}
-              />
-            </>
-          )}
+          <MenuItemLink
+            to="/category"
+            primaryText="Product Category"
+            leftIcon={<CategoryIcon />} // Left Icon for Income
+            style={{ paddingLeft: 48 }}
+          />
+          <MenuItemLink
+            to="/productType"
+            primaryText="Product Type"
+            leftIcon={<TypeSpecimenOutlinedIcon />} // Left Icon for Income
+            style={{ paddingLeft: 48 }}
+          />
+          <MenuItemLink
+            to="/items"
+            primaryText="Product Items"
+            leftIcon={<ClassIcon />} // Left Icon for Income
+            style={{ paddingLeft: 48 }}
+          />
 
           {permission2 && (
             <MenuItemLink

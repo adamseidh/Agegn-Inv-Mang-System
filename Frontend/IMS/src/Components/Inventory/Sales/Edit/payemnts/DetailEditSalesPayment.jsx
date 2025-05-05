@@ -79,15 +79,24 @@ const PaymentDetail = ({ isOpen, close, payment }) => {
                   {payment.payment_type || "N/A"}
                 </p>
               </div>
-
               <div className="space-y-1">
                 <p className="text-gray-500 text-sm font-medium">
-                  Payment Method:
+                  Payment Option:
                 </p>
                 <p className="text-gray-700 font-semibold">
                   {payment.payment_option || "N/A"}
                 </p>
               </div>
+              {payment.payment_option === "Check" && (
+                <div className="space-y-1">
+                  <p className="text-gray-500 text-sm font-medium">
+                    Check No.:
+                  </p>
+                  <p className="text-gray-700 font-semibold">
+                    {payment.check_number || "N/A"}
+                  </p>
+                </div>
+              )}
 
               <div className="space-y-1">
                 <p className="text-gray-500 text-sm font-medium">Bank Name:</p>

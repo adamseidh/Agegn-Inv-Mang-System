@@ -10,6 +10,7 @@ const AddPayment = ({ isOpen, close, addPayment }) => {
     remark: "",
     payment_type: "",
     payment_option: "",
+    check_number: "",
     payment_date: "",
     pre_notification_day: 3,
     bank_name: "",
@@ -18,6 +19,7 @@ const AddPayment = ({ isOpen, close, addPayment }) => {
   });
 
   const handleChange = (e, field) => {
+    console.log("input data", e.target.value);
     setPayment({ ...payment, [field]: e.target.value });
   };
 
@@ -77,18 +79,37 @@ const AddPayment = ({ isOpen, close, addPayment }) => {
               </div>
 
               <div className="relative">
-                <input
-                  type="text"
-                  className="primaryInput peer"
-                  placeholder=" "
+                <label className="inputLabel">Payment Options</label>
+                <select
                   value={payment.payment_option}
                   onChange={(e) => handleChange(e, "payment_option")}
+                  className="primaryInput peer"
                   required
-                />
-                <label className="inputLabel">
-                  Pay by(cash, transfer, check..)
-                </label>
+                >
+                  <option value="">--Select--</option>
+                  <option value={"Cash"}>Cash</option>
+                  <option value={"Check"}>Check</option>
+                  <option value={"Transfer"}>Transfer</option>
+                </select>
               </div>
+
+              {payment.payment_option === "Check" && (
+                <div className="relative">
+                  <input
+                    type="text"
+                    className="primaryInput peer"
+                    placeholder=" "
+                    value={payment.check_number}
+                    onChange={(e) => handleChange(e, "check_number")}
+                    onWheel={(e) => {
+                      // Prevent increment/decrement using mouse wheel
+                      e.target.blur(); // Remove focus from the input to prevent changes
+                    }}
+                    required
+                  />
+                  <label className="inputLabel">Check Number</label>
+                </div>
+              )}
 
               <div className="relative">
                 <input

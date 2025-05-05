@@ -180,7 +180,7 @@ const AddProduct = ({ isOpen, close, addProduct, purchaseId }) => {
 
     if (token) {
       axios
-        .get(`${serverHost}/items`, {
+        .get(`${serverHost}/ItemsList`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

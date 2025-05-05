@@ -9,6 +9,7 @@ import { FormattedNumber } from "../../../helpers/functions/FormattedNumber";
 import AddPayment from "./Modals/addPayemnt";
 import EditPayment from "./Modals/editPayment";
 import PaymentDetail from "./Modals/paymentDetail";
+import Permission from "../../../helpers/utils/permissions";
 
 function Checkout() {
   const location = useLocation();
@@ -33,6 +34,24 @@ function Checkout() {
 
   const [remark, setRemark] = useState();
   const userId = JSON.parse(localStorage.getItem("userId")).userId;
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    const storedRole = localStorage.getItem("role");
+    const storedToken = localStorage.getItem("token");
+
+    if (storedUserId && storedRole && storedToken) {
+      const parsedUserId = JSON.parse(storedUserId).userId;
+      const parsedRole = JSON.parse(storedRole).role;
+      const token = JSON.parse(storedToken).token;
+
+      setRole(parsedRole);
+
+      console.log("User Role:", parsedRole);
+    }
+  }, []);
+  const { permission1, permission2, permission3 } = Permission(role);
 
   const handlePaymentMenuToggle = (index) => {
     setOpenPaymentTableMenu(openPaymentTableMenu === index ? null : index);
@@ -322,117 +341,123 @@ function Checkout() {
                   </div>
                 </div>
 
-                {/**payment section */}
-                <div className="mt-8">
-                  <div className="flex flex-row justify-between items-center">
-                    <h2 className="text-2xl font-bold mb-6 text-gray-800">
-                      Payments
-                    </h2>
-                    <button
-                      onClick={() => setAddPaymentOpen(true)}
-                      className="primaryBtn"
-                    >
-                      + Add Payment
-                    </button>
-                  </div>
-                  <div className="overflow-hidden rounded-lg shadow-md border border-gray-200">
-                    <table className="w-full">
-                      <thead className="bg-gray-800">
-                        <tr>
-                          <th className="p-4 text-left text-white font-semibold">
-                            Payment Type
-                          </th>
+                {permission1 && (
+                  <>
+                    {/**payment section */}
+                    <div className="mt-8">
+                      <div className="flex flex-row justify-between items-center">
+                        <h2 className="text-2xl font-bold mb-6 text-gray-800">
+                          Payments
+                        </h2>
+                        <button
+                          onClick={() => setAddPaymentOpen(true)}
+                          className="primaryBtn"
+                        >
+                          + Add Payment
+                        </button>
+                      </div>
+                      <div className="overflow-hidden rounded-lg shadow-md border border-gray-200">
+                        <table className="w-full">
+                          <thead className="bg-gray-800">
+                            <tr>
+                              <th className="p-4 text-left text-white font-semibold">
+                                Payment Type
+                              </th>
 
-                          <th className="p-4 text-left text-white font-semibold">
-                            Amount
-                          </th>
+                              <th className="p-4 text-left text-white font-semibold">
+                                Amount
+                              </th>
 
-                          <th className="p-4 text-left text-white font-semibold">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {payments.map((payment, index) => (
-                          <tr key={index}>
-                            <td className="p-4 text-gray-700">
-                              {payment.payment_type}
-                            </td>
+                              <th className="p-4 text-left text-white font-semibold">
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {payments.map((payment, index) => (
+                              <tr key={index}>
+                                <td className="p-4 text-gray-700">
+                                  {payment.payment_type}
+                                </td>
 
-                            <td className="p-4 text-gray-700">
-                              {payment.amount}
-                            </td>
+                                <td className="p-4 text-gray-700">
+                                  {payment.amount}
+                                </td>
 
-                            <td className="p-4 relative">
-                              <button
-                                onClick={() => handlePaymentMenuToggle(index)}
-                                className="text-gray-500 hover:text-gray-700 "
-                              >
-                                <FaEllipsisV />
-                              </button>
-                              {openPaymentTableMenu === index && (
-                                <div className="flex absolute left-[-210px] py-1 px-2 -top-0.5 bg-white border border-gray-200  shadow-lg z-10 rounded-lg">
+                                <td className="p-4 relative">
                                   <button
-                                    onClick={() => {
-                                      setSelectedPayment(payment);
-                                      setPaymentDetailOpen(true);
-                                      handlePaymentMenuToggle(index);
-                                    }}
-                                    className="block w-full px-4 py-2 text-sm text-primaryColor hover:bg-blue-100 hover:rounded-lg "
+                                    onClick={() =>
+                                      handlePaymentMenuToggle(index)
+                                    }
+                                    className="text-gray-500 hover:text-gray-700 "
                                   >
-                                    Detail
+                                    <FaEllipsisV />
                                   </button>
-                                  <button
-                                    onClick={() => {
-                                      setSelectedPayment(payment);
-                                      setEditPaymentOpen(true);
-                                      handlePaymentMenuToggle(index);
-                                    }}
-                                    className="block w-full px-4 py-2 text-sm  text-green-500 hover:bg-green-100 hover:rounded-lg"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      deletePayment(payment);
-                                      handlePaymentMenuToggle(index);
-                                    }}
-                                    className="block w-full px-4  text-sm  text-red-500 hover:bg-red-100 hover:rounded-lg"
-                                  >
-                                    Delete
-                                  </button>
+                                  {openPaymentTableMenu === index && (
+                                    <div className="flex absolute left-[-210px] py-1 px-2 -top-0.5 bg-white border border-gray-200  shadow-lg z-10 rounded-lg">
+                                      <button
+                                        onClick={() => {
+                                          setSelectedPayment(payment);
+                                          setPaymentDetailOpen(true);
+                                          handlePaymentMenuToggle(index);
+                                        }}
+                                        className="block w-full px-4 py-2 text-sm text-primaryColor hover:bg-blue-100 hover:rounded-lg "
+                                      >
+                                        Detail
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          setSelectedPayment(payment);
+                                          setEditPaymentOpen(true);
+                                          handlePaymentMenuToggle(index);
+                                        }}
+                                        className="block w-full px-4 py-2 text-sm  text-green-500 hover:bg-green-100 hover:rounded-lg"
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          deletePayment(payment);
+                                          handlePaymentMenuToggle(index);
+                                        }}
+                                        className="block w-full px-4  text-sm  text-red-500 hover:bg-red-100 hover:rounded-lg"
+                                      >
+                                        Delete
+                                      </button>
+                                    </div>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+
+                          {/* Footer row for totals */}
+                          <tfoot>
+                            <tr className="bg-gray-200 font-semibold">
+                              <td className="p-4 text-gray-800"> Total</td>
+                              <td className="p-4 text-gray-800  " colSpan={2}>
+                                <div className="flex flex-row gap-1">
+                                  <p>
+                                    {" "}
+                                    {FormattedNumber(
+                                      payments.reduce(
+                                        (sum, payment) =>
+                                          sum + parseFloat(payment.amount),
+                                        0
+                                      )
+                                    )}
+                                  </p>
+                                  <p>ETB</p>
                                 </div>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-
-                      {/* Footer row for totals */}
-                      <tfoot>
-                        <tr className="bg-gray-200 font-semibold">
-                          <td className="p-4 text-gray-800"> Total</td>
-                          <td className="p-4 text-gray-800  " colSpan={2}>
-                            <div className="flex flex-row gap-1">
-                              <p>
-                                {" "}
-                                {FormattedNumber(
-                                  payments.reduce(
-                                    (sum, payment) =>
-                                      sum + parseFloat(payment.amount),
-                                    0
-                                  )
-                                )}
-                              </p>
-                              <p>ETB</p>
-                            </div>
-                          </td>
-                        </tr>
-                      </tfoot>
-                    </table>
-                  </div>
-                </div>
-                {/**end of payment section */}
+                              </td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                    </div>
+                    {/**end of payment section */}
+                  </>
+                )}
                 <button
                   onClick={handleSubmit}
                   disabled={cart.length === 0 || isSubmitting}

@@ -154,6 +154,7 @@ const addPayment = async (req, res) => {
       remark,
       payment_type,
       payment_option,
+      check_number,
       payment_date,
       pre_notification_day,
       bank_name,
@@ -162,7 +163,7 @@ const addPayment = async (req, res) => {
       serverHost,
     } = req.body;
 
-    console.log("serv", serverHost);
+    console.log("check number", check_number);
 
     const image = req.file ? req.file.filename : null;
     const payment_status =
@@ -174,10 +175,10 @@ const addPayment = async (req, res) => {
 
     const query = `
       INSERT INTO purchase_payment 
-      (purchase_id, amount, remark, payment_type, payment_option, 
+      (purchase_id, amount, remark, payment_type, payment_option, check_number,
        payment_date, pre_notification_day, bank_name, account_number, 
        payment_status, payment_image) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?)
     `;
 
     db.query(
@@ -188,6 +189,7 @@ const addPayment = async (req, res) => {
         remark,
         payment_type,
         payment_option,
+        check_number,
         payment_date,
         pre_notification_day,
         bank_name,
@@ -213,6 +215,7 @@ const addPayment = async (req, res) => {
             remark,
             payment_type,
             payment_option,
+            check_number,
             payment_date,
             pre_notification_day,
             bank_name,
@@ -238,6 +241,7 @@ const updatePayment = (req, res) => {
     remark,
     payment_type,
     payment_option,
+    check_number,
     payment_date,
     pre_notification_day,
     payment_status,
@@ -263,6 +267,7 @@ const updatePayment = (req, res) => {
       remark = ?,
       payment_type = ?,
       payment_option = ?,
+      check_number = ?,
       payment_date = ?,
       pre_notification_day = ?,
       bank_name = ?,
@@ -281,6 +286,7 @@ const updatePayment = (req, res) => {
       remark,
       payment_type,
       payment_option,
+      check_number,
       payment_date,
       pre_notification_day,
       bank_name,

@@ -37,7 +37,7 @@ const ProductType = (req, res) => {
 
   let whereClause = "WHERE 1 = 1";
   if (q) {
-    whereClause += ` AND (TIN LIKE '%${q}%' OR phone LIKE '%${q}%' OR name LIKE '%${q}%')`;
+    whereClause += ` AND (name LIKE '%${q}%')`;
   }
 
   if (payment_status) {

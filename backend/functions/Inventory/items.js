@@ -36,12 +36,17 @@ const Items = (req, res) => {
   }
 
   let whereClause = "WHERE 1 = 1";
+  let queryParams = [];
+  
   if (q) {
-    whereClause += ` AND (title LIKE '%${q}%' )`;
+    whereClause += ` AND (I.name LIKE ?)`;
+    const searchTerm = `%${q}%`;
+    queryParams = [searchTerm];
   }
 
   if (payment_status) {
-    whereClause += ` AND payment_status = '${payment_status}'`;
+    whereClause += ` AND payment_status = ?`;
+    queryParams.push(payment_status);
   }
 
   if (sort) {
@@ -74,12 +79,17 @@ const Items = (req, res) => {
         ORDER BY ${_sort} ${_order}
         LIMIT ${_limit} OFFSET ${offset}`;
 
-  db.query(query, (err, results) => {
+  db.query(query, queryParams, (err, results) => {
     if (err) {
+      console.log("erorr", err);
       res.status(500).json({ error: err });
     } else {
-      const countQuery = `SELECT COUNT(*) AS total FROM items ${whereClause}`;
-      db.query(countQuery, (err, countResult) => {
+      const countQuery = `SELECT COUNT(*) AS total FROM items I
+                         LEFT JOIN category C ON I.category_id = C.id
+                         LEFT JOIN product_type PT ON I.type_id = PT.id
+                         ${whereClause}`;
+      
+      db.query(countQuery, queryParams, (err, countResult) => {
         if (err) {
           res.status(500).json({ error: err });
         } else {
@@ -94,9 +104,6 @@ const Items = (req, res) => {
               .toString(),
           };
 
-          // Append the total row to the results
-          //results.push(totalRow);
-
           // Set headers and return the response
           res.setHeader(
             "Content-Range",
@@ -109,7 +116,6 @@ const Items = (req, res) => {
     }
   });
 };
-
 const ItemsList = (req, res) => {
   let { _sort, _order, _page, _limit, q, filter, range, sort } = req.query;
 

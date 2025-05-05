@@ -12,6 +12,7 @@ import EditPayment from "./PrchsdPrdctModals/pchPrdctPymntEdModal";
 import PaymentDetail from "./PrchsdPrdctModals/puchPrdPaymentDetail";
 import AddPayment from "./PrchsdPrdctModals/pchprdAddPaymnt";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import Permission from "../../../helpers/utils/permissions";
 const PurchasedProductList = () => {
   const { id } = useParams();
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
@@ -41,6 +42,25 @@ const PurchasedProductList = () => {
   const [isProductDelete, setIsProductDelete] = useState(false);
 
   const navigate = useNavigate();
+
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    const storedRole = localStorage.getItem("role");
+    const storedToken = localStorage.getItem("token");
+
+    if (storedUserId && storedRole && storedToken) {
+      const parsedUserId = JSON.parse(storedUserId).userId;
+      const parsedRole = JSON.parse(storedRole).role;
+      const token = JSON.parse(storedToken).token;
+
+      setRole(parsedRole);
+
+      console.log("User Role:", parsedRole);
+    }
+  }, []);
+  const { permission1, permission2, permission3 } = Permission(role);
 
   useEffect(() => {
     const getToken = localStorage.getItem("token");
@@ -145,6 +165,7 @@ const PurchasedProductList = () => {
     return Item ? Item.unit : "Unknown";
   };
   const addPayment = (payment) => {
+    console.log("payamnt data");
     setPayments([...payments, payment]);
   };
 
@@ -403,123 +424,129 @@ const PurchasedProductList = () => {
         </div>
       </div>
 
-      <div className="mt-8">
-        <div className="flex flex-row justify-between items-center">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">Payments</h2>
-          <button
-            onClick={() => setAddPaymentOpen(true)}
-            className="primaryBtn"
-          >
-            + Add Payment
-          </button>
-        </div>
-        <div className="overflow-hidden rounded-lg shadow-md border border-gray-200">
-          <table className="w-full">
-            <thead className="bg-gray-800">
-              <tr>
-                <th className="p-4 text-left text-white font-semibold">No.</th>
-                <th className="p-4 text-left text-white font-semibold">
-                  Payment Type
-                </th>
-                <th className="p-4 text-left text-white font-semibold">
-                  Pay By
-                </th>
-                <th className="p-4 text-left text-white font-semibold">
-                  Amount
-                </th>
-                <th className="p-4 text-left text-white font-semibold">
-                  Remark
-                </th>
-                <th className="p-4 text-left text-white font-semibold">
-                  Payment Date
-                </th>
-                <th className="p-4 text-left text-white font-semibold">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {payments.map((payment, index) => (
-                <tr key={index}>
-                  <td className="p-4 text-gray-700">{index + 1}</td>
-                  <td className="p-4 text-gray-700">{payment.payment_type}</td>
-                  <td className="p-4 text-gray-700">
-                    {payment.payment_option}
-                  </td>
-                  <td className="p-4 text-gray-700">{payment.amount}</td>
-                  <td className="p-4 text-gray-700">{payment.remark}</td>
-                  <td className="p-4 text-gray-700">
-                    {FormattedDate(payment.payment_date)}
-                  </td>
-                  <td className="p-4 relative">
-                    <button
-                      onClick={() => handlePaymentMenuToggle(index)}
-                      className="text-gray-500 hover:text-gray-700 "
-                    >
-                      <FaEllipsisV />
-                    </button>
-                    {openPaymentTableMenu === index && (
-                      <div className="flex absolute left-[-210px] py-1 px-2 -top-0.5 bg-white border border-gray-200  shadow-lg z-10 rounded-lg">
-                        <button
-                          onClick={() => {
-                            setSelectedPayment(payment);
-                            setPaymentDetailOpen(true);
-                            handlePaymentMenuToggle(index);
-                          }}
-                          className="block w-full px-4 py-2 text-sm text-primaryColor hover:bg-blue-100 hover:rounded-lg "
-                        >
-                          Detail
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedPayment(payment);
-                            setEditPaymentOpen(true);
-                            handlePaymentMenuToggle(index);
-                          }}
-                          className="block w-full px-4 py-2 text-sm  text-green-500 hover:bg-green-100 hover:rounded-lg"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(payment, false)}
-                          className="block w-full px-4  text-sm  text-red-500 hover:bg-red-100 hover:rounded-lg"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                  </td>
+      {permission1 && (
+        <div className="mt-8">
+          <div className="flex flex-row justify-between items-center">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">Payments</h2>
+            <button
+              onClick={() => setAddPaymentOpen(true)}
+              className="primaryBtn"
+            >
+              + Add Payment
+            </button>
+          </div>
+          <div className="overflow-hidden rounded-lg shadow-md border border-gray-200">
+            <table className="w-full">
+              <thead className="bg-gray-800">
+                <tr>
+                  <th className="p-4 text-left text-white font-semibold">
+                    No.
+                  </th>
+                  <th className="p-4 text-left text-white font-semibold">
+                    Payment Type
+                  </th>
+                  <th className="p-4 text-left text-white font-semibold">
+                    Pay By
+                  </th>
+                  <th className="p-4 text-left text-white font-semibold">
+                    Amount
+                  </th>
+                  <th className="p-4 text-left text-white font-semibold">
+                    Remark
+                  </th>
+                  <th className="p-4 text-left text-white font-semibold">
+                    Payment Date
+                  </th>
+                  <th className="p-4 text-left text-white font-semibold">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr className="bg-gray-200 font-semibold">
-                <td className="p-4 text-gray-800"></td>
-                <td className="p-4 text-gray-800" colSpan={2}>
-                  {" "}
-                  Total
-                </td>
-                <td className="p-4 text-gray-800  " colSpan={2}>
-                  <div className="flex flex-row gap-1">
-                    <p>
-                      {" "}
-                      {FormattedNumber(
-                        payments.reduce(
-                          (sum, payment) => sum + parseFloat(payment.amount),
-                          0
-                        )
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {payments.map((payment, index) => (
+                  <tr key={index}>
+                    <td className="p-4 text-gray-700">{index + 1}</td>
+                    <td className="p-4 text-gray-700">
+                      {payment.payment_type}
+                    </td>
+                    <td className="p-4 text-gray-700">
+                      {payment.payment_option}
+                    </td>
+                    <td className="p-4 text-gray-700">{payment.amount}</td>
+                    <td className="p-4 text-gray-700">{payment.remark}</td>
+                    <td className="p-4 text-gray-700">
+                      {FormattedDate(payment.payment_date)}
+                    </td>
+                    <td className="p-4 relative">
+                      <button
+                        onClick={() => handlePaymentMenuToggle(index)}
+                        className="text-gray-500 hover:text-gray-700 "
+                      >
+                        <FaEllipsisV />
+                      </button>
+                      {openPaymentTableMenu === index && (
+                        <div className="flex absolute left-[-210px] py-1 px-2 -top-0.5 bg-white border border-gray-200  shadow-lg z-10 rounded-lg">
+                          <button
+                            onClick={() => {
+                              setSelectedPayment(payment);
+                              setPaymentDetailOpen(true);
+                              handlePaymentMenuToggle(index);
+                            }}
+                            className="block w-full px-4 py-2 text-sm text-primaryColor hover:bg-blue-100 hover:rounded-lg "
+                          >
+                            Detail
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedPayment(payment);
+                              setEditPaymentOpen(true);
+                              handlePaymentMenuToggle(index);
+                            }}
+                            className="block w-full px-4 py-2 text-sm  text-green-500 hover:bg-green-100 hover:rounded-lg"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(payment, false)}
+                            className="block w-full px-4  text-sm  text-red-500 hover:bg-red-100 hover:rounded-lg"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       )}
-                    </p>
-                    <p>ETB</p>
-                  </div>
-                </td>
-                <td className="p-4 text-gray-800"></td>
-                <td className="p-4 text-gray-800"></td>
-              </tr>
-            </tfoot>
-          </table>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr className="bg-gray-200 font-semibold">
+                  <td className="p-4 text-gray-800"></td>
+                  <td className="p-4 text-gray-800" colSpan={2}>
+                    {" "}
+                    Total
+                  </td>
+                  <td className="p-4 text-gray-800  " colSpan={2}>
+                    <div className="flex flex-row gap-1">
+                      <p>
+                        {" "}
+                        {FormattedNumber(
+                          payments.reduce(
+                            (sum, payment) => sum + parseFloat(payment.amount),
+                            0
+                          )
+                        )}
+                      </p>
+                      <p>ETB</p>
+                    </div>
+                  </td>
+                  <td className="p-4 text-gray-800"></td>
+                  <td className="p-4 text-gray-800"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="bg-white my-4 rounded-lg shadow-md grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
         <div className="border p-2 rounded-lg">
@@ -561,97 +588,99 @@ const PurchasedProductList = () => {
             </button>
           )}
         </div>
-        <div className="space-y-2 border p-2 rounded-lg">
-          <div className="flex flex-row gap-1">
-            <p>Overall Total Price amount:</p>
-            <p className="font-semibold">
-              {FormattedNumber(
-                products.reduce(
-                  (sum, product) =>
-                    sum +
-                    parseFloat(product.quantity) *
-                      parseFloat(product.purchase_price),
-                  0
-                )
-              )}
-            </p>
-            <p className="font-semibold">ETB</p>
+        {permission1 && (
+          <div className="space-y-2 border p-2 rounded-lg">
+            <div className="flex flex-row gap-1">
+              <p>Overall Total Price amount:</p>
+              <p className="font-semibold">
+                {FormattedNumber(
+                  products.reduce(
+                    (sum, product) =>
+                      sum +
+                      parseFloat(product.quantity) *
+                        parseFloat(product.purchase_price),
+                    0
+                  )
+                )}
+              </p>
+              <p className="font-semibold">ETB</p>
+            </div>
+
+            <div className="flex flex-row gap-1">
+              <p>Completed Payment:</p>
+              <p className="font-semibold">
+                {FormattedNumber(
+                  payments.reduce((sum, payment) => {
+                    if (payment.payment_type === "Paid") {
+                      return sum + parseFloat(payment.amount);
+                    }
+                    return sum;
+                  }, 0)
+                )}{" "}
+                ETB
+              </p>
+            </div>
+
+            <div className="flex flex-row gap-1">
+              <p>Loan:</p>
+              <p className="font-semibold">
+                {FormattedNumber(
+                  payments.reduce((sum, payment) => {
+                    if (payment.payment_type === "Loan") {
+                      return sum + parseFloat(payment.amount);
+                    }
+                    return sum;
+                  }, 0)
+                )}{" "}
+                ETB
+              </p>
+            </div>
+
+            {/* Payment validation status - only shows if total required > 0 */}
+            {(() => {
+              const totalPaid = payments.reduce((sum, payment) => {
+                return sum + parseFloat(payment.amount);
+              }, 0);
+
+              const totalRequired = products.reduce((sum, product) => {
+                return (
+                  sum +
+                  parseFloat(product.quantity) *
+                    parseFloat(product.purchase_price)
+                );
+              }, 0);
+
+              // Only show validation if there's an actual required payment
+              if (totalRequired > 0) {
+                const isComplete = Math.abs(totalPaid - totalRequired) < 0.01;
+
+                return (
+                  <div
+                    className={`flex items-center gap-2 ${
+                      isComplete ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {isComplete ? (
+                      <>
+                        <FaCheckCircle />
+                        <span>Payment completed Payment Data</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaTimesCircle />
+                        <span>
+                          Remaining Payment Data:{" "}
+                          {FormattedNumber(totalRequired - totalPaid)} ETB
+                        </span>
+                      </>
+                    )}
+                  </div>
+                );
+              }
+              return null;
+            })()}
           </div>
-
-          <div className="flex flex-row gap-1">
-            <p>Completed Payment:</p>
-            <p className="font-semibold">
-              {FormattedNumber(
-                payments.reduce((sum, payment) => {
-                  if (payment.payment_type === "Paid") {
-                    return sum + parseFloat(payment.amount);
-                  }
-                  return sum;
-                }, 0)
-              )}{" "}
-              ETB
-            </p>
-          </div>
-
-          <div className="flex flex-row gap-1">
-            <p>Loan:</p>
-            <p className="font-semibold">
-              {FormattedNumber(
-                payments.reduce((sum, payment) => {
-                  if (payment.payment_type === "Loan") {
-                    return sum + parseFloat(payment.amount);
-                  }
-                  return sum;
-                }, 0)
-              )}{" "}
-              ETB
-            </p>
-          </div>
-
-          {/* Payment validation status - only shows if total required > 0 */}
-          {(() => {
-            const totalPaid = payments.reduce((sum, payment) => {
-              return sum + parseFloat(payment.amount);
-            }, 0);
-
-            const totalRequired = products.reduce((sum, product) => {
-              return (
-                sum +
-                parseFloat(product.quantity) *
-                  parseFloat(product.purchase_price)
-              );
-            }, 0);
-
-            // Only show validation if there's an actual required payment
-            if (totalRequired > 0) {
-              const isComplete = Math.abs(totalPaid - totalRequired) < 0.01;
-
-              return (
-                <div
-                  className={`flex items-center gap-2 ${
-                    isComplete ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {isComplete ? (
-                    <>
-                      <FaCheckCircle />
-                      <span>Payment completed Payment Data</span>
-                    </>
-                  ) : (
-                    <>
-                      <FaTimesCircle />
-                      <span>
-                        Remaining Payment Data:{" "}
-                        {FormattedNumber(totalRequired - totalPaid)} ETB
-                      </span>
-                    </>
-                  )}
-                </div>
-              );
-            }
-            return null;
-          })()}
-        </div>
+        )}
       </div>
       <button type="button" onClick={handleBack} className="primaryBtn mt-8">
         Back

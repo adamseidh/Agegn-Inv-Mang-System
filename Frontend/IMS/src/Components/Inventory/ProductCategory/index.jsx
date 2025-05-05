@@ -30,18 +30,9 @@ import {
 } from "react-admin";
 
 // Filter component for the list
-const FilterData = (props) => (
-  <Filter {...props}>
-    <SelectInput
-      label="Complain Status"
-      source="complain_status"
-      choices={[
-        { id: "Replied", name: "Replied" },
-        { id: "Not Replied", name: "Not Replied" },
-      ]}
-    />
-  </Filter>
-);
+const ProductsCategoryFilter = [
+  <TextInput label="Search: Category Name" source="q" alwaysOn key="search" />,
+];
 
 const Category = () => {
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
@@ -92,7 +83,7 @@ const Category = () => {
           </form>
         </div>
         <div className="col-span-3">
-          <List>
+          <List filters={ProductsCategoryFilter}>
             <DatagridConfigurable
               rowClick="edit"
               bulkActionButtons={

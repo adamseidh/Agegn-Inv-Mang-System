@@ -107,13 +107,14 @@ const AddPurchase = (req, res) => {
 
           // Process payments with proper null handling
           const paymentQuery =
-            "INSERT INTO purchase_payment (purchase_id, amount,payment_type, payment_option,payment_date, pre_notification_day, bank_name,account_number,remark, payment_status , payment_image) VALUES ?";
+            "INSERT INTO purchase_payment (purchase_id, amount,payment_type, payment_option,check_number,payment_date, pre_notification_day, bank_name,account_number,remark, payment_status , payment_image) VALUES ?";
 
           const paymentValues = payments.map((payment, index) => [
             purchaseId,
             payment.amount ? Number(payment.amount) : null,
             payment.payment_type || null,
             payment.payment_option || null,
+            payment.check_number || null,
             payment.payment_date || null,
             payment.pre_notification_day || null,
             payment.bank_name || null,

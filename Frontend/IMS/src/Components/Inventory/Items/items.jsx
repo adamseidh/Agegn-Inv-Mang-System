@@ -33,6 +33,7 @@ import {
   useRecordContext,
   AutocompleteInput,
   NumberField,
+  Pagination,
 } from "react-admin";
 import { RichTextInput } from "ra-input-rich-text";
 import axios from "axios";
@@ -40,18 +41,28 @@ import { Grid } from "@mui/material";
 import NumberInputStyle from "../../../helpers/functions/numberInputStyle";
 
 const Items = () => {
+  const ProductsFilter = [
+    <TextInput label="Search: Product Name" source="q" alwaysOn key="search" />,
+  ];
   const PostListActions = () => (
     <TopToolbar>
       {/**<SelectColumnsButton /> */}
-      {/**<FilterButton /> */}
+      <FilterButton />
       <CreateButton />
       {/** <ExportButton /> */}
     </TopToolbar>
   );
+  const CustomPagination = (props) => (
+    <Pagination rowsPerPageOptions={[5, 10, 50, 100]} {...props} />
+  );
 
   return (
     <div>
-      <List actions={<PostListActions />}>
+      <List
+        filters={ProductsFilter}
+        pagination={<CustomPagination />}
+        perPage={10}
+      >
         <DatagridConfigurable
           bulkActionButtons={<BulkDeleteButton mutationMode="pessimistic" />}
           rowClick="show"

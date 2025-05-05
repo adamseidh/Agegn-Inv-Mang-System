@@ -154,6 +154,7 @@ const addSalesPayment = async (req, res) => {
       remark,
       payment_type,
       payment_option,
+      check_number,
       payment_date,
       pre_notification_day,
       bank_name,
@@ -175,10 +176,10 @@ const addSalesPayment = async (req, res) => {
 
     const query = `
       INSERT INTO sells_payment 
-      (sells_id, amount, remark, payment_type, payment_option, 
+      (sells_id, amount, remark, payment_type, payment_option, check_number,
        payment_date, pre_notification_day, bank_name, account_number, 
        payment_status, payment_image) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.query(
@@ -189,6 +190,7 @@ const addSalesPayment = async (req, res) => {
         remark,
         payment_type,
         payment_option,
+        check_number,
         payment_date,
         pre_notification_day,
         bank_name,
@@ -214,6 +216,7 @@ const addSalesPayment = async (req, res) => {
             remark,
             payment_type,
             payment_option,
+            check_number,
             payment_date,
             pre_notification_day,
             bank_name,
@@ -239,6 +242,7 @@ const updateSalesPayment = (req, res) => {
     remark,
     payment_type,
     payment_option,
+    check_number,
     payment_date,
     pre_notification_day,
     payment_status,
@@ -264,6 +268,7 @@ const updateSalesPayment = (req, res) => {
       remark = ?,
       payment_type = ?,
       payment_option = ?,
+      check_number=?,
       payment_date = ?,
       pre_notification_day = ?,
       bank_name = ?,
@@ -282,6 +287,7 @@ const updateSalesPayment = (req, res) => {
       remark,
       payment_type,
       payment_option,
+      check_number,
       payment_date,
       pre_notification_day,
       bank_name,

@@ -28,21 +28,13 @@ import {
   useRefresh,
   BulkDeleteButton,
   getMutationMode,
+  Pagination,
 } from "react-admin";
 
 // Filter component for the list
-const FilterData = (props) => (
-  <Filter {...props}>
-    <SelectInput
-      label="Complain Status"
-      source="complain_status"
-      choices={[
-        { id: "Replied", name: "Replied" },
-        { id: "Not Replied", name: "Not Replied" },
-      ]}
-    />
-  </Filter>
-);
+const ProductsTypeFilter = [
+  <TextInput label="Search: Category Name" source="q" alwaysOn key="search" />,
+];
 
 const ProductType = () => {
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
@@ -70,6 +62,9 @@ const ProductType = () => {
         notify(error);
       });
   };
+  const CustomPagination = (props) => (
+    <Pagination rowsPerPageOptions={[5, 10, 50, 100, 500, 1000]} {...props} />
+  );
   return (
     <div>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
@@ -93,7 +88,11 @@ const ProductType = () => {
           </form>
         </div>
         <div className="col-span-3">
-          <List>
+          <List
+            filters={ProductsTypeFilter}
+            pagination={<CustomPagination />}
+            perPage={10}
+          >
             <DatagridConfigurable
               rowClick="edit"
               bulkActionButtons={

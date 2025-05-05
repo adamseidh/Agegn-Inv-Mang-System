@@ -85,6 +85,7 @@ const submitSale = (req, res) => {
                 payment.amount ? Number(payment.amount) : null,
                 payment.payment_type || null,
                 payment.payment_option || null,
+                payment.check_number || null,
                 payment.payment_date || null,
                 payment.pre_notification_day || null,
                 payment.bank_name || null,
@@ -99,7 +100,7 @@ const submitSale = (req, res) => {
               ]);
 
               db.query(
-                "INSERT INTO sells_payment (sells_id, amount, payment_type, payment_option, payment_date, pre_notification_day, bank_name, account_number, remark, payment_status, payment_image) VALUES ?",
+                "INSERT INTO sells_payment (sells_id, amount, payment_type, payment_option,check_number, payment_date, pre_notification_day, bank_name, account_number, remark, payment_status, payment_image) VALUES ?",
                 [paymentValues],
                 (paymentErr) => {
                   if (paymentErr) {
@@ -218,12 +219,10 @@ const updatSales = (req, res) => {
 
     Promise.all(updateProductPromises)
       .then(() => {
-        res
-          .status(200)
-          .json({
-            message: "Sales record updated successfully",
-            success: true,
-          });
+        res.status(200).json({
+          message: "Sales record updated successfully",
+          success: true,
+        });
       })
       .catch((err) => {
         res

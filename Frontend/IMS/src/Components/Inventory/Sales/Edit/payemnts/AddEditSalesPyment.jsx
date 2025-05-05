@@ -8,6 +8,7 @@ const AddPayment = ({ isOpen, close, addPayment, saleId }) => {
     remark: "",
     payment_type: "",
     payment_option: "",
+    check_number: "",
     payment_date: "",
     pre_notification_day: 3,
     bank_name: "",
@@ -40,6 +41,7 @@ const AddPayment = ({ isOpen, close, addPayment, saleId }) => {
       formData.append("payment_type", payment.payment_type);
       formData.append("serverHost", serverHost);
       formData.append("payment_option", payment.payment_option);
+      formData.append("check_number", payment.check_number);
       formData.append("payment_date", payment.payment_date);
       formData.append("pre_notification_day", payment.pre_notification_day);
       formData.append("bank_name", payment.bank_name);
@@ -69,6 +71,7 @@ const AddPayment = ({ isOpen, close, addPayment, saleId }) => {
           remark: "",
           payment_type: "",
           payment_option: "",
+          check_number: "",
           payment_date: "",
           pre_notification_day: 3,
           bank_name: "",
@@ -137,18 +140,37 @@ const AddPayment = ({ isOpen, close, addPayment, saleId }) => {
               </div>
 
               <div className="relative">
-                <input
-                  type="text"
-                  className="primaryInput peer"
-                  placeholder=" "
+                <label className="inputLabel">Payment Options</label>
+                <select
                   value={payment.payment_option}
                   onChange={(e) => handleChange(e, "payment_option")}
+                  className="primaryInput peer"
                   required
-                />
-                <label className="inputLabel">
-                  Pay by (cash, transfer, check...)
-                </label>
+                >
+                  <option value="">--Select--</option>
+                  <option value={"Cash"}>Cash</option>
+                  <option value={"Check"}>Check</option>
+                  <option value={"Transfer"}>Transfer</option>
+                </select>
               </div>
+
+              {payment.payment_option === "Check" && (
+                <div className="relative">
+                  <input
+                    type="text"
+                    className="primaryInput peer"
+                    placeholder=" "
+                    value={payment.check_number}
+                    onChange={(e) => handleChange(e, "check_number")}
+                    onWheel={(e) => {
+                      // Prevent increment/decrement using mouse wheel
+                      e.target.blur(); // Remove focus from the input to prevent changes
+                    }}
+                    required
+                  />
+                  <label className="inputLabel">Check Number</label>
+                </div>
+              )}
 
               <div className="relative">
                 <input

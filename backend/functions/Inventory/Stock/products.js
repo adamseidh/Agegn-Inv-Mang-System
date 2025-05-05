@@ -40,7 +40,7 @@ const Products = (req, res) => {
 
   let whereClause = "WHERE 1 = 1";
   if (q) {
-    whereClause += ` AND i.name LIKE '%${q}%'`;
+    whereClause += ` AND i.name LIKE '${q}%'`;
   }
 
   if (categoryId) {
