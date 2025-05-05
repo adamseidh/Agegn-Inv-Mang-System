@@ -34,7 +34,9 @@ const PurchasedProductList = () => {
   const [remark, setRemark] = useState("");
   const [productId, setProductId] = useState();
   const [originalSupplier, setOriginalSupplier] = useState(null);
+  const [invoice_number, setInvoice_number] = useState("");
   const [originalRemark, setOriginalRemark] = useState("");
+  const [originalInvoice_number, setOriginalInvoice_number] = useState("");
 
   // Delete confirmation states
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -137,9 +139,13 @@ const PurchasedProductList = () => {
         setOriginalSupplier(response.data.supplier_id);
         setRemark(response.data.remark);
         setOriginalRemark(response.data.remark);
+        setInvoice_number(response.data.invoice_number);
+        setOriginalInvoice_number(response.data.invoice_number);
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
+
+  console.log("purchase list data");
 
   const handleMenuToggle = (index) => {
     setOpenMenu(openMenu === index ? null : index);
@@ -151,6 +157,10 @@ const PurchasedProductList = () => {
 
   const handleRemarkChange = (value) => {
     setRemark(value);
+  };
+
+  const handleInvoceNumberChange = (value) => {
+    setInvoice_number(value);
   };
 
   const handlePaymentMenuToggle = (index) => {
@@ -249,7 +259,7 @@ const PurchasedProductList = () => {
 
       await axios.put(
         `${serverHost}/EditPurchase/${id}`,
-        { supplier, remark },
+        { supplier, remark, invoice_number },
         {
           headers: {
             Authorization: token ? `Bearer ${token}` : "",
@@ -261,6 +271,7 @@ const PurchasedProductList = () => {
       // Update original values after successful save
       setOriginalSupplier(supplier);
       setOriginalRemark(remark);
+      setOriginalInvoice_number(invoice_number);
     } catch (error) {
       console.error(
         "Error submitting form:",
@@ -271,7 +282,10 @@ const PurchasedProductList = () => {
   };
 
   // Check if there are changes to show the save button
-  const hasChanges = supplier !== originalSupplier || remark !== originalRemark;
+  const hasChanges =
+    supplier !== originalSupplier ||
+    remark !== originalRemark ||
+    invoice_number !== originalInvoice_number;
 
   return (
     <div className="flex-1 p-4">
@@ -567,6 +581,17 @@ const PurchasedProductList = () => {
             </select>
           </div>
 
+          <div className="relative">
+            <input
+              type="text"
+              className="primaryInput peer"
+              placeholder=" "
+              value={invoice_number}
+              onChange={(e) => handleInvoceNumberChange(e.target.value)}
+              required
+            />
+            <label className="inputLabel">Invoice Number</label>
+          </div>
           <div className="relative">
             <input
               type="text"

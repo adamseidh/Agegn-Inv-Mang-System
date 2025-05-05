@@ -31,6 +31,7 @@ const AddPurchase = () => {
   const [suppliers, setSuppliers] = useState([]);
   const [supplier, setSupplier] = useState([]);
   const [remark, setRemark] = useState([]);
+  const [invoice_number, setInvoice_number] = useState("");
 
   const navigate = useNavigate();
 
@@ -146,6 +147,7 @@ const AddPurchase = () => {
     formData.append("serverHost", serverHost);
     formData.append("supplier", supplier);
     formData.append("remark", remark);
+    formData.append("invoice_number", invoice_number);
     formData.append("userId", userId);
 
     // Append products data
@@ -569,6 +571,18 @@ const AddPurchase = () => {
                 </option>
               ))}
             </select>
+          </div>
+
+          <div className="relative">
+            <input
+              type="text"
+              className="primaryInput peer"
+              placeholder=" "
+              value={invoice_number}
+              onChange={(e) => setInvoice_number(e.target.value)}
+              required
+            />
+            <label className="inputLabel">Invoice Number</label>
           </div>
 
           <div className="relative">

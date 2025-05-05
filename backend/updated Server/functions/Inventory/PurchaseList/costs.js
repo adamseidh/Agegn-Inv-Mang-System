@@ -68,7 +68,7 @@ const PurchaseList = (req, res) => {
   const query = `
 SELECT 
   PL.*, 
-  s.name AS supplierName,u.name as user,
+  s.name AS supplierName,
   CASE 
     WHEN SUM(CASE WHEN pp.payment_status != 'Completed' THEN 1 ELSE 0 END) > 0 THEN 'Not Completed'
     ELSE 'Completed'
@@ -77,7 +77,6 @@ SELECT
 FROM purchase_list PL 
 LEFT JOIN supplier s ON PL.supplier_id = s.id 
 LEFT JOIN purchase_payment pp ON PL.id = pp.purchase_id
-LEFT JOIN users u ON PL.userId = u.id
 ${whereClause}
 GROUP BY PL.id
 ORDER BY PL.created_at DESC
@@ -85,7 +84,6 @@ LIMIT ${_limit} OFFSET ${offset}`;
 
   db.query(query, (err, results) => {
     if (err) {
-      console.log(err);
       res.status(500).json({ error: err });
     } else {
       const countQuery = `SELECT COUNT(*) AS total FROM purchase_list ${whereClause}`;
@@ -131,6 +129,41 @@ const SinglePurchaseData = (req, res) => {
     }
   });
 };
+
+const productCostList = (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+        SELECT * FROM cost_list WHERE product_id = ? ORDER BY id DESC`;
+
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    } else {
+      res.setHeader("Access-Control-Expose-Headers", "Content-Range");
+      res.json(results);
+    }
+  });
+};
+
+const deleteProductCost = (req, res) => {
+  const { id } = req.params;
+  console.log(" id", id);
+
+  const query = "DELETE FROM cost_list WHERE id = ?";
+
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Data not found" });
+    }
+
+    res.json({ message: "Data deleted successfully" });
+  });
+};
 const CreateItem = (req, res) => {
   const { name, low_level, category_id, type_id, description, serverHost } =
     req.body;
@@ -166,19 +199,18 @@ const CreateItem = (req, res) => {
   });
 };
 
-const EditPurchase = (req, res) => {
-  const { supplier, remark, invoice_number } = req.body;
+const updateProductCost = (req, res) => {
+  const { title, amount } = req.body;
   const { id } = req.params;
-  console.log("supplire", supplier);
-  console.log("remark", remark);
+  console.log(title, id, amount);
 
   const query = `
-        UPDATE purchase_list 
-        SET supplier_id = ?, remark = ?, invoice_number = ? WHERE id = ?`;
+        UPDATE cost_list 
+        SET title = ?, amount = ?
+        WHERE id = ?`;
 
-  db.query(query, [supplier, remark, invoice_number, id], (err, result) => {
+  db.query(query, [title, amount, id], (err, result) => {
     if (err) {
-      conso;
       return res.status(500).json({ error: err });
     }
 
@@ -190,51 +222,30 @@ const EditPurchase = (req, res) => {
   });
 };
 
-const deletePurchase = (req, res) => {
+const deleteItem = (req, res) => {
   const { id } = req.params;
 
-  const deleteProductQuery = "DELETE FROM product_list WHERE purchase_id = ?";
-  const deletePurchaseListQuery = "DELETE FROM purchase_list WHERE id = ?";
-  const deletePurchasePaymentQuery =
-    "DELETE FROM purchase_payment WHERE purchase_id = ?";
+  const query = "DELETE FROM items WHERE id = ?";
 
-  // First delete from sells_product
-  db.query(deleteProductQuery, [id], (err, result1) => {
+  db.query(query, [id], (err, result) => {
     if (err) {
-      return res
-        .status(500)
-        .json({ error: "Error deleting products", details: err });
+      return res.status(500).json({ error: err });
     }
 
-    // Then delete from deletePurchaseList
-    db.query(deletePurchaseListQuery, [id], (err, result2) => {
-      if (err) {
-        return res
-          .status(500)
-          .json({ error: "Error deleting order", details: err });
-      }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Data not found" });
+    }
 
-      db.query(deletePurchasePaymentQuery, [id], (err, result2) => {
-        if (err) {
-          return res
-            .status(500)
-            .json({ error: "Error deleting order", details: err });
-        }
-
-        if (result2.affectedRows === 0) {
-          return res.status(404).json({ message: "Order not found" });
-        }
-
-        res.json({ message: "data deleted successfully" });
-      });
-    });
+    res.json({ message: "Data deleted successfully" });
   });
 };
 
 module.exports = {
   PurchaseList,
   SinglePurchaseData,
+  productCostList,
+  deleteProductCost,
   CreateItem,
-  EditPurchase,
-  deletePurchase,
+  updateProductCost,
+  deleteItem,
 };

@@ -1,16 +1,7 @@
 const db = require("../../../db");
 const path = require("path");
-const { insertUserHistory } = require("../../Users/history");
 const AddPurchase = (req, res) => {
-  const {
-    supplier,
-    remark,
-    invoice_number,
-    userId,
-    serverHost,
-    products,
-    payments,
-  } = req.body;
+  const { supplier, remark, serverHost, products, payments } = req.body;
 
   console.log("Received data:", {
     supplier,
@@ -20,21 +11,12 @@ const AddPurchase = (req, res) => {
     payments,
   });
 
-  console.log("user id", userId);
-
-  // Validate required fields
-  if (!products || !Array.isArray(products) || products.length === 0) {
-    return res
-      .status(400)
-      .json({ message: "At least one product is required" });
-  }
-
   // Insert purchase
   const purchaseQuery =
-    "INSERT INTO purchase_list (remark,invoice_number,supplier_id, userId) VALUES (?,?,?,?)";
+    "INSERT INTO purchase_list (remark,supplier_id) VALUES (?,?)";
   db.query(
     purchaseQuery,
-    [remark || null, invoice_number || null, supplier || null, userId],
+    [remark || null, supplier || null],
     (err, purchaseResult) => {
       if (err) {
         console.log("err", err);
@@ -42,8 +24,6 @@ const AddPurchase = (req, res) => {
       }
 
       const purchaseId = purchaseResult.insertId;
-
-      insertUserHistory(userId, "Insert Product Purchase");
 
       // Process products with proper null handling
       const productQuery =
@@ -106,23 +86,15 @@ const AddPurchase = (req, res) => {
         }
 
         function processPayments() {
-          // Handle undefined or empty payments
-          if (!payments || !Array.isArray(payments) || payments.length === 0) {
-            return res.json({
-              message: "Purchase and products added successfully (no payments)",
-            });
-          }
-
           // Process payments with proper null handling
           const paymentQuery =
-            "INSERT INTO purchase_payment (purchase_id, amount,payment_type, payment_option,check_number,payment_date, pre_notification_day, bank_name,account_number,remark, payment_status , payment_image) VALUES ?";
+            "INSERT INTO purchase_payment (purchase_id, amount,payment_type, payment_option,payment_date, pre_notification_day, bank_name,account_number,remark, payment_status , payment_image) VALUES ?";
 
           const paymentValues = payments.map((payment, index) => [
             purchaseId,
             payment.amount ? Number(payment.amount) : null,
             payment.payment_type || null,
             payment.payment_option || null,
-            payment.check_number || null,
             payment.payment_date || null,
             payment.pre_notification_day || null,
             payment.bank_name || null,

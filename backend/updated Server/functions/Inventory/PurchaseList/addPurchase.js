@@ -2,15 +2,7 @@ const db = require("../../../db");
 const path = require("path");
 const { insertUserHistory } = require("../../Users/history");
 const AddPurchase = (req, res) => {
-  const {
-    supplier,
-    remark,
-    invoice_number,
-    userId,
-    serverHost,
-    products,
-    payments,
-  } = req.body;
+  const { supplier, remark, userId, serverHost, products, payments } = req.body;
 
   console.log("Received data:", {
     supplier,
@@ -31,10 +23,10 @@ const AddPurchase = (req, res) => {
 
   // Insert purchase
   const purchaseQuery =
-    "INSERT INTO purchase_list (remark,invoice_number,supplier_id, userId) VALUES (?,?,?,?)";
+    "INSERT INTO purchase_list (remark,supplier_id, userId) VALUES (?,?,?)";
   db.query(
     purchaseQuery,
-    [remark || null, invoice_number || null, supplier || null, userId],
+    [remark || null, supplier || null, userId],
     (err, purchaseResult) => {
       if (err) {
         console.log("err", err);

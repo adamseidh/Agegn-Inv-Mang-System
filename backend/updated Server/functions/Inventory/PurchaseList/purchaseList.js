@@ -167,18 +167,17 @@ const CreateItem = (req, res) => {
 };
 
 const EditPurchase = (req, res) => {
-  const { supplier, remark, invoice_number } = req.body;
+  const { supplier, remark } = req.body;
   const { id } = req.params;
   console.log("supplire", supplier);
   console.log("remark", remark);
 
   const query = `
         UPDATE purchase_list 
-        SET supplier_id = ?, remark = ?, invoice_number = ? WHERE id = ?`;
+        SET supplier_id = ?, remark = ? WHERE id = ?`;
 
-  db.query(query, [supplier, remark, invoice_number, id], (err, result) => {
+  db.query(query, [supplier, remark, id], (err, result) => {
     if (err) {
-      conso;
       return res.status(500).json({ error: err });
     }
 
