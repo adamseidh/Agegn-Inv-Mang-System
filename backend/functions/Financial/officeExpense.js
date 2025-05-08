@@ -1,8 +1,11 @@
 const db = require("../../db");
 const { insertUserHistory } = require("../Users/history");
 
-const otherIncome = (req, res) => {
+const officeExpenses = (req, res) => {
   let { _sort, _order, _page, _limit, q, filter, range, sort } = req.query;
+  const userId = req.query.userId;
+
+  console.log("here is user id from params", userId);
 
   // Defaults
   _sort = _sort || "id";
@@ -36,12 +39,21 @@ const otherIncome = (req, res) => {
   }
 
   let whereClause = "WHERE 1 = 1";
+  let countWhereClause = "WHERE 1 = 1";
+
+  if (userId) {
+    whereClause += ` AND OE.userId = ${userId}`;
+    countWhereClause += ` AND userId = ${userId}`;
+  }
+
   if (q) {
     whereClause += ` AND (TIN LIKE '%${q}%' OR phone LIKE '%${q}%' OR name LIKE '%${q}%')`;
+    countWhereClause += ` AND (TIN LIKE '%${q}%' OR phone LIKE '%${q}%' OR name LIKE '%${q}%')`;
   }
 
   if (payment_status) {
     whereClause += ` AND payment_status = '${payment_status}'`;
+    countWhereClause += ` AND payment_status = '${payment_status}'`;
   }
 
   if (sort) {
@@ -64,40 +76,35 @@ const otherIncome = (req, res) => {
   }
 
   const query = `
-       SELECT OI.*,u.name as createdBy FROM otherIncome OI 
-  LEFT JOIN users u ON OI.userId = u.id 
-        ${whereClause}
-        ORDER BY OI.id DESC
-        LIMIT ${_limit} OFFSET ${offset}`;
+    SELECT 
+        OE.*, 
+        (OE.amount - IFNULL(SUM(OED.amount), 0)) AS available_amount
+    FROM office_expenses OE
+    LEFT JOIN office_expense_detail OED 
+        ON OE.id = OED.office_expense_id
+    ${whereClause}
+    GROUP BY OE.id
+    ORDER BY OE.id DESC
+    LIMIT ${_limit} OFFSET ${offset}`;
 
   db.query(query, (err, results) => {
     if (err) {
+      console.log("error", err);
       res.status(500).json({ error: err });
     } else {
-      const countQuery = `SELECT COUNT(*) AS total FROM otherIncome ${whereClause}`;
+      const countQuery = `SELECT COUNT(*) AS total FROM office_expenses ${countWhereClause}`;
       db.query(countQuery, (err, countResult) => {
         if (err) {
           res.status(500).json({ error: err });
         } else {
           const total = countResult[0].total;
-
-          // Calculate the summation for each column
-          const totalRow = {
-            id: null,
-            source: "Total",
-            amount: results
-              .reduce((sum, row) => sum + parseFloat(row.amount || 0), 0)
-              .toString(),
-          };
-
-          // Append the total row to the results
-          results.push(totalRow);
+          const contentRange = `office_expenses ${offset}-${Math.min(
+            offset + _limit - 1,
+            total - 1
+          )}/${total}`;
 
           // Set headers and return the response
-          res.setHeader(
-            "Content-Range",
-            `otherIncome ${offset}-${offset + results.length}/${total}`
-          );
+          res.setHeader("Content-Range", contentRange);
           res.setHeader("Access-Control-Expose-Headers", "Content-Range");
           res.json(results);
         }
@@ -106,52 +113,85 @@ const otherIncome = (req, res) => {
   });
 };
 
-const specificCashInflows = (req, res) => {
-  const { id } = req.params;
-  const query = "SELECT * FROM cashinflows WHERE id = ?";
-  db.query(query, [id], (err, results) => {
+const officeExpenseSummary = (req, res) => {
+  const officeExpId = req.params.id;
+
+  const query = `
+    SELECT 
+        OE.*, 
+       IFNULL(SUM(OED.amount), 0) AS usedAmount
+    FROM office_expenses OE
+    LEFT JOIN office_expense_detail OED 
+        ON OE.id = OED.office_expense_id
+        WHERE OE.id = ?
+    `;
+
+  db.query(query, [officeExpId], (err, results) => {
     if (err) {
+      console.log("error", err);
       res.status(500).json({ error: err });
-    } else if (results.length === 0) {
-      res.status(404).json({ message: "Cash Inflows not found" });
     } else {
-      res.json(results[0]); // Return the trader's data
+      const countQuery = `SELECT COUNT(*) AS total FROM office_expenses `;
+      db.query(countQuery, (err, countResult) => {
+        if (err) {
+          res.status(500).json({ error: err });
+        } else {
+          // Set headers and return the response
+          res.setHeader("Access-Control-Expose-Headers", "Content-Range");
+          res.json(results);
+        }
+      });
     }
   });
 };
 
-const addOtherIncome = (req, res) => {
-  const { source, amount, userId } = req.body;
-  console.log(source, amount);
+const addOfficeExpense = (req, res) => {
+  const { reason, amount, userId } = req.body;
 
   const query = `
-  INSERT INTO otherIncome (source, amount, userId)
+  INSERT INTO office_expenses (reason, amount, userId)
   VALUES (?,?,?)
 `;
 
-  const values = [source, amount, userId];
+  const OtherExpensequery = `
+INSERT INTO otherExpense (reason, amount, userId)
+VALUES (?,?,?)
+`;
+  const values = [reason, amount, userId];
+  console.log("userd id", userId);
 
   db.query(query, values, (err, result) => {
     if (err) {
       console.log(err);
       return res.status(500).json({ error: err });
     }
-
-    insertUserHistory(userId, "Inserted other income");
+    ////
+    db.query(
+      OtherExpensequery,
+      ["office Expense", amount, userId],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ error: err });
+        }
+        insertUserHistory(userId, "Inserted Office Expense");
+      }
+    );
+    ///
     res.json({ id: result.insertId });
   });
 };
 
-const EditOtherIncome = (req, res) => {
+const EditOfficeExpense = (req, res) => {
   const { id } = req.params;
-  const { source, amount } = req.body;
+  const { reason, amount } = req.body;
 
   const query = `
-        UPDATE otherIncome 
-        SET source = ?, amount = ?
+        UPDATE office_expenses
+        SET reason = ?, amount = ?
         WHERE id = ?`;
 
-  db.query(query, [source, amount, id], (err, result) => {
+  db.query(query, [reason, amount, id], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err });
     }
@@ -164,9 +204,9 @@ const EditOtherIncome = (req, res) => {
   });
 };
 
-const showOtherIncomes = (req, res) => {
+const showOfficeExpense = (req, res) => {
   const { id } = req.params;
-  const query = `SELECT * FROM otherIncome  WHERE id = ?`;
+  const query = `SELECT * FROM office_expenses  WHERE id = ?`;
   db.query(query, [id], (err, results) => {
     if (err) {
       res.status(500).json({ error: err });
@@ -177,10 +217,10 @@ const showOtherIncomes = (req, res) => {
     }
   });
 };
-const deleteOtherIncome = (req, res) => {
+const deleteOfficeExpense = (req, res) => {
   const { id } = req.params;
 
-  const query = "DELETE FROM otherIncome WHERE id = ?";
+  const query = "DELETE FROM office_expenses WHERE id = ?";
 
   db.query(query, [id], (err, result) => {
     if (err) {
@@ -192,15 +232,15 @@ const deleteOtherIncome = (req, res) => {
       return res.status(404).json({ message: "Data not found" });
     }
 
-    res.json({ message: "Cash Inflows deleted successfully" });
+    res.json({ message: " deleted successfully" });
   });
 };
 
 module.exports = {
-  otherIncome,
-  specificCashInflows,
-  addOtherIncome,
-  EditOtherIncome,
-  showOtherIncomes,
-  deleteOtherIncome,
+  officeExpenses,
+  addOfficeExpense,
+  EditOfficeExpense,
+  showOfficeExpense,
+  deleteOfficeExpense,
+  officeExpenseSummary,
 };

@@ -68,7 +68,7 @@ const otherExpenses = (req, res) => {
           LEFT JOIN users u ON OE.userId = u.id 
 
         ${whereClause}
-        ORDER BY ${_sort} ${_order}
+        ORDER BY OE.id DESC
         LIMIT ${_limit} OFFSET ${offset}`;
 
   db.query(query, (err, results) => {

@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Admin, Resource, Layout, CustomRoutes } from "react-admin";
+import {
+  Admin,
+  Resource,
+  Layout,
+  CustomRoutes,
+  ResourceContextProvider,
+} from "react-admin";
 import { BrowserRouter, Route } from "react-router-dom";
 import { createTheme } from "@mui/material";
 import CryptoJS from "crypto-js";
@@ -78,6 +84,14 @@ import EditSales from "./Components/Inventory/Sales/Edit/editSales";
 import AddProductOnEdit from "./Components/Inventory/Sales/Edit/addProductOnEdit";
 import { SalesUpcamingPaymentsList } from "./Components/Notifications/salesUpcamingPayment";
 import { SalesReachedaymentsList } from "./Components/Notifications/salesReachedPayment";
+import {
+  EditOfficeExpense,
+  OfficeExpenses,
+} from "./Components/Financial/officeExpense";
+import {
+  EditOfficeExpenseDetail,
+  OfficeExpensesDetail,
+} from "./Components/Financial/officeExpense/officeExpenseDetail";
 
 const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
 
@@ -172,6 +186,17 @@ const App = () => {
         </CustomRoutes>
         <CustomRoutes>
           <Route path="/salesList/:id/show" element={<SalesListDetail />} />
+        </CustomRoutes>
+
+        <CustomRoutes>
+          <Route
+            path="/officeExpenses/:id/show"
+            element={
+              <ResourceContextProvider value="officeExpenseDetails">
+                <OfficeExpensesDetail />
+              </ResourceContextProvider>
+            }
+          />
         </CustomRoutes>
         <CustomRoutes>
           <Route
@@ -280,6 +305,19 @@ const App = () => {
           options={{ label: "Other Expenses" }}
           list={otherExpenses}
           edit={EditOtherExpense}
+        />
+        <Resource
+          name="officeExpenses"
+          options={{ label: "Office Expenses" }}
+          list={OfficeExpenses}
+          edit={EditOfficeExpense}
+        />
+
+        <Resource
+          name="officeExpenseDetails"
+          options={{ label: "Expense Details" }}
+          list={OfficeExpensesDetail}
+          edit={EditOfficeExpenseDetail}
         />
         <Resource
           name="items"

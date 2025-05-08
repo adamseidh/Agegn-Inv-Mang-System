@@ -27,6 +27,7 @@ import ShoppingCartSharpIcon from "@mui/icons-material/ShoppingCartSharp";
 import Shop2Icon from "@mui/icons-material/Shop2";
 import TypeSpecimenOutlinedIcon from "@mui/icons-material/TypeSpecimenOutlined";
 import InsightsIcon from "@mui/icons-material/Insights";
+import PaymentsIcon from "@mui/icons-material/Payments";
 
 import axios from "axios";
 import Permission from "../helpers/utils/permissions";
@@ -281,7 +282,7 @@ const CustomMenu = (props) => {
       )}
 
       {/*****Financial */}
-      {permission1 && (
+      {permission2 && (
         <MenuItemLink
           to="#"
           primaryText={
@@ -302,14 +303,15 @@ const CustomMenu = (props) => {
         />
       )}
       {openFinancial && permission1 && (
+        <MenuItemLink
+          to="/financialReport"
+          primaryText="Report"
+          leftIcon={<MonetizationOnIcon />} // Left Icon for Income
+          style={{ paddingLeft: 48 }}
+        />
+      )}
+      {openFinancial && permission2 && (
         <>
-          <MenuItemLink
-            to="/financialReport"
-            primaryText="Report"
-            leftIcon={<MonetizationOnIcon />} // Left Icon for Income
-            style={{ paddingLeft: 48 }}
-          />
-
           <MenuItemLink
             to="/otherIncomes"
             primaryText="Other Income"
@@ -319,7 +321,14 @@ const CustomMenu = (props) => {
           <MenuItemLink
             to="/otherExpenses"
             primaryText="Other Expense"
-            leftIcon={<ArrowUpwardIcon />} // Left Icon for Income
+            leftIcon={<ArrowUpwardIcon />} // Left Icon for Expnse
+            style={{ paddingLeft: 48 }}
+          />
+
+          <MenuItemLink
+            to="/officeExpenses"
+            primaryText="Office Expense"
+            leftIcon={<PaymentsIcon />}
             style={{ paddingLeft: 48 }}
           />
         </>

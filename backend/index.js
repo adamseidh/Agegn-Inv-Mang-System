@@ -189,6 +189,21 @@ const {
   SalesPayments,
   checkSalesPayments,
 } = require("./functions/Notifications/salesPaymentDate");
+const {
+  officeExpenses,
+  addOfficeExpense,
+  EditOfficeExpense,
+  showOfficeExpense,
+  deleteOfficeExpense,
+  officeExpenseSummary,
+} = require("./functions/Financial/officeExpense");
+const {
+  addOfficeExpenseDetail,
+  officeExpensesDetail,
+  EditOfficeExpenseDetail,
+  showOfficeExpenseDetail,
+  deleteOfficeExpenseDetail,
+} = require("./functions/Financial/officeExpnseDetail");
 
 const app = express();
 const PORT = 3000;
@@ -565,8 +580,6 @@ app.get("/purchasedProducts", purchasedProducts);
 ///Financial********************
 app.get("/otherExpenses", otherExpenses);
 
-app.get("/otherExpenses", verifyToken, otherIncome);
-
 app.post("/addotherExpenses", verifyToken, addOtherExpense);
 
 app.put("/otherExpenses/:id", verifyToken, EditOtherExpense);
@@ -576,6 +589,34 @@ app.get("/otherExpenses/:id", verifyToken, showOtherExpense);
 app.delete("/otherExpenses/:id", verifyToken, deleteOtherExpense);
 
 /// other incomes
+
+//strt of offcie expsense
+app.get("/officeExpenses", officeExpenses);
+
+app.post("/addOfficeExpenses", verifyToken, addOfficeExpense);
+
+app.put("/officeExpenses/:id", verifyToken, EditOfficeExpense);
+
+app.get("/officeExpenses/:id", verifyToken, showOfficeExpense);
+
+app.get("/officeExpenseSummary/:id", officeExpenseSummary);
+
+app.delete("/officeExpenses/:id", verifyToken, deleteOfficeExpense);
+
+/// end of offcie expenses.
+
+//office expense detail
+app.post("/addOfficeExpenseDetail", verifyToken, addOfficeExpenseDetail);
+
+app.get("/officeExpenseDetails", officeExpensesDetail);
+
+app.put("/officeExpenseDetails/:id", EditOfficeExpenseDetail);
+
+app.get("/officeExpenseDetails/:id", verifyToken, showOfficeExpenseDetail);
+
+app.delete("/officeExpenseDetails/:id", verifyToken, deleteOfficeExpenseDetail);
+
+//end of office expense detail.
 
 app.get("/otherIncomes", verifyToken, otherIncome);
 
