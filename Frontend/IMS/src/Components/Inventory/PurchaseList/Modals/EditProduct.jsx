@@ -58,20 +58,21 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
   }, []);
   const { permission1, permission2, permission3 } = Permission(role);
 
-  useEffect(() => {
+  const fetchItems = () => {
     const getToken = localStorage.getItem("token");
-    const token = JSON.parse(getToken)?.token;
+    const token = JSON.parse(getToken).token;
 
-    if (token) {
-      axios
-        .get(`${serverHost}/ItemsList`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => setItems(response.data))
-        .catch((error) => console.error("Error fetching data:", error));
-    }
+    axios
+      .get(`${serverHost}/ItemsList`, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      })
+      .then((response) => setItems(response.data))
+      .catch((error) => console.error("Error fetching data:", error));
+  };
+  useEffect(() => {
+    fetchItems();
   }, []);
 
   const handleChange = (e, field) => {
@@ -132,6 +133,32 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
     });
     close();
   };
+  const handleAddNewItem = () => {
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+
+    const width = screenWidth * 0.7;
+    const height = screenHeight * 0.8;
+
+    const left = (screenWidth - width) / 2;
+    const top = (screenHeight - height) / 2;
+
+    const newWindow = window.open(
+      `${window.location.origin}/items/create`,
+      "_blank",
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
+
+    // Add an event listener to check when the new window is closed
+    if (newWindow) {
+      const checkWindowClosed = setInterval(() => {
+        if (newWindow.closed) {
+          clearInterval(checkWindowClosed);
+          fetchItems(); // Refresh items when the window is closed
+        }
+      }, 500);
+    }
+  };
 
   if (!isOpen || !product) return null;
   return (
@@ -166,25 +193,34 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
                 Product Information
               </h4>
 
-              <div className="relative">
+              <div className="relative col-span-2">
+                <div className="flex items-center justify-center gap-2">
+                  <select
+                    value={editedProduct.item_id}
+                    onChange={(e) => handleChange(e, "item_id")}
+                    className="primaryInput peer flex-1"
+                    required
+                  >
+                    <option value="">--Select--</option>
+                    {items.map((item) => (
+                      <option
+                        key={item.id}
+                        value={item.id}
+                        selected={item.id === editedProduct.item_id}
+                      >
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={handleAddNewItem}
+                    className="primaryBtn !-mt-0.5 whitespace-nowrap"
+                  >
+                    + Product Name
+                  </button>
+                </div>
                 <label className="inputLabel">Product Name</label>
-                <select
-                  value={editedProduct.item_id}
-                  onChange={(e) => handleChange(e, "item_id")}
-                  className="primaryInput peer"
-                  required
-                >
-                  <option value="">--Select--</option>
-                  {items.map((item) => (
-                    <option
-                      key={item.id}
-                      value={item.id}
-                      selected={item.id === editedProduct.item_id}
-                    >
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               <div className="relative">

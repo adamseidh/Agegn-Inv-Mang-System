@@ -4,7 +4,7 @@ const { insertUserHistory } = require("../Users/history");
 const otherExpenses = (req, res) => {
   let { _sort, _order, _page, _limit, q, filter, range, sort } = req.query;
 
-  // Defaults
+  // Defaultsa
   _sort = _sort || "id";
   _order = _order === "desc" ? "DESC" : "ASC";
   _page = parseInt(_page, 10) || 1;

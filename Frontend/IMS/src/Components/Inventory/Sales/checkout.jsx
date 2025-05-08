@@ -98,7 +98,8 @@ function Checkout() {
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
-  useEffect(() => {
+
+  const fetchCustomers = () => {
     const getToken = localStorage.getItem("token");
     const token = JSON.parse(getToken)?.token;
 
@@ -113,7 +114,38 @@ function Checkout() {
       })
 
       .catch((error) => console.error("Error fetching data:", error));
+  };
+
+  useEffect(() => {
+    fetchCustomers();
   }, []);
+
+  const handleAddNewCustomer = () => {
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+
+    const width = screenWidth * 0.7;
+    const height = screenHeight * 0.8;
+
+    const left = (screenWidth - width) / 2;
+    const top = (screenHeight - height) / 2;
+
+    const newWindow = window.open(
+      `${window.location.origin}/customers/create`,
+      "_blank",
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
+
+    // Add an event listener to check when the new window is closed
+    if (newWindow) {
+      const checkWindowClosed = setInterval(() => {
+        if (newWindow.closed) {
+          clearInterval(checkWindowClosed);
+          fetchCustomers(); // Refresh items when the window is closed
+        }
+      }, 500);
+    }
+  };
   const handleSubmit = async () => {
     if (cart.length === 0) return;
 
@@ -311,21 +343,29 @@ function Checkout() {
                 </div>
 
                 <div className="border p-2 rounded-lg">
-                  <div className="relative">
-                    <label className="inputLabel">Customer</label>
-                    <select
-                      value={customer}
-                      onChange={(e) => setCustomer(e.target.value)}
-                      className="primaryInput peer"
-                      required
+                  <div className=" flex flex-col justify-between">
+                    <div className="relative">
+                      <label className="inputLabel">Customer</label>
+                      <select
+                        value={customer}
+                        onChange={(e) => setCustomer(e.target.value)}
+                        className="primaryInput peer"
+                        required
+                      >
+                        <option value="">--Select--</option>
+                        {customers.map((customer) => (
+                          <option key={customer.id} value={customer.id}>
+                            {customer.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      onClick={handleAddNewCustomer}
+                      className="primaryBtn"
                     >
-                      <option value="">--Select--</option>
-                      {customers.map((customer) => (
-                        <option key={customer.id} value={customer.id}>
-                          {customer.name}
-                        </option>
-                      ))}
-                    </select>
+                      New Customer
+                    </button>
                   </div>
 
                   <div className="relative">

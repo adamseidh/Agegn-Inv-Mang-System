@@ -23,6 +23,8 @@ const AddProduct = ({ isOpen, close, addProduct }) => {
   });
 
   const [role, setRole] = useState(null);
+  const [items, setItems] = useState([]);
+  const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
@@ -35,13 +37,55 @@ const AddProduct = ({ isOpen, close, addProduct }) => {
       const token = JSON.parse(storedToken).token;
 
       setRole(parsedRole);
-
       console.log("User Role:", parsedRole);
     }
+
+    fetchItems(); // Fetch items when component mounts
   }, []);
+
   const { permission1, permission2, permission3 } = Permission(role);
 
-  const [items, setItems] = useState([]);
+  const fetchItems = () => {
+    const getToken = localStorage.getItem("token");
+    const token = JSON.parse(getToken).token;
+
+    axios
+      .get(`${serverHost}/ItemsList`, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      })
+      .then((response) => setItems(response.data))
+      .catch((error) => console.error("Error fetching data:", error));
+  };
+
+  // Function to handle opening new window for adding items
+  const handleAddNewItem = () => {
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+
+    const width = screenWidth * 0.7;
+    const height = screenHeight * 0.8;
+
+    const left = (screenWidth - width) / 2;
+    const top = (screenHeight - height) / 2;
+
+    const newWindow = window.open(
+      `${window.location.origin}/items/create`,
+      "_blank",
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
+
+    // Add an event listener to check when the new window is closed
+    if (newWindow) {
+      const checkWindowClosed = setInterval(() => {
+        if (newWindow.closed) {
+          clearInterval(checkWindowClosed);
+          fetchItems(); // Refresh items when the window is closed
+        }
+      }, 500);
+    }
+  };
 
   const handleChange = (e, field) => {
     setProduct({ ...product, [field]: e.target.value });
@@ -107,21 +151,6 @@ const AddProduct = ({ isOpen, close, addProduct }) => {
     addProduct({ ...product, totalCost, sellingPrice, additionalCost });
     close();
   };
-  const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
-
-  useEffect(() => {
-    const getToken = localStorage.getItem("token");
-    const token = JSON.parse(getToken).token;
-
-    axios
-      .get(`${serverHost}/ItemsList`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      })
-      .then((response) => setItems(response.data))
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
 
   return (
     <div
@@ -154,22 +183,33 @@ const AddProduct = ({ isOpen, close, addProduct }) => {
               <h4 className=" col-span-3 font-bold text-lg">
                 Product Information
               </h4>
-              <div className="relative">
+
+              <div className="relative col-span-2">
+                <div className="flex items-center justify-center gap-2">
+                  <select
+                    value={product.item_id}
+                    onChange={(e) => handleChange(e, "item_id")}
+                    className="primaryInput peer flex-1"
+                    required
+                  >
+                    <option value="">--Select Product--</option>
+                    {items.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={handleAddNewItem}
+                    className="primaryBtn !-mt-0.5 whitespace-nowrap"
+                  >
+                    + Product Name
+                  </button>
+                </div>
                 <label className="inputLabel">Product Name</label>
-                <select
-                  value={product.item_id}
-                  onChange={(e) => handleChange(e, "item_id")}
-                  className="primaryInput peer"
-                  required
-                >
-                  <option value="">--Select--</option>
-                  {items.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
               </div>
+
               <div className="relative">
                 <input
                   type="number"

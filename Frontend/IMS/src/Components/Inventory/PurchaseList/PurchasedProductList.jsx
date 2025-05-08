@@ -78,7 +78,7 @@ const PurchasedProductList = () => {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  useEffect(() => {
+  const fetchSuppliers = () => {
     const getToken = localStorage.getItem("token");
     const token = JSON.parse(getToken)?.token;
 
@@ -90,7 +90,38 @@ const PurchasedProductList = () => {
       })
       .then((response) => setSuppliers(response.data))
       .catch((error) => console.error("Error fetching data:", error));
+  };
+
+  useEffect(() => {
+    fetchSuppliers();
   }, []);
+
+  const handleAddNewSupplier = () => {
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+
+    const width = screenWidth * 0.7;
+    const height = screenHeight * 0.8;
+
+    const left = (screenWidth - width) / 2;
+    const top = (screenHeight - height) / 2;
+
+    const newWindow = window.open(
+      `${window.location.origin}/supplier/create`,
+      "_blank",
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
+
+    // Add an event listener to check when the new window is closed
+    if (newWindow) {
+      const checkWindowClosed = setInterval(() => {
+        if (newWindow.closed) {
+          clearInterval(checkWindowClosed);
+          fetchSuppliers(); // Refresh items when the window is closed
+        }
+      }, 500);
+    }
+  };
 
   useEffect(() => {
     const getToken = localStorage.getItem("token");
@@ -564,21 +595,26 @@ const PurchasedProductList = () => {
 
       <div className="bg-white my-4 rounded-lg shadow-md grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
         <div className="border p-2 rounded-lg">
-          <div className="relative">
-            <label className="inputLabel">Supplier</label>
-            <select
-              value={supplier}
-              onChange={(e) => supplierChange(e.target.value)}
-              className="primaryInput peer"
-              required
-            >
-              <option value="">--Select--</option>
-              {suppliers.map((supplier) => (
-                <option key={supplier.id} value={supplier.id}>
-                  {supplier.name}
-                </option>
-              ))}
-            </select>
+          <div className=" flex flex-col justify-between">
+            <div className="relative ">
+              <label className="inputLabel">Supplier</label>
+              <select
+                value={supplier}
+                onChange={(e) => supplierChange(e.target.value)}
+                className="primaryInput peer"
+                required
+              >
+                <option value="">--Select--</option>
+                {suppliers.map((supplier) => (
+                  <option key={supplier.id} value={supplier.id}>
+                    {supplier.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button onClick={handleAddNewSupplier} className="primaryBtn !mb-6">
+              New Supplier
+            </button>
           </div>
 
           <div className="relative">
@@ -592,6 +628,7 @@ const PurchasedProductList = () => {
             />
             <label className="inputLabel">Invoice Number</label>
           </div>
+
           <div className="relative">
             <input
               type="text"
