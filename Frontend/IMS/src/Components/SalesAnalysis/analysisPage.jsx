@@ -200,7 +200,7 @@ const AnalysisPage = () => {
     );
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%", marginTop: "20px" }}>
       <Typography variant="h4" gutterBottom>
         Sales Analysis
       </Typography>

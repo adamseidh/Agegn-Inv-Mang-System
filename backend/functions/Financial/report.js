@@ -2,7 +2,7 @@ const db = require("../../db");
 
 const soldProducts = (req, res) => {
   const query = `
-      SELECT sp.*, sl.created_at as salesDate, i.name as productName, pl.overall_cost as productCost 
+      SELECT sp.*, sl.created_at as salesDate, i.name as productName, pl.overall_cost*sp.quantity as productCost 
       FROM sells_product sp
       LEFT JOIN sells_list sl ON sp.sells_id = sl.id
       LEFT JOIN product_list pl ON sp.product_id = pl.id

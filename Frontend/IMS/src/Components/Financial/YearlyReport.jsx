@@ -6,6 +6,7 @@ import {
   endOfYear,
   isWithinInterval,
 } from "date-fns";
+import { FormattedNumber } from "../../helpers/functions/FormattedNumber";
 
 const YearlyReport = ({
   purchasedProducts,
@@ -46,8 +47,8 @@ const YearlyReport = ({
 
   const overallIncome = salesTotal + incomeTotal;
   const overallExpense = purchasesTotal + expensesTotal;
-  const netProfit = overallIncome - overallExpense;
-
+  const netCashFlow = overallIncome - overallExpense;
+  const netProfit = incomeTotal - expensesTotal + salesProfit;
   return (
     <div className="mt-6">
       <h2 className="text-xl font-semibold mb-4">
@@ -56,26 +57,58 @@ const YearlyReport = ({
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded shadow border-l-4 border-blue-500">
-          <h3 className="font-medium text-gray-700">Total Sales</h3>
-          <p className="text-2xl font-bold">{salesTotal.toFixed(2)}</p>
-        </div>
         <div className="bg-white p-4 rounded shadow border-l-4 border-green-500">
           <h3 className="font-medium text-gray-700">Total Income</h3>
-          <p className="text-2xl font-bold">{overallIncome.toFixed(2)}</p>
+          <p className="text-2xl font-bold">{FormattedNumber(overallIncome)}</p>
+          <p className="text-sm text-gray-500">
+            Sales: {FormattedNumber(salesTotal)}
+          </p>
+          <p className="text-sm text-gray-500">
+            Other: {FormattedNumber(incomeTotal)}
+          </p>
         </div>
         <div className="bg-white p-4 rounded shadow border-l-4 border-red-500">
           <h3 className="font-medium text-gray-700">Total Expenses</h3>
-          <p className="text-2xl font-bold">{overallExpense.toFixed(2)}</p>
+          <p className="text-2xl font-bold">
+            {FormattedNumber(overallExpense)}
+          </p>
+          <p className="text-sm text-gray-500">
+            Purchases: {FormattedNumber(purchasesTotal)}
+          </p>
+          <p className="text-sm text-gray-500">
+            Other: {FormattedNumber(expensesTotal)}
+          </p>
         </div>
         <div className="bg-white p-4 rounded shadow border-l-4 border-purple-500">
+          <h3 className="font-medium text-gray-700">Net Cash flow</h3>
+          <p
+            className={`text-2xl font-bold ${
+              netCashFlow >= 0 ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {FormattedNumber(netCashFlow)}
+          </p>
+          <p className="text-sm text-gray-500">
+            From Product: {FormattedNumber(salesTotal - purchasesTotal)}
+          </p>
+          <p className="text-sm text-gray-500">
+            From Other: {FormattedNumber(incomeTotal - expensesTotal)}
+          </p>
+        </div>
+        <div className="bg-white p-4 rounded shadow border-l-4 border-blue-500">
           <h3 className="font-medium text-gray-700">Net Profit</h3>
           <p
             className={`text-2xl font-bold ${
               netProfit >= 0 ? "text-green-600" : "text-red-600"
             }`}
           >
-            {netProfit.toFixed(2)}
+            {FormattedNumber(netProfit)}
+          </p>
+          <p className="text-sm text-gray-500">
+            From Sales: {FormattedNumber(salesProfit)}
+          </p>
+          <p className="text-sm text-gray-500">
+            From Other: {FormattedNumber(incomeTotal - expensesTotal)}
           </p>
         </div>
       </div>
@@ -121,10 +154,10 @@ const YearlyReport = ({
                     Total
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {salesTotal.toFixed(2)}
+                    {FormattedNumber(salesTotal)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {salesProfit.toFixed(2)}
+                    {FormattedNumber(salesProfit)}
                   </td>
                 </tr>
               </tbody>
@@ -163,7 +196,7 @@ const YearlyReport = ({
                     Total
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {purchasesTotal.toFixed(2)}
+                    {FormattedNumber(purchasesTotal)}
                   </td>
                 </tr>
               </tbody>
@@ -202,7 +235,7 @@ const YearlyReport = ({
                     Total
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {incomeTotal.toFixed(2)}
+                    {FormattedNumber(incomeTotal)}
                   </td>
                 </tr>
               </tbody>
@@ -241,7 +274,7 @@ const YearlyReport = ({
                     Total
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {expensesTotal.toFixed(2)}
+                    {FormattedNumber(expensesTotal)}
                   </td>
                 </tr>
               </tbody>

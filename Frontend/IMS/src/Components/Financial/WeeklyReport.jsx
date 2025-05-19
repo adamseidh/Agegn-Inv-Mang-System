@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import { format, startOfWeek, addDays, isSameDay } from "date-fns";
+import { FormattedNumber } from "../../helpers/functions/FormattedNumber";
 
 const WeeklyReport = ({
   purchasedProducts,
@@ -21,6 +22,8 @@ const WeeklyReport = ({
       return isSameDay(itemDate, days[activeDay]);
     });
   };
+
+  console.log("sold products:", soldProducts);
 
   const dayPurchases = filterByDay(purchasedProducts, "purchase_date");
   const daySales = filterByDay(soldProducts, "salesDate");
@@ -43,7 +46,8 @@ const WeeklyReport = ({
 
   const overallIncome = salesTotal + incomeTotal;
   const overallExpense = purchasesTotal + expensesTotal;
-  const netProfit = overallIncome - overallExpense;
+  const netCashFlow = overallIncome - overallExpense;
+  const netProfit = incomeTotal - expensesTotal + salesProfit;
 
   return (
     <div className="mt-6">
@@ -120,10 +124,10 @@ const WeeklyReport = ({
                           Total
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {salesTotal.toFixed(2)}
+                          {FormattedNumber(salesTotal)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {salesProfit.toFixed(2)}
+                          {FormattedNumber(salesProfit)}
                         </td>
                       </tr>
                     </tbody>
@@ -177,7 +181,7 @@ const WeeklyReport = ({
                           Total
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {purchasesTotal.toFixed(2)}
+                          {FormattedNumber(purchasesTotal)}
                         </td>
                       </tr>
                     </tbody>
@@ -216,7 +220,7 @@ const WeeklyReport = ({
                           Total
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {incomeTotal.toFixed(2)}
+                          {FormattedNumber(incomeTotal)}
                         </td>
                       </tr>
                     </tbody>
@@ -255,7 +259,7 @@ const WeeklyReport = ({
                           Total
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {expensesTotal.toFixed(2)}
+                          {FormattedNumber(expensesTotal)}
                         </td>
                       </tr>
                     </tbody>
@@ -266,45 +270,62 @@ const WeeklyReport = ({
               {/* Summary Section */}
               <div className="bg-gray-100 p-4 rounded-lg">
                 <h3 className="text-lg font-semibold mb-4">Daily Summary</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="bg-white p-4 rounded shadow">
                     <h4 className="font-medium text-gray-700">Income</h4>
                     <p className="text-2xl font-bold text-green-600">
-                      {overallIncome.toFixed(2)}
+                      {FormattedNumber(overallIncome)}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Sales: {salesTotal.toFixed(2)}
+                      Sales: {FormattedNumber(salesTotal)}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Other: {incomeTotal.toFixed(2)}
+                      Other: {FormattedNumber(incomeTotal)}
                     </p>
                   </div>
                   <div className="bg-white p-4 rounded shadow">
                     <h4 className="font-medium text-gray-700">Expenses</h4>
                     <p className="text-2xl font-bold text-red-600">
-                      {overallExpense.toFixed(2)}
+                      {FormattedNumber(overallExpense)}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Purchases: {purchasesTotal.toFixed(2)}
+                      Purchases: {FormattedNumber(purchasesTotal)}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Other: {expensesTotal.toFixed(2)}
+                      Other: {FormattedNumber(expensesTotal)}
                     </p>
                   </div>
                   <div className="bg-white p-4 rounded shadow">
-                    <h4 className="font-medium text-gray-700">Profit</h4>
+                    <h4 className="font-medium text-gray-700">Net Cash Flow</h4>
+                    <p
+                      className={`text-2xl font-bold ${
+                        netCashFlow >= 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {FormattedNumber(netCashFlow)}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      From Product:{" "}
+                      {FormattedNumber(salesTotal - purchasesTotal)}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      From Other: {FormattedNumber(incomeTotal - expensesTotal)}
+                    </p>
+                  </div>
+                  <div className="bg-white p-4 rounded shadow">
+                    <h4 className="font-medium text-gray-700">Net Profit</h4>
                     <p
                       className={`text-2xl font-bold ${
                         netProfit >= 0 ? "text-green-600" : "text-red-600"
                       }`}
                     >
-                      {netProfit.toFixed(2)}(Diff.)
+                      {FormattedNumber(netProfit)}
                     </p>
                     <p className="text-sm text-gray-500">
-                      From Sales: {salesProfit.toFixed(2)} (Price-cost)
+                      From Sales: {FormattedNumber(salesProfit)}
                     </p>
                     <p className="text-sm text-gray-500">
-                      From Other: {(incomeTotal - expensesTotal).toFixed(2)}
+                      From Other: {FormattedNumber(incomeTotal - expensesTotal)}
                     </p>
                   </div>
                 </div>

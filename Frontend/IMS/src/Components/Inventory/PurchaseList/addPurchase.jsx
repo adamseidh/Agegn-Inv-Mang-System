@@ -122,6 +122,9 @@ const AddPurchase = () => {
   const handlePaymentMenuToggle = (index) => {
     setOpenPaymentTableMenu(openPaymentTableMenu === index ? null : index);
   };
+  const supplierChange = (value) => {
+    setSupplier(value);
+  };
 
   const addProduct = (product) => {
     setProducts([...products, product]);
