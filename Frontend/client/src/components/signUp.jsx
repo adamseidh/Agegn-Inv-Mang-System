@@ -8,10 +8,12 @@ const SignUp = ({ isOpen, close }) => {
 
   const [formData, setFormData] = useState({
     name: "",
+    customer_name: "",
     phone: "",
     email: "",
     website: "",
     region: "",
+    zone: "",
     wereda_or_city: "",
     kebele: "",
     tin: "",
@@ -41,12 +43,13 @@ const SignUp = ({ isOpen, close }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.name) newErrors.name = "Name is required";
+    if (!formData.customer_name) newErrors.name = "Company Name is required";
+    if (!formData.name) newErrors.name = "Your Name is required";
     if (!formData.phone) newErrors.phone = "Phone is required";
     if (!formData.region) newErrors.region = "Region is required";
     if (!formData.wereda_or_city)
       newErrors.wereda_or_city = "Wereda/City is required";
-    if (!formData.kebele) newErrors.kebele = "Kebele is required";
+    if (!formData.zone) newErrors.zone = "Zone is required";
     if (formData.pin.length < 4)
       newErrors.pin = "PIN must be at least 4 digits";
     if (formData.pin !== formData.confirmPin)
@@ -137,27 +140,46 @@ const SignUp = ({ isOpen, close }) => {
           )}
 
           {/* Basic Information */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Full Name*
-            </label>
-            <input
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md ${
-                errors.name
-                  ? "border-red-500"
-                  : "border-gray-300 focus:border-primaryColor"
-              }`}
-              placeholder="Full Name"
-            />
-            {errors.name && (
-              <p className="text-red-500 text-xs">{errors.name}</p>
-            )}
-          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Company Name*
+              </label>
+              <input
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  errors.name
+                    ? "border-red-500"
+                    : "border-gray-300 focus:border-primaryColor"
+                }`}
+                placeholder="Company Name"
+              />
+              {errors.name && (
+                <p className="text-red-500 text-xs">{errors.name}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Full Name*
+              </label>
+              <input
+                name="customer_name"
+                value={formData.customer_name}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  errors.customer_name
+                    ? "border-red-500"
+                    : "border-gray-300 focus:border-primaryColor"
+                }`}
+                placeholder="Your Name"
+              />
+              {errors.customer_name && (
+                <p className="text-red-500 text-xs">{errors.customer_name}</p>
+              )}
+            </div>
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Phone Number*
@@ -191,10 +213,6 @@ const SignUp = ({ isOpen, close }) => {
                 placeholder="Email"
               />
             </div>
-          </div>
-
-          {/* Address Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Region*
@@ -217,6 +235,26 @@ const SignUp = ({ isOpen, close }) => {
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
+                Zone
+              </label>
+              <input
+                name="zone"
+                value={formData.zone}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  errors.zone
+                    ? "border-red-500"
+                    : "border-gray-300 focus:border-primaryColor"
+                }`}
+                placeholder="zone"
+              />
+              {errors.zone && (
+                <p className="text-red-500 text-xs">{errors.zone}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
                 Wereda/City*
               </label>
               <input
@@ -234,12 +272,9 @@ const SignUp = ({ isOpen, close }) => {
                 <p className="text-red-500 text-xs">{errors.wereda_or_city}</p>
               )}
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Kebele*
+                Kebele
               </label>
               <input
                 name="kebele"
@@ -269,10 +304,6 @@ const SignUp = ({ isOpen, close }) => {
                 placeholder="Website"
               />
             </div>
-          </div>
-
-          {/* Business Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 TIN Number
@@ -298,49 +329,49 @@ const SignUp = ({ isOpen, close }) => {
                 placeholder="Letter Number"
               />
             </div>
-          </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Create PIN* (4+ digits)
+              </label>
+              <input
+                name="pin"
+                type="password"
+                value={formData.pin}
+                onChange={handleChange}
+                maxLength="6"
+                className={`w-full px-3 py-2 border rounded-md ${
+                  errors.pin
+                    ? "border-red-500"
+                    : "border-gray-300 focus:border-primaryColor"
+                }`}
+                placeholder="Enter PIN"
+              />
+              {errors.pin && (
+                <p className="text-red-500 text-xs">{errors.pin}</p>
+              )}
+            </div>
 
-          {/* Security Information */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Create PIN* (4+ digits)
-            </label>
-            <input
-              name="pin"
-              type="password"
-              value={formData.pin}
-              onChange={handleChange}
-              maxLength="6"
-              className={`w-full px-3 py-2 border rounded-md ${
-                errors.pin
-                  ? "border-red-500"
-                  : "border-gray-300 focus:border-primaryColor"
-              }`}
-              placeholder="Enter PIN"
-            />
-            {errors.pin && <p className="text-red-500 text-xs">{errors.pin}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Confirm PIN*
-            </label>
-            <input
-              name="confirmPin"
-              type="password"
-              value={formData.confirmPin}
-              onChange={handleChange}
-              maxLength="6"
-              className={`w-full px-3 py-2 border rounded-md ${
-                errors.confirmPin
-                  ? "border-red-500"
-                  : "border-gray-300 focus:border-primaryColor"
-              }`}
-              placeholder="Confirm PIN"
-            />
-            {errors.confirmPin && (
-              <p className="text-red-500 text-xs">{errors.confirmPin}</p>
-            )}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Confirm PIN*
+              </label>
+              <input
+                name="confirmPin"
+                type="password"
+                value={formData.confirmPin}
+                onChange={handleChange}
+                maxLength="6"
+                className={`w-full px-3 py-2 border rounded-md ${
+                  errors.confirmPin
+                    ? "border-red-500"
+                    : "border-gray-300 focus:border-primaryColor"
+                }`}
+                placeholder="Confirm PIN"
+              />
+              {errors.confirmPin && (
+                <p className="text-red-500 text-xs">{errors.confirmPin}</p>
+              )}
+            </div>
           </div>
 
           <div className="pt-4">

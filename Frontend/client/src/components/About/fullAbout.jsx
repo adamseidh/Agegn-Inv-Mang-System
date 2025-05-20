@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  FaUsers,
   FaMicroscope,
   FaHospital,
   FaTools,
@@ -10,32 +9,21 @@ import {
   FaHeart,
   FaShieldAlt,
   FaClinicMedical,
+  FaUserTie,
 } from "react-icons/fa";
 
 import Logo from "../../assets/Logo.jpg";
 import ShardBanner from "../shared/sharedBanner";
 
 export default function FullAbout() {
-  const teamMembers = [
-    {
-      name: "Liyat",
-      role: "CEO & Founder",
-      specialization: "Biomedical Engineering",
-      image: "assets/team/team.jpg",
-    },
-    {
-      name: "Eng. Selamawit Assefa",
-      role: "Technical Director",
-      specialization: "Medical Equipment Maintenance",
-      image: "assets/team/team.jpg",
-    },
-    {
-      name: "Dr. Yohannes Mekonnen",
-      role: "Clinical Specialist",
-      specialization: "Laboratory Diagnostics",
-      image: "assets/team/team.jpg",
-    },
-  ];
+  const founder = {
+    name: "Liyat Temesgen",
+    role: "Founder & CEO",
+    specialization: "Biomedical Engineering",
+    description:
+      "With extensive experience in Biomedical Engineering, Liyat Temesgen established Agegn General Biomedical Engineering to revolutionize healthcare technology in Ethiopia. ",
+    image: "assets/team/22.png",
+  };
 
   const coreValues = [
     {
@@ -87,12 +75,12 @@ export default function FullAbout() {
               Agegn General Biomedical Engineering
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Established in 2023, Agegn Biomedical is Ethiopia's premier
-              provider of medical equipment, laboratory reagents, and biomedical
-              engineering services. We specialize in installation, maintenance,
-              and technical support for hospitals and diagnostic centers
-              nationwide, ensuring healthcare providers have access to reliable,
-              cutting-edge technology.
+              Founded by Liyat Temesgen in 2023, Agegn Biomedical is Ethiopia's
+              premier provider of medical equipment, laboratory reagents, and
+              biomedical engineering services. We specialize in installation,
+              maintenance, and technical support for hospitals and diagnostic
+              centers nationwide, ensuring healthcare providers have access to
+              reliable, cutting-edge technology.
             </p>
           </div>
           <div className="rounded-xl overflow-hidden shadow-2xl border-4 border-white">
@@ -134,36 +122,37 @@ export default function FullAbout() {
         </div>
       </section>
 
-      {/* Team Section - Medical Professionals */}
+      {/* Founder Section */}
       <section className="py-16 px-4 md:px-8 bg-white">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
-            <FaUsers className="inline-block mr-3 text-primaryColor" />
-            Our Expert Team
+            About Founder
           </h2>
           <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
-            Certified biomedical engineers and clinical specialists dedicated to
-            healthcare technology
+            The visionary behind Agegn General Biomedical Engineering
           </p>
-          <div className="grid md:grid-cols-3 gap-8">
-            {teamMembers.map((member, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all border border-gray-100"
-              >
-                <div className="w-40 h-40 rounded-full mx-auto mb-6 overflow-hidden border-4 border-primaryColor bg-gray-100">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h3 className="text-xl font-bold text-gray-800">
-                  {member.name}
-                </h3>
-                <p className="text-primaryColor font-medium">{member.role}</p>
-              </div>
-            ))}
+          <div className="flex flex-col md:flex-row items-center justify-center gap-12 bg-gray-50 p-8 rounded-2xl shadow-inner">
+            <div className="w-64 h-64 rounded-full bg-gradient-to-br from-gray-950 to-gray-600 overflow-hidden border-4 border-primaryColor shadow-lg">
+              <img
+                src={founder.image}
+                alt={founder.name}
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div className="text-left max-w-2xl space-y-4">
+              <h3 className="text-2xl font-bold text-gray-800">
+                {founder.name}
+              </h3>
+              <p className="text-primaryColor font-medium text-xl">
+                {founder.role}
+              </p>
+              <p className="text-gray-700 font-medium">
+                {founder.specialization}
+              </p>
+              <p className="text-gray-600 leading-relaxed">
+                {founder.description}
+              </p>
+            </div>
           </div>
         </div>
       </section>

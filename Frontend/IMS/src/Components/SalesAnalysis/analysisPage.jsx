@@ -242,13 +242,13 @@ const AnalysisPage = () => {
                   </TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     {activeTab === "revenue"
-                      ? "Total Revenue"
+                      ? "Total Revenue (ETB)"
                       : "Quantity Sold"}
                   </TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     {activeTab === "revenue"
                       ? "Quantity Sold"
-                      : "Total Revenue"}
+                      : "Total Revenue (ETB)"}
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -260,13 +260,13 @@ const AnalysisPage = () => {
                       <TableCell>{product.productName}</TableCell>
                       <TableCell align="right">
                         {activeTab === "revenue"
-                          ? `$${product.totalPrice.toFixed(2)}`
+                          ? `${product.totalPrice.toFixed(2)}`
                           : product.quantity}
                       </TableCell>
                       <TableCell align="right">
                         {activeTab === "revenue"
                           ? product.quantity
-                          : `$${product.totalPrice.toFixed(2)}`}
+                          : `${product.totalPrice.toFixed(2)}`}
                       </TableCell>
                     </TableRow>
                   ))
@@ -303,7 +303,7 @@ const AnalysisPage = () => {
               />
               <YAxis />
               <Tooltip
-                formatter={(value) => [`$${value}`, "Total Sales"]}
+                formatter={(value) => [`${value} ETB`, "Total Sales"]}
                 labelFormatter={(date) =>
                   format(new Date(date), "MMMM do, yyyy")
                 }

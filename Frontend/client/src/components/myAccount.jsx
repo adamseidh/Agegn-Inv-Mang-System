@@ -12,6 +12,7 @@ import {
   FaMapMarkerAlt,
   FaIdCard,
   FaSignOutAlt,
+  FaHospital,
 } from "react-icons/fa";
 import axios from "axios";
 import CryptoJS from "crypto-js";
@@ -137,7 +138,7 @@ const MyAccount = () => {
     sessionStorage.removeItem("customerId");
 
     // Redirect to home page and reload
-    navigate("/login");
+    navigate("/");
     window.location.reload();
   };
 
@@ -229,12 +230,25 @@ const MyAccount = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Full Name
+                          Company Name
                         </label>
                         <input
                           type="text"
                           name="name"
                           value={formData.name || ""}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primaryColor focus:border-primaryColor"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Full Name
+                        </label>
+                        <input
+                          type="text"
+                          name="customer_name"
+                          value={formData.customer_name || ""}
                           onChange={handleInputChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primaryColor focus:border-primaryColor"
                           required
@@ -285,6 +299,19 @@ const MyAccount = () => {
                           type="text"
                           name="region"
                           value={formData.region || ""}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primaryColor focus:border-primaryColor"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Zone
+                        </label>
+                        <input
+                          type="text"
+                          name="zone"
+                          value={formData.zone || ""}
                           onChange={handleInputChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primaryColor focus:border-primaryColor"
                           required
@@ -347,6 +374,7 @@ const MyAccount = () => {
                         <input
                           type="password"
                           name="pin"
+                          city
                           value={pin || ""}
                           onChange={(e) => setPin(e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primaryColor focus:border-primaryColor"
@@ -374,11 +402,24 @@ const MyAccount = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="flex items-start space-x-4">
                       <div className="p-3 bg-blue-50 rounded-full text-primaryColor">
-                        <FaUser className="text-xl" />
+                        <FaHospital className="text-xl" />
                       </div>
                       <div>
                         <h3 className="font-medium text-gray-900">
                           {profile.name}
+                        </h3>
+                        <p className="text-gray-500">Company Name</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-4">
+                      <div className="p-3 bg-blue-50 rounded-full text-primaryColor">
+                        <FaUser className="text-xl" />
+                      </div>
+
+                      <div>
+                        <h3 className="font-medium text-gray-900">
+                          {profile.customer_name}
                         </h3>
                         <p className="text-gray-500">Full Name</p>
                       </div>
@@ -428,6 +469,7 @@ const MyAccount = () => {
                         <h3 className="font-medium text-gray-900">
                           {[
                             profile.region,
+                            profile.zone,
                             profile.wereda_or_city,
                             profile.kebele,
                           ]

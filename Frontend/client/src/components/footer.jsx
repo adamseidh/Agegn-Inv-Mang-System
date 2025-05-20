@@ -7,6 +7,7 @@ import {
   FaEnvelope,
   FaMapMarkerAlt,
   FaClinicMedical,
+  FaTelegram,
 } from "react-icons/fa";
 import Logo from "../assets/Logo.jpg";
 import { Link } from "react-router-dom";
@@ -51,6 +52,12 @@ export default function Footer() {
               equipment, and laboratory reagents in Ethiopia.
             </p>
             <div className="flex space-x-4">
+              <a
+                href="https://t.me/agegnleyubiomedical"
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                <FaTelegram className="text-2xl" />
+              </a>
               <a
                 href="#"
                 className="text-gray-300 hover:text-white transition-colors"
