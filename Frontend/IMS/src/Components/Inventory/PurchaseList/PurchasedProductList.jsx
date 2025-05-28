@@ -83,7 +83,7 @@ const PurchasedProductList = () => {
     const token = JSON.parse(getToken)?.token;
 
     axios
-      .get(`${serverHost}/supplier`, {
+      .get(`${serverHost}/supplierList`, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
         },
@@ -604,7 +604,6 @@ const PurchasedProductList = () => {
                 className="primaryInput peer"
                 required
               >
-                <option value="">--Select--</option>
                 {suppliers.map((supplier) => (
                   <option key={supplier.id} value={supplier.id}>
                     {supplier.name}

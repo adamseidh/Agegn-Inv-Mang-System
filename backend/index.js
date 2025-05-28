@@ -40,6 +40,7 @@ const {
   EditCategory,
   AddCategory,
   deleteCategory,
+  CategoryList,
 } = require("./functions/Inventory/category");
 const {
   ProductType,
@@ -47,6 +48,7 @@ const {
   EditProductType,
   AddProductType,
   deleteProductType,
+  ProductTypeList,
 } = require("./functions/Inventory/type");
 const {
   Items,
@@ -64,6 +66,7 @@ const {
   AddSupplier,
   deleteSupplier,
   SupplierCount,
+  SupplierList,
 } = require("./functions/Inventory/suppliers");
 const {
   PurchaseList,
@@ -330,6 +333,8 @@ app.post("/addCategory", verifyToken, AddCategory);
 
 //delete category
 app.delete("/category/:id", verifyToken, deleteCategory);
+
+app.get("/categoryList", CategoryList);
 //**** End of Category ******/
 //******************************
 
@@ -353,6 +358,9 @@ app.post("/productType", verifyToken, AddProductType);
 
 //delete productType
 app.delete("/productType/:id", verifyToken, deleteProductType);
+
+app.get("/productTypeList", ProductTypeList);
+
 //**** End of ProductType ******/
 //******************************
 
@@ -396,6 +404,7 @@ app.post("/supplier", verifyToken, AddSupplier);
 
 //delete supplier
 app.delete("/supplier/:id", verifyToken, deleteSupplier);
+app.get("/supplierList", SupplierList);
 //**** End of supplier ******/
 //******************************
 

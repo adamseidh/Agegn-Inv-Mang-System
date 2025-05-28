@@ -185,7 +185,7 @@ const CreateItem = (props) => {
     const token = JSON.parse(gettoken).token;
 
     axios
-      .get(`${serverHost}/category`, {
+      .get(`${serverHost}/categoryList`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -205,7 +205,7 @@ const CreateItem = (props) => {
     const token = JSON.parse(gettoken).token;
 
     axios
-      .get(`${serverHost}/productType`, {
+      .get(`${serverHost}/productTypeList`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -390,7 +390,7 @@ const EditItem = (props) => {
     const token = JSON.parse(gettoken).token;
 
     axios
-      .get(`${serverHost}/category`, {
+      .get(`${serverHost}/categoryList`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -410,7 +410,7 @@ const EditItem = (props) => {
     const token = JSON.parse(gettoken).token;
 
     axios
-      .get(`${serverHost}/productType`, {
+      .get(`${serverHost}/productTypeList`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -429,6 +429,85 @@ const EditItem = (props) => {
     fetchCategory();
     fetchType();
   }, []);
+
+  const AddCategoryButton = () => {
+    const { onClose } = useCreateSuggestionContext();
+
+    const handleClick = () => {
+      // Use window.location.origin to get the current domain
+
+      const screenWidth = window.screen.width;
+      const screenHeight = window.screen.height;
+
+      const width = screenWidth * 0.7;
+      const height = screenHeight * 1;
+
+      const left = (screenWidth - width) / 2;
+      const top = (screenHeight - height) / 2;
+
+      const newWindow = window.open(
+        `${window.location.origin}/category`,
+        "_blank",
+        `width=${width},height=${height},left=${left},top=${top}`
+      );
+
+      // Add an event listener to check when the new window is closed
+      if (newWindow) {
+        const checkWindowClosed = setInterval(() => {
+          if (newWindow.closed) {
+            clearInterval(checkWindowClosed);
+            fetchCategory(); // Refresh categories when the window is closed
+          }
+        }, 500);
+      }
+
+      onClose(); // Close the dropdown after click
+    };
+
+    return (
+      <Button onClick={handleClick} color="primary">
+        Add New Category
+      </Button>
+    );
+  };
+  const AddTypeButton = () => {
+    const { onClose } = useCreateSuggestionContext();
+
+    const handleClick = () => {
+      const screenWidth = window.screen.width;
+      const screenHeight = window.screen.height;
+
+      const width = screenWidth * 0.7;
+      const height = screenHeight * 1;
+
+      const left = (screenWidth - width) / 2;
+      const top = (screenHeight - height) / 2;
+
+      const newWindow = window.open(
+        `${window.location.origin}/productType`,
+        "_blank",
+        `width=${width},height=${height},left=${left},top=${top}`
+      );
+
+      // Add an event listener to check when the new window is closed
+      if (newWindow) {
+        const checkWindowClosed = setInterval(() => {
+          if (newWindow.closed) {
+            clearInterval(checkWindowClosed);
+            fetchType();
+          }
+        }, 500);
+      }
+
+      onClose(); // Close the dropdown after click
+    };
+
+    return (
+      <Button onClick={handleClick} color="primary">
+        Add New Type
+      </Button>
+    );
+  };
   // Function to handle the form submission
   const handleSubmit = async (data) => {
     const formData = new FormData();
@@ -516,6 +595,11 @@ const EditItem = (props) => {
                 name: data.name,
               }))}
               fullWidth
+              create={<AddCategoryButton />}
+              onCreate={(filter) => {
+                // This will trigger the AddCategoryButton
+                return filter;
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -524,6 +608,10 @@ const EditItem = (props) => {
               source="type_id"
               choices={type.map((data) => ({ id: data.id, name: data.name }))}
               fullWidth
+              create={<AddTypeButton />}
+              onCreate={(filter) => {
+                return filter;
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
