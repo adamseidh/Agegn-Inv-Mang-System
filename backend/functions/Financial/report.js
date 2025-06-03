@@ -108,7 +108,7 @@ const purchasedProducts = (req, res) => {
     _sort = "CAST(capital AS DECIMAL)";
   }
 
-  const query = `SELECT pl.*, i.name as productName, pl.overall_cost*pl.quantity as productCostAmount,
+  const query = `SELECT pl.*, i.name as productName, pl.purchase_price*pl.quantity as productCostAmount,
        (SELECT payment_status FROM purchase_payment WHERE purchase_id = pl.purchase_id LIMIT 1) as payment_status,
        (SELECT amount FROM purchase_payment WHERE purchase_id = pl.purchase_id LIMIT 1) as paymentAmount
 FROM product_list pl

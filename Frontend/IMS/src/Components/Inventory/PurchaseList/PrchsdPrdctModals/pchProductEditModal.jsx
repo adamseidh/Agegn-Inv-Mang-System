@@ -178,6 +178,10 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
 
   const updateCost = async (index, cost) => {
     const productId = editedProduct.id;
+    const additionalCosts = editedProduct.costs
+      .reduce((sum, c) => sum + parseFloat(c.amount || 0), 0)
+      .toFixed(2);
+    const overallCost = calculateTotalCost();
     const sellingPrice = calculateSellingPrice();
 
     if (!cost.title || !cost.amount) {
@@ -193,7 +197,14 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
         // Update existing cost
         await axios.put(
           `${serverHost}/updateProductCost/${cost.id}`,
-          { title: cost.title, amount: cost.amount, productId, sellingPrice },
+          {
+            title: cost.title,
+            amount: cost.amount,
+            productId,
+            sellingPrice,
+            additionalCosts,
+            overallCost,
+          },
           {
             headers: {
               Authorization: token ? `Bearer ${token}` : "",
@@ -204,7 +215,13 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
         // Create new cost
         const response = await axios.post(
           `${serverHost}/createProductCost`,
-          { ...cost, product_id: editedProduct.id, sellingPrice },
+          {
+            ...cost,
+            product_id: editedProduct.id,
+            sellingPrice,
+            additionalCosts,
+            overallCost,
+          },
           {
             headers: {
               Authorization: token ? `Bearer ${token}` : "",
@@ -247,14 +264,25 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
         const getToken = localStorage.getItem("token");
         const token = JSON.parse(getToken)?.token;
 
-        // First remove the cost from the state to get the updated selling price
+        // First remove the cost from the state to get the updated values
         const newCosts = editedProduct.costs.filter((_, i) => i !== index);
         const updatedProduct = { ...editedProduct, costs: newCosts };
+
+        const additionalCosts = newCosts
+          .reduce((sum, c) => sum + parseFloat(c.amount || 0), 0)
+          .toFixed(2);
+        const overallCost = calculateTotalCost(updatedProduct);
         const sellingPrice = calculateSellingPrice(updatedProduct);
 
         if (cost.id) {
           // Delete cost from database if it has an ID (existing cost)
           await axios.delete(`${serverHost}/deleteProductCost/${cost.id}`, {
+            data: {
+              productId,
+              sellingPrice,
+              additionalCosts,
+              overallCost,
+            },
             headers: {
               Authorization: token ? `Bearer ${token}` : "",
             },
@@ -263,7 +291,11 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
           // Update the product price with the new selling price
           await axios.put(
             `${serverHost}/updateProductPrice/${productId}`,
-            { sellingPrice },
+            {
+              sellingPrice,
+              additionalCosts,
+              overallCost,
+            },
             {
               headers: {
                 Authorization: token ? `Bearer ${token}` : "",
@@ -289,14 +321,16 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
           return newChanged;
         });
 
-        // Call the parent component's update function with the new selling price
+        // Call the parent component's update function with the new values
         updateProduct({
           ...updatedProduct,
-          totalCost: calculateTotalCost(updatedProduct),
+          totalCost: overallCost,
           selling_price: sellingPrice,
+          additional_cost: additionalCosts,
+          overall_cost: overallCost,
         });
       } catch (error) {
-        console.error("Error deleting cost:", error);
+        console.log("Error deleting cost:", error);
         alert("Failed to delete cost");
       }
     }
@@ -418,6 +452,8 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
         ...editedProduct,
         totalCost: calculateTotalCost(),
         selling_price: sellingPrice,
+        additional_cost: additionalCost,
+        overall_cost: overallCost,
       });
 
       alert("Product updated successfully!");
