@@ -36,6 +36,7 @@ import {
   Pagination,
   CreateContextProvider,
   useCreateSuggestionContext,
+  required,
 } from "react-admin";
 import { RichTextInput } from "ra-input-rich-text";
 import axios from "axios";
@@ -131,11 +132,34 @@ const CreateItem = (props) => {
   const dataProvider = useDataProvider();
   const [category, setCategory] = useState([]);
   const [type, setType] = useState([]);
+  const [errors, setErrors] = useState({});
 
   const userId = JSON.parse(localStorage.getItem("userId")).userId;
 
+  // Function to validate form data
+  const validateForm = (data) => {
+    const newErrors = {};
+
+    if (!data.name) newErrors.name = "Product Name is required";
+    if (!data.unit) newErrors.unit = "Measurement Unit is required";
+    if (!data.category_id)
+      newErrors.category_id = "Product Category is required";
+    if (!data.type_id) newErrors.type_id = "Product Type is required";
+    if (data.low_level === undefined || data.low_level === null)
+      newErrors.low_level = "Low Level Quantity is required";
+    if (!data.image || !data.image.rawFile)
+      newErrors.image = "Article Image is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   // Function to handle the form submission
   const handleSubmit = async (data) => {
+    if (!validateForm(data)) {
+      return;
+    }
+
     const formData = new FormData();
 
     formData.append("name", data.name);
@@ -144,7 +168,7 @@ const CreateItem = (props) => {
     formData.append("category_id", data.category_id);
     formData.append("type_id", data.type_id);
     formData.append("low_level", data.low_level);
-    formData.append("description", data.description);
+    formData.append("description", data.description || "");
     formData.append("userId", userId);
 
     console.log("Form data while creating:", formData);
@@ -229,8 +253,6 @@ const CreateItem = (props) => {
     const { onClose } = useCreateSuggestionContext();
 
     const handleClick = () => {
-      // Use window.location.origin to get the current domain
-
       const screenWidth = window.screen.width;
       const screenHeight = window.screen.height;
 
@@ -246,17 +268,16 @@ const CreateItem = (props) => {
         `width=${width},height=${height},left=${left},top=${top}`
       );
 
-      // Add an event listener to check when the new window is closed
       if (newWindow) {
         const checkWindowClosed = setInterval(() => {
           if (newWindow.closed) {
             clearInterval(checkWindowClosed);
-            fetchCategory(); // Refresh categories when the window is closed
+            fetchCategory();
           }
         }, 500);
       }
 
-      onClose(); // Close the dropdown after click
+      onClose();
     };
 
     return (
@@ -265,6 +286,7 @@ const CreateItem = (props) => {
       </Button>
     );
   };
+
   const AddTypeButton = () => {
     const { onClose } = useCreateSuggestionContext();
 
@@ -284,7 +306,6 @@ const CreateItem = (props) => {
         `width=${width},height=${height},left=${left},top=${top}`
       );
 
-      // Add an event listener to check when the new window is closed
       if (newWindow) {
         const checkWindowClosed = setInterval(() => {
           if (newWindow.closed) {
@@ -294,7 +315,7 @@ const CreateItem = (props) => {
         }, 500);
       }
 
-      onClose(); // Close the dropdown after click
+      onClose();
     };
 
     return (
@@ -322,11 +343,13 @@ const CreateItem = (props) => {
                 name: data.name,
               }))}
               fullWidth
+              validate={[required()]}
               create={<AddCategoryButton />}
               onCreate={(filter) => {
-                // This will trigger the AddCategoryButton
                 return filter;
               }}
+              error={errors.category_id}
+              helperText={errors.category_id}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -335,17 +358,36 @@ const CreateItem = (props) => {
               source="type_id"
               choices={type.map((data) => ({ id: data.id, name: data.name }))}
               fullWidth
+              validate={[required()]}
               create={<AddTypeButton />}
               onCreate={(filter) => {
                 return filter;
               }}
+              error={errors.type_id}
+              helperText={errors.type_id}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextInput source="name" label="Product Name" required fullWidth />
+            <TextInput
+              source="name"
+              label="Product Name"
+              required
+              fullWidth
+              validate={[required()]}
+              error={errors.name}
+              helperText={errors.name}
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextInput source="unit" label="Measurement Unit" fullWidth />
+            <TextInput
+              source="unit"
+              label="Measurement Unit"
+              fullWidth
+              required
+              validate={[required()]}
+              error={errors.unit}
+              helperText={errors.unit}
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
             <NumberInput
@@ -353,6 +395,10 @@ const CreateItem = (props) => {
               label="Low Level Quantity"
               sx={NumberInputStyle}
               fullWidth
+              required
+              validate={[required()]}
+              error={errors.low_level}
+              helperText={errors.low_level}
             />
           </Grid>
 
@@ -372,9 +418,15 @@ const CreateItem = (props) => {
           label="Article Image"
           accept="image/*"
           required
+          validate={[required()]}
         >
           <ImageField source="src" title="title" />
         </ImageInput>
+        {errors.image && (
+          <Typography color="error" variant="body2">
+            {errors.image}
+          </Typography>
+        )}
       </SimpleForm>
     </Create>
   );

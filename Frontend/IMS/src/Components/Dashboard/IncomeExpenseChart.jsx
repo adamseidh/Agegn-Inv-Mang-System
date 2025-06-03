@@ -72,11 +72,6 @@ const IncomeExpenseChart = () => {
       subDays(lastDay, i)
     ).reverse();
 
-    // Filter completed purchases only
-    const completedPurchases = purchasedProducts.filter(
-      (item) => item.payment_status === "Completed"
-    );
-
     // Create daily totals
     const chartData = dateRange.map((date) => {
       // Filter sales for this day
@@ -98,12 +93,13 @@ const IncomeExpenseChart = () => {
       );
 
       // Filter purchases for this day (only completed)
-      const dailyPurchases = completedPurchases.filter(
+      const dailyPurchases = purchasedProducts.filter(
         (item) =>
           item.purchase_date && isSameDay(new Date(item.purchase_date), date)
       );
       const purchasesTotal = dailyPurchases.reduce(
-        (sum, item) => sum + (parseFloat(item.overall_cost) || 0),
+        (sum, item) =>
+          sum + (parseFloat(item.overall_cost * item.quantity) || 0),
         0
       );
 

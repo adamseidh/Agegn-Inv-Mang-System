@@ -29,7 +29,7 @@ const AddPurchase = () => {
   const [openPaymentTableMenu, setOpenPaymentTableMenu] = useState(null); // toggle for payment table
   const [items, setItems] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
-  const [supplier, setSupplier] = useState([]);
+  const [supplier, setSupplier] = useState();
   const [remark, setRemark] = useState([]);
   const [invoice_number, setInvoice_number] = useState("");
 
@@ -172,6 +172,16 @@ const AddPurchase = () => {
     return Item ? Item.unit : "Unknown";
   };
   const handleSubmit = async (e) => {
+    if (!supplier || supplier === "") {
+      alert("Please Select a Supplier!");
+      return;
+    }
+
+    if (!products || products.length === 0) {
+      alert("Please Add at least one Product!");
+      return;
+    }
+
     const userId = JSON.parse(localStorage.getItem("userId")).userId;
     e.preventDefault();
 

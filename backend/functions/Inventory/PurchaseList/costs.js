@@ -146,6 +146,41 @@ const productCostList = (req, res) => {
   });
 };
 
+const createProductCost = (req, res) => {
+  const { product_id, title, amount, sellingPrice } = req.body;
+
+  const query =
+    "INSERT INTO cost_list (product_id, title, amount) VALUES (?, ?, ?)";
+
+  db.query(query, [product_id, title, amount], (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ error: err });
+    }
+
+    //at this point update the product selling price .
+    const updateProductQuery = `
+        UPDATE product_list
+        SET selling_price = ?
+        WHERE id = ?`;
+    db.query(
+      updateProductQuery,
+      [sellingPrice, product_id],
+      (err, updateResult) => {
+        if (err) {
+          return res.status(500).json({ error: err });
+        }
+
+        if (updateResult.affectedRows === 0) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+      }
+    );
+
+    res.json({ id: result.insertId });
+  });
+};
+
 const deleteProductCost = (req, res) => {
   const { id } = req.params;
   console.log(" id", id);
@@ -163,6 +198,30 @@ const deleteProductCost = (req, res) => {
 
     res.json({ message: "Data deleted successfully" });
   });
+};
+
+const UpdateProductPrice = (req, res) => {
+  // this is to modify the product selling price when the additional cost is removed.
+  const id = req.params.id;
+  const { sellingPrice } = req.body;
+
+  console.log("selling price did", id);
+  console.log("sellingprice", sellingPrice);
+
+  const updateProductQuery = `
+        UPDATE product_list
+        SET selling_price = ?
+        WHERE id = ?`;
+  db.query(updateProductQuery, [sellingPrice, id], (err, updateResult) => {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+
+    if (updateResult.affectedRows === 0) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+  });
+  res.json({ message: "Product price updated successfully" });
 };
 const CreateItem = (req, res) => {
   const { name, low_level, category_id, type_id, description, serverHost } =
@@ -200,7 +259,7 @@ const CreateItem = (req, res) => {
 };
 
 const updateProductCost = (req, res) => {
-  const { title, amount } = req.body;
+  const { title, amount, productId, sellingPrice } = req.body;
   const { id } = req.params;
   console.log(title, id, amount);
 
@@ -218,12 +277,32 @@ const updateProductCost = (req, res) => {
       return res.status(404).json({ message: "Data not found" });
     }
 
+    //at this point update the product selling price .
+    const updateProductQuery = `
+        UPDATE product_list
+        SET selling_price = ?
+        WHERE id = ?`;
+    db.query(
+      updateProductQuery,
+      [sellingPrice, productId],
+      (err, updateResult) => {
+        if (err) {
+          return res.status(500).json({ error: err });
+        }
+
+        if (updateResult.affectedRows === 0) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+      }
+    );
+
     res.json({ id: result.insertId });
   });
 };
 
 const deleteItem = (req, res) => {
   const { id } = req.params;
+  const { productId, sellingPrice } = req.body;
 
   const query = "DELETE FROM items WHERE id = ?";
 
@@ -235,6 +314,24 @@ const deleteItem = (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Data not found" });
     }
+
+    const updateProductQuery = `
+        UPDATE product_list
+        SET selling_price = ?
+        WHERE id = ?`;
+    db.query(
+      updateProductQuery,
+      [sellingPrice, productId],
+      (err, updateResult) => {
+        if (err) {
+          return res.status(500).json({ error: err });
+        }
+
+        if (updateResult.affectedRows === 0) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+      }
+    );
 
     res.json({ message: "Data deleted successfully" });
   });
@@ -248,4 +345,6 @@ module.exports = {
   CreateItem,
   updateProductCost,
   deleteItem,
+  createProductCost,
+  UpdateProductPrice,
 };

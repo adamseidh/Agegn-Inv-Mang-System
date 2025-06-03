@@ -213,10 +213,6 @@ const deleteSales = (req, res) => {
             .json({ error: "Error deleting order", details: err });
         }
 
-        if (result2.affectedRows === 0) {
-          return res.status(404).json({ message: "Order not found" });
-        }
-
         res.json({ message: "data deleted successfully" });
       });
     });

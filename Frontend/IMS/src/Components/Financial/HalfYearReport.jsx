@@ -49,7 +49,10 @@ const HalfYearReport = ({
   const salesTotal = calculateTotals(halfYearSales, "total_price");
   const salesCost = calculateTotals(halfYearSales, "productCost");
   const salesProfit = salesTotal - salesCost;
-  const purchasesTotal = calculateTotals(halfYearPurchases, "overall_cost");
+  const purchasesTotal = calculateTotals(
+    halfYearPurchases,
+    "productCostAmount"
+  );
   const incomeTotal = calculateTotals(halfYearIncome, "amount");
   const expensesTotal = calculateTotals(halfYearExpenses, "amount");
 
@@ -196,7 +199,7 @@ const HalfYearReport = ({
                       {purchase.productName || "N/A"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {purchase.overall_cost}
+                      {purchase.productCostAmount}
                     </td>
                   </tr>
                 ))}

@@ -147,6 +147,11 @@ function Checkout() {
     }
   };
   const handleSubmit = async () => {
+    if (!customer) {
+      setError("Please select a customer.");
+      return;
+    }
+
     if (cart.length === 0) return;
 
     setIsSubmitting(true);
@@ -224,12 +229,6 @@ function Checkout() {
       </div>
       {/* Checkout Content */}
       <div className="container mx-auto p-6">
-        {error && (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
-            <p>{error}</p>
-          </div>
-        )}
-
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Product List */}
           <div className="lg:w-3/5">
@@ -497,6 +496,11 @@ function Checkout() {
                     </div>
                     {/**end of payment section */}
                   </>
+                )}
+                {error && (
+                  <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
+                    <p>{error}</p>
+                  </div>
                 )}
                 <button
                   onClick={handleSubmit}

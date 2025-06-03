@@ -38,7 +38,7 @@ const MonthlyReport = ({
   const salesTotal = calculateTotals(monthSales, "total_price");
   const salesCost = calculateTotals(monthSales, "productCost");
   const salesProfit = salesTotal - salesCost;
-  const purchasesTotal = calculateTotals(monthPurchases, "overall_cost");
+  const purchasesTotal = calculateTotals(monthPurchases, "productCostAmount");
   const incomeTotal = calculateTotals(monthIncome, "amount");
   const expensesTotal = calculateTotals(monthExpenses, "amount");
 
@@ -197,7 +197,7 @@ const MonthlyReport = ({
                         {purchase.productName || "N/A"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {purchase.overall_cost}
+                        {purchase.productCostAmount}
                       </td>
                     </tr>
                   ))

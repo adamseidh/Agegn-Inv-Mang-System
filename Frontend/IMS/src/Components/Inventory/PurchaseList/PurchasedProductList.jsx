@@ -350,9 +350,7 @@ const PurchasedProductList = () => {
                 <th className="p-4 text-left text-white font-semibold">
                   Total
                 </th>
-                <th className="p-4 text-left text-white font-semibold">
-                  Price
-                </th>
+
                 <th className="p-4 text-left text-white font-semibold">
                   Expire Date
                 </th>
@@ -381,9 +379,7 @@ const PurchasedProductList = () => {
                         parseFloat(product.purchase_price)
                     )}
                   </td>
-                  <td className="p-4 text-gray-700">
-                    {FormattedNumber(product.selling_price)}
-                  </td>
+
                   <td className="p-4 text-gray-700">
                     {FormattedDate(product.expire_date)}
                   </td>
@@ -431,7 +427,6 @@ const PurchasedProductList = () => {
             </tbody>
             <tfoot>
               <tr className="bg-gray-200 font-semibold">
-                <td className="p-4 text-gray-800"></td>
                 <td className="p-4 text-gray-800"></td>
                 <td className="p-4 text-gray-800" colSpan={2}>
                   {" "}

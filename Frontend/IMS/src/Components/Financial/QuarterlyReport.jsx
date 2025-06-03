@@ -44,7 +44,7 @@ const QuarterlyReport = ({
   const salesTotal = calculateTotals(quarterSales, "total_price");
   const salesCost = calculateTotals(quarterSales, "productCost");
   const salesProfit = salesTotal - salesCost;
-  const purchasesTotal = calculateTotals(quarterPurchases, "overall_cost");
+  const purchasesTotal = calculateTotals(quarterPurchases, "productCostAmount");
   const incomeTotal = calculateTotals(quarterIncome, "amount");
   const expensesTotal = calculateTotals(quarterExpenses, "amount");
 
@@ -191,7 +191,7 @@ const QuarterlyReport = ({
                       {purchase.productName || "N/A"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {purchase.overall_cost}
+                      {purchase.productCostAmount}
                     </td>
                   </tr>
                 ))}

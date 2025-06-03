@@ -41,7 +41,7 @@ const YearlyReport = ({
   const salesTotal = calculateTotals(yearSales, "total_price");
   const salesCost = calculateTotals(yearSales, "productCost");
   const salesProfit = salesTotal - salesCost;
-  const purchasesTotal = calculateTotals(yearPurchases, "overall_cost");
+  const purchasesTotal = calculateTotals(yearPurchases, "productCostAmount");
   const incomeTotal = calculateTotals(yearIncome, "amount");
   const expensesTotal = calculateTotals(yearExpenses, "amount");
 
@@ -187,7 +187,7 @@ const YearlyReport = ({
                       {purchase.productName || "N/A"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {purchase.overall_cost}
+                      {purchase.productCostAmount}
                     </td>
                   </tr>
                 ))}

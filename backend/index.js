@@ -93,6 +93,8 @@ const {
   productCostList,
   deleteProductCost,
   updateProductCost,
+  createProductCost,
+  UpdateProductPrice,
 } = require("./functions/Inventory/PurchaseList/costs");
 const {
   Products,
@@ -490,12 +492,16 @@ app.delete("/deleteProduct/:id", verifyToken, deleteProduct);
 //delete purchase payment data
 app.delete("/deletePayment/:id", verifyToken, deletePayment);
 
+app.post("/createProductCost", verifyToken, createProductCost);
 //costs under a product.
 app.get("/productCostList/:id", verifyToken, productCostList);
 
 app.delete("/deleteProductCost/:id", verifyToken, deleteProductCost);
 
 app.put("/updateProductCost/:id", updateProductCost);
+
+//update product price . this is used when the addtional cost is modified.
+app.put("/updateProductPrice/:id", UpdateProductPrice);
 
 // add purchase List
 app.post(

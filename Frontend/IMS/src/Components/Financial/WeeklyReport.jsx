@@ -24,6 +24,7 @@ const WeeklyReport = ({
   };
 
   console.log("sold products:", soldProducts);
+  console.log("purchased productcs", purchasedProducts);
 
   const dayPurchases = filterByDay(purchasedProducts, "purchase_date");
   const daySales = filterByDay(soldProducts, "salesDate");
@@ -40,7 +41,7 @@ const WeeklyReport = ({
   const salesTotal = calculateTotals(daySales, "total_price");
   const salesCost = calculateTotals(daySales, "productCost");
   const salesProfit = salesTotal - salesCost;
-  const purchasesTotal = calculateTotals(dayPurchases, "overall_cost");
+  const purchasesTotal = calculateTotals(dayPurchases, "productCostAmount");
   const incomeTotal = calculateTotals(dayIncome, "amount");
   const expensesTotal = calculateTotals(dayExpenses, "amount");
 
@@ -146,7 +147,7 @@ const WeeklyReport = ({
                           Product
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Price
+                          Purchase Cost
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Quantity
@@ -163,13 +164,13 @@ const WeeklyReport = ({
                             {purchase.productName || "N/A"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {purchase.purchase_price}
+                            {purchase.overall_cost}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {purchase.quantity}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {purchase.overall_cost}
+                            {purchase.productCostAmount}
                           </td>
                         </tr>
                       ))}
