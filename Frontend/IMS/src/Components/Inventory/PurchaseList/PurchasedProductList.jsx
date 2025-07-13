@@ -134,6 +134,7 @@ const PurchasedProductList = () => {
         },
       })
       .then((response) => {
+        console.log("Purchased Product List Data:", response.data);
         setProducts(response.data);
       })
       .catch((error) => console.error("Error fetching data:", error));

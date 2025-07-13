@@ -191,9 +191,14 @@ const updateProduct = (req, res) => {
 
   const image = req.file ? req.file.filename : null;
   const { id } = req.params;
-  console.log("her ei s id", id);
 
   const fullPath = image ? `${serverHost}/images/${image}` : oldImage;
+
+  const processedExpireDate = expire_date === "" ? null : expire_date;
+  const processedPurchaseDate =
+    purchase_date === ""
+      ? new Date().toISOString().split("T")[0]
+      : purchase_date;
 
   const query = `
   UPDATE product_list
@@ -220,8 +225,8 @@ const updateProduct = (req, res) => {
       brand,
       description,
       quantity,
-      expire_date,
-      purchase_date,
+      processedExpireDate,
+      processedPurchaseDate,
       serial_number,
       batch_number,
       purchase_price,
