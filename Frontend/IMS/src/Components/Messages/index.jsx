@@ -57,7 +57,7 @@ const Messages = () => {
           <TextField source="name" label=" Sender Name" />
           <TextField source="phone" label="Sender Phone" />
           <TextField source="email" label="Sender Email" />
-          <TruncatedTextField source="content" label="Message Content" />
+          <TruncatedTextField source="message_content" label="Message Content" />
           <StatusField source="message_status" />
           {/* Add Action column with Edit button */}
         </DatagridConfigurable>
@@ -73,7 +73,7 @@ const ShowMessage = (props) => {
         <TextField source="name" label=" Sender Name" />
         <TextField source="phone" label="Sender Phone" />
         <TextField source="email" label="Sender Email" />
-        <TextField source="content" label="Message Content" />
+        <TextField source="message_content" label="Message Content" />
       </SimpleShowLayout>
     </Show>
   );

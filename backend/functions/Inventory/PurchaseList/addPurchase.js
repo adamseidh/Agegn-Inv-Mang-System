@@ -19,6 +19,7 @@ const AddPurchase = (req, res) => {
     products,
     payments,
   });
+  console.log('Prout list', products);
 
   console.log("user id", userId);
 
@@ -61,8 +62,8 @@ const AddPurchase = (req, res) => {
         product.serial_number || null,
         product.batch_number || null,
         product.purchase_price ? Number(product.purchase_price) : null,
-        product.additional_cost ? Number(product.additional_cost) : 0, // Default to 0 if not provided
-        product.overall_cost ? Number(product.overall_cost) : null,
+        product.additional_cost ? Number(product.additional_cost) : null, // Default to 0 if not provided
+        product.overall_cost ? Number(product.overall_cost) : 0,
         product.selling_price ? Number(product.selling_price) : null,
         req.files["productsImages"] && req.files["productsImages"][index]
           ? `${serverHost}/images/${path.basename(

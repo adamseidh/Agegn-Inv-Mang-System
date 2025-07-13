@@ -21,6 +21,7 @@ const addProduct = async (req, res) => {
     const {
       item_id,
       brand,
+      serial_number,
       quantity,
       expire_date,
       purchase_date,
@@ -40,9 +41,9 @@ const addProduct = async (req, res) => {
     // Insert product
     const productQuery = `
       INSERT INTO product_list 
-      (item_id,purchase_id, brand, quantity, expire_date, purchase_date, batch_number, 
+      (item_id,purchase_id, brand, serial_number, quantity, expire_date, purchase_date, batch_number, 
        description, purchase_price, additional_cost, overall_cost, selling_price, image) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
     `;
 
     const imagePath = req.file ? `${req.file.filename}` : null;
@@ -52,17 +53,17 @@ const addProduct = async (req, res) => {
       [
         item_id,
         purchase_id,
-        brand,
-
-        quantity,
-        expire_date,
-        purchase_date,
-        batch_number,
-        description,
-        purchase_price,
-        additional_cost,
-        overall_cost,
-        selling_price,
+        brand || null,
+        serial_number || null,
+        quantity ? Number(quantity) : null,
+        expire_date || null,,
+        purchase_date || new Date().toISOString().slice(0, 19).replace("T", " "), ,
+        batch_number || null,
+        description || null,
+        purchase_price ? Number(purchase_price) : null,
+        additional_cost ? Number(additional_cost) : null, // Default to 0 if not provided
+        overall_cost ? Number(overall_cost) : 0,
+        selling_price   ? Number(selling_price) : null,
         imagePath,
       ],
       (err, productResult) => {
@@ -189,16 +190,23 @@ const updateProduct = (req, res) => {
     oldImage,
   } = req.body;
 
+  // Debug: Log the incoming request body
+  console.log('Request body:', req.body);
+
   const image = req.file ? req.file.filename : null;
   const { id } = req.params;
 
   const fullPath = image ? `${serverHost}/images/${image}` : oldImage;
 
   const processedExpireDate = expire_date === "" ? null : expire_date;
-  const processedPurchaseDate =
-    purchase_date === ""
-      ? new Date().toISOString().split("T")[0]
-      : purchase_date;
+  const processedPurchaseDate = purchase_date === "" 
+    ? new Date().toISOString().split("T")[0] 
+    : purchase_date;
+
+  // Ensure serial_number is a single value
+  const cleanSerialNumber = Array.isArray(serial_number) 
+    ? serial_number[0] 
+    : serial_number;
 
   const query = `
   UPDATE product_list
@@ -218,37 +226,39 @@ const updateProduct = (req, res) => {
     image = ?
   WHERE id = ?`;
 
-  db.query(
-    query,
-    [
-      item_id,
-      brand,
-      description,
-      quantity,
-      processedExpireDate,
-      processedPurchaseDate,
-      serial_number,
-      batch_number,
-      purchase_price,
-      additional_cost,
-      overall_cost,
-      selling_price,
-      fullPath,
-      id,
-    ],
-    (err, result) => {
-      if (err) {
-        console.log(err);
-        return res.status(500).json({ error: err });
-      }
+  const values = [
+    item_id,
+    brand || null,
+    description || null,
+    quantity ? Number(quantity) : null,
+    processedExpireDate,
+    processedPurchaseDate,
+    cleanSerialNumber || null,  // Use the cleaned serial number
+    batch_number || null,
+    purchase_price ? Number(purchase_price) : null,
+    additional_cost ? Number(additional_cost) : 0, // Default to 0 if not provided
+    overall_cost ? Number(overall_cost) : 0,
+    selling_price ? Number(selling_price) : null,
+    fullPath,
+    id,
+  ];
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Data not found" });
-      }
+  // Debug: Log the query and values
+  console.log('Query:', query);
+  console.log('Values:', values);
 
-      res.json({ id: result.insertId });
+  db.query(query, values, (err, result) => {
+    if (err) {
+      console.log('Database error:', err);
+      return res.status(500).json({ error: err.message });
     }
-  );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Data not found" });
+    }
+
+    res.json({ success: true, id: result.insertId });
+  });
 };
 
 const deleteProduct = (req, res) => {

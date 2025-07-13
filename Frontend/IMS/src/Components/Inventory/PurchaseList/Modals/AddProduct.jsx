@@ -14,6 +14,8 @@ const AddProduct = ({ isOpen, close, addProduct }) => {
     expire_date: "",
     purchase_date: "",
     batch_number: "",
+    serial_number: "",
+
     description: "",
     itemCost: "",
     profitPercent: 10,
@@ -258,6 +260,7 @@ const AddProduct = ({ isOpen, close, addProduct }) => {
                   placeholder=" "
                   value={product.purchase_date}
                   onChange={(e) => handleChange(e, "purchase_date")}
+                  required
                 />
                 <label className="inputLabel">Purchase Date</label>
               </div>

@@ -149,47 +149,52 @@ const addOfficeExpense = (req, res) => {
   const { reason, amount, userId } = req.body;
 
   const query = `
-  INSERT INTO office_expenses (reason, amount, userId)
-  VALUES (?,?,?)
-`;
+    INSERT INTO office_expenses (reason, amount, userId)
+    VALUES (?, ?, ?)
+  `;
 
-  const OtherExpensequery = `
-INSERT INTO otherExpense (reason, amount, userId)
-VALUES (?,?,?)
-`;
   const values = [reason, amount, userId];
-  console.log("userd id", userId);
+  console.log("user id", userId);
 
   db.query(query, values, (err, result) => {
     if (err) {
       console.log(err);
       return res.status(500).json({ error: err });
     }
-    ////
-    db.query(
-      OtherExpensequery,
-      ["office Expense", amount, userId],
-      (err, result) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).json({ error: err });
-        }
-        insertUserHistory(userId, "Inserted Office Expense");
+
+    const officeExpenseId = result.insertId; 
+
+    const otherExpenseQuery = `
+      INSERT INTO otherExpense (reason, amount, userId, officeExpId)
+      VALUES (?, ?, ?, ?)
+    `;
+
+    const otherExpenseValues = ["office Expense", amount, userId, officeExpenseId];
+
+    db.query(otherExpenseQuery, otherExpenseValues, (err, result2) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ error: err });
       }
-    );
-    ///
-    res.json({ id: result.insertId });
+
+      insertUserHistory(userId, "Inserted Office Expense");
+
+      // Return response after both inserts succeed
+      res.json({ id: officeExpenseId });
+    });
   });
 };
+
 
 const EditOfficeExpense = (req, res) => {
   const { id } = req.params;
   const { reason, amount } = req.body;
 
   const query = `
-        UPDATE office_expenses
-        SET reason = ?, amount = ?
-        WHERE id = ?`;
+    UPDATE office_expenses
+    SET reason = ?, amount = ?
+    WHERE id = ?
+  `;
 
   db.query(query, [reason, amount, id], (err, result) => {
     if (err) {
@@ -197,12 +202,25 @@ const EditOfficeExpense = (req, res) => {
     }
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "data not found" });
+      return res.status(404).json({ message: "Data not found" });
     }
 
-    res.json({ id: result.insertId });
+    const otherExpenseQuery = `
+      UPDATE otherExpense
+      SET amount = ?
+      WHERE officeExpId = ?
+    `;
+
+    db.query(otherExpenseQuery, [amount, id], (err2, result2) => {
+      if (err2) {
+        return res.status(500).json({ error: err2 });
+      }
+
+      res.json({ message: "Updated successfully" });
+    });
   });
 };
+
 
 const showOfficeExpense = (req, res) => {
   const { id } = req.params;
@@ -220,21 +238,37 @@ const showOfficeExpense = (req, res) => {
 const deleteOfficeExpense = (req, res) => {
   const { id } = req.params;
 
-  const query = "DELETE FROM office_expenses WHERE id = ?";
+  // First, delete from otherExpense
+  const deleteOtherExpenseQuery = `
+    DELETE FROM otherExpense
+    WHERE officeExpId = ?
+  `;
 
-  db.query(query, [id], (err, result) => {
-    if (err) {
-      console.log(err);
-      return res.status(500).json({ error: err });
+  db.query(deleteOtherExpenseQuery, [id], (err1, result1) => {
+    if (err1) {
+      return res.status(500).json({ error: err1 });
     }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Data not found" });
-    }
+    // Then delete from office_expenses
+    const deleteOfficeExpenseQuery = `
+      DELETE FROM office_expenses
+      WHERE id = ?
+    `;
 
-    res.json({ message: " deleted successfully" });
+    db.query(deleteOfficeExpenseQuery, [id], (err2, result2) => {
+      if (err2) {
+        return res.status(500).json({ error: err2 });
+      }
+
+      if (result2.affectedRows === 0) {
+        return res.status(404).json({ message: "Data not found" });
+      }
+
+      res.json({ message: "Deleted successfully" });
+    });
   });
 };
+
 
 module.exports = {
   officeExpenses,

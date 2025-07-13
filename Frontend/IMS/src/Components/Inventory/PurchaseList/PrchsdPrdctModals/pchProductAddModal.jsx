@@ -9,6 +9,7 @@ const AddProduct = ({ isOpen, close, addProduct, purchaseId }) => {
   const [product, setProduct] = useState({
     item_id: "",
     brand: "",
+    serial_number: "",
     quantity: "",
     expire_date: "",
     purchase_date: "",
@@ -100,6 +101,7 @@ const AddProduct = ({ isOpen, close, addProduct, purchaseId }) => {
       formData.append("quantity", product.quantity);
       formData.append("expire_date", product.expire_date);
       formData.append("purchase_date", product.purchase_date);
+       formData.append("serial_number", product.serial_number);
       formData.append("batch_number", product.batch_number);
       formData.append("description", product.description);
       formData.append("purchase_price", product.purchase_price);
@@ -324,10 +326,22 @@ const AddProduct = ({ isOpen, close, addProduct, purchaseId }) => {
                   placeholder=" "
                   value={product.purchase_date}
                   onChange={(e) => handleChange(e, "purchase_date")}
+                  required
                 />
                 <label className="inputLabel">Purchase Date</label>
               </div>
 
+
+ <div className="relative">
+                <input
+                  type="text"
+                  className="primaryInput peer"
+                  placeholder=" "
+                  value={product.serial_number}
+                  onChange={(e) => handleChange(e, "serial_number")}
+                />
+                <label className="inputLabel">Serial Number</label>
+              </div>
               <div className="relative">
                 <input
                   type="text"

@@ -14,6 +14,7 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
     expire_date: "",
     purchase_date: "",
     batch_number: "",
+    serial_number: "",
     description: "",
     purchase_price: "",
     profitPercent: 10,
@@ -64,6 +65,7 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
           expire_date: product.expire_date || "",
           purchase_date: product.purchase_date || "",
           batch_number: product.batch_number || "",
+          serial_number: product.serial_number || "",
           description: product.description || "",
           purchase_price: product.purchase_price || "",
           profitPercent: product.profitPercent || 10,
@@ -402,6 +404,7 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
         formatDateToInputValue(editedProduct.purchase_date)
       );
       formData.append("batch_number", editedProduct.batch_number);
+      formData.append("serial_number", editedProduct.serial_number);
       formData.append("description", editedProduct.description);
       formData.append("purchase_price", editedProduct.purchase_price);
       formData.append("profitPercent", editedProduct.profitPercent);
@@ -576,10 +579,20 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
                   placeholder=" "
                   value={formatDateToInputValue(editedProduct.purchase_date)}
                   onChange={(e) => handleChange(e, "purchase_date")}
+                  required
                 />
                 <label className="inputLabel">Purchase Date</label>
               </div>
-
+<div className="relative">
+                <input
+                  type="text"
+                  className="primaryInput peer"
+                  placeholder=" "
+                  value={editedProduct.serial_number}
+                  onChange={(e) => handleChange(e, "serial_number")}
+                />
+                <label className="inputLabel">Serial Number</label>
+              </div>
               {/* Batch Number */}
               <div className="relative">
                 <input

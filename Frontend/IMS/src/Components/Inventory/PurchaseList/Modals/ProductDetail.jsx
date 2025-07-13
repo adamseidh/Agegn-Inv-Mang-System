@@ -133,6 +133,17 @@ const ProductDetail = ({ isOpen, close, product }) => {
                   </p>
                 </div>
 
+
+<div className="space-y-1">
+                  <p className="text-gray-500 text-sm font-medium">
+                    Serial Number
+                  </p>
+                  <p className="text-gray-700 font-semibold">
+                    {product?.serial_number || "N/A"}
+                  </p>
+                </div>
+
+
                 <div className="space-y-1">
                   <p className="text-gray-500 text-sm font-medium">
                     Batch Number

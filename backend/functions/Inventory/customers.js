@@ -181,8 +181,7 @@ const CustomersCount = (req, res) => {
   }
 
   const query = `
-        SELECT * FROM customers
-        ${whereClause}`;
+        SELECT * FROM customers ORDER BY name ASC`;
 
   db.query(query, (err, results) => {
     if (err) {

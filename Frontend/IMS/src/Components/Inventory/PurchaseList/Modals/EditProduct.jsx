@@ -12,6 +12,7 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
     expire_date: "",
     purchase_date: "",
     batch_number: "",
+    serial_number: "",
     description: "",
     itemCost: "",
     profitPercent: 10,
@@ -30,6 +31,7 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
         expire_date: product.expire_date || "",
         purchase_date: product.purchase_date || "",
         batch_number: product.batch_number || "",
+        serial_number: product.serial_number || "",
         description: product.description || "",
         itemCost: product.itemCost || "",
         profitPercent: product.profitPercent || 10,
@@ -101,12 +103,17 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
     setEditedProduct({ ...editedProduct, image: e.target.files[0] });
   };
 
-  const calculateTotalCost = () => {
-    const additionalCosts = editedProduct.costs.reduce(
+  const calculateAddtioanCosts=()=>{
+     const additionalCosts = editedProduct.costs.reduce(
       (sum, cost) => sum + parseFloat(cost.amount || 0),
       0
     );
-    return (parseFloat(editedProduct.itemCost || 0) + additionalCosts).toFixed(
+    return additionalCosts
+
+  }
+  const calculateTotalCost = () => {
+    const additionalCost =  calculateAddtioanCosts();
+    return (parseFloat(editedProduct.itemCost || 0) + additionalCost).toFixed(
       2
     );
   };
@@ -126,10 +133,12 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
     e.preventDefault();
     const totalCost = calculateTotalCost();
     const sellingPrice = calculateSellingPrice();
+    const additionalCost = calculateAddtioanCosts();
     updateProduct({
       ...editedProduct,
       totalCost,
       sellingPrice,
+      additionalCost
     });
     close();
   };
@@ -267,9 +276,26 @@ const EditProduct = ({ isOpen, close, product, updateProduct }) => {
                   placeholder=" "
                   value={editedProduct.purchase_date}
                   onChange={(e) => handleChange(e, "purchase_date")}
+                  required
                 />
                 <label className="inputLabel">Purchase Date</label>
               </div>
+
+
+
+<div className="relative">
+                <input
+                  type="text"
+                  className="primaryInput peer"
+                  placeholder=" "
+                  value={editedProduct.serial_number}
+                  onChange={(e) => handleChange(e, "serial_number")}
+                />
+                <label className="inputLabel">Serial Number</label>
+              </div>
+
+
+
 
               <div className="relative">
                 <input
