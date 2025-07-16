@@ -525,7 +525,6 @@ app.delete("/supplier/:id", verifyToken, deleteSupplier);
 //**************Sells  */
 app.post(
   "/addSells",
-  verifyToken,
   upload.fields([{ name: "paymentImages" }]),
   submitSale
 );

@@ -14,12 +14,37 @@ const submitSale = (req, res) => {
     payments,
   } = req.body;
 
-  // Parse JSON strings
-  const parsedItems = JSON.parse(items);
-  const parsedPayments = payments ? JSON.parse(payments) : [];
+  // Helper function to safely parse data
+  const safeParse = (data) => {
+    if (typeof data === 'string') {
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        console.error("Failed to parse JSON:", e);
+        return null;
+      }
+    }
+    return data; // Return as-is if not a string
+  };
 
-  if (!parsedItems || !Array.isArray(parsedItems)) {
-    return res.status(400).json({ message: "Invalid items data" });
+  // Process items
+  let parsedItems;
+  if (items) {
+    parsedItems = safeParse(items);
+    if (!Array.isArray(parsedItems)) {
+      return res.status(400).json({ message: "Invalid items data format" });
+    }
+  } else {
+    return res.status(400).json({ message: "Items data is required" });
+  }
+
+  // Process payments
+  let parsedPayments = [];
+  if (payments) {
+    parsedPayments = safeParse(payments);
+    if (!Array.isArray(parsedPayments)) {
+      parsedPayments = []; // Default to empty array if invalid
+    }
   }
 
   const sells_source = sales_source ? sales_source : "System";
@@ -50,7 +75,7 @@ const submitSale = (req, res) => {
       (insertErr, saleResult) => {
         if (insertErr) {
           return db.rollback(() => {
-            console.error("Insert into sells_list error:", insertErr);
+            console.log("Insert into sells_list error:", insertErr);
             res.status(500).json({ message: insertErr.message });
           });
         }
@@ -77,7 +102,7 @@ const submitSale = (req, res) => {
             }
 
             // 3. Process payments if they exist
-            if (parsedPayments && parsedPayments.length > 0) {
+            if (parsedPayments.length > 0) {
               const serverHost = `${req.protocol}://${req.get("host")}`;
 
               const paymentValues = parsedPayments.map((payment, index) => [

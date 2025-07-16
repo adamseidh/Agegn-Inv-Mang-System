@@ -3,7 +3,6 @@ import Layout from "./layout";
 import Home from "./home";
 import MarketMain from "./components/market/marketMain.jsx";
 import Checkout from "./components/market/checkout.jsx";
-import Donate from "./components/donate/donate.jsx";
 import FullAbout from "./components/About/fullAbout.jsx";
 import ContactUsPage from "./contactUsPage.jsx";
 import ResourcesPage from "./components/resources.jsx";
