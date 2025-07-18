@@ -35,8 +35,11 @@ import {
   BulkDeleteButton,
 } from "react-admin";
 
+import { useParams, useNavigate } from 'react-router-dom';
+
 import { Grid, Typography, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import Permission from "../../../helpers/utils/permissions";
 
 // Filter component for the list
 const FilterData = (props) => (
@@ -233,165 +236,215 @@ const SectionHeader = ({ title }) => (
   </Typography>
 );
 
-const ShowProduct = (props) => (
-  <Show {...props} sx={{ maxWidth: 1000, margin: "0 auto" }}>
-    <SimpleShowLayout>
-      <Grid container spacing={3}>
-        {/* Product Information Section */}
-        <Grid item xs={12} md={6}>
-          <StyledPaper>
-            <SectionHeader title="Product Information" />
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Labeled label="Product Name">
-                  <TextField source="name" fullWidth />
-                </Labeled>
-              </Grid>
-              <Grid item xs={6}>
-                <Labeled label="Category">
-                  <TextField source="categoryName" fullWidth />
-                </Labeled>
-              </Grid>
-              <Grid item xs={6}>
-                <Labeled label="Brand">
-                  <TextField source="brand" fullWidth />
-                </Labeled>
-              </Grid>
-              <Grid item xs={6}>
-                <Labeled label="Type">
-                  <TextField source="typeName" fullWidth />
-                </Labeled>
-              </Grid>
-              <Grid item xs={12}>
-                <Labeled label="Description">
-                  <TextField source="description" fullWidth />
-                </Labeled>
-              </Grid>
-            </Grid>
-          </StyledPaper>
-        </Grid>
+const ShowProduct = (props) => {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
+    const getToken = localStorage.getItem("token");
+    const token = JSON.parse(getToken)?.token;
+    const [aProductDetail, setAproductDetail] = useState(null);
 
-        {/* Inventory Details Section */}
-        <Grid item xs={12} md={6}>
-          <StyledPaper>
-            <SectionHeader title="Inventory Details" />
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Labeled label="Available Stock">
-                  <NumberField
-                    source="available_product"
-                    sx={{ fontWeight: "bold", color: "success.main" }}
-                  />
-                </Labeled>
-              </Grid>
-              <Grid item xs={6}>
-                <Labeled label="Sold">
-                  <NumberField source="sold_product" />
-                </Labeled>
-              </Grid>
-              <Grid item xs={6}>
-                <Labeled label="Quantity">
-                  <TextField source="quantity" />
-                </Labeled>
-              </Grid>
-              <Grid item xs={6}>
-                <Labeled label="Unit">
-                  <TextField source="unit" />
-                </Labeled>
-              </Grid>
-              <Grid item xs={6}>
-                <Labeled label="Serial No.">
-                  <TextField source="serial_number" />
-                </Labeled>
-              </Grid>
-              <Grid item xs={6}>
-                <Labeled label="Batch No.">
-                  <TextField source="batch_number" />
-                </Labeled>
-              </Grid>
-            </Grid>
-          </StyledPaper>
-        </Grid>
+    const storedRole = localStorage.getItem("role");
+     const parsedRole = JSON.parse(storedRole).role;
 
-        {/* Financial Information Section */}
-        <Grid item xs={12} md={6}>
-          <StyledPaper>
-            <SectionHeader title="Financial Information" />
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Labeled label="Purchase Price (ETB)">
-                  <NumberField
-                    source="purchase_price"
-                    options={{ style: "currency", currency: "ETB" }}
-                  />
-                </Labeled>
-              </Grid>
-              <Grid item xs={6}>
-                <Labeled label="Selling Price (ETB)">
-                  <NumberField
-                    source="selling_price"
-                    options={{ style: "currency", currency: "ETB" }}
-                    sx={{ fontWeight: "bold", color: "primary.main" }}
-                  />
-                </Labeled>
-              </Grid>
-              <Grid item xs={6}>
-                <Labeled label="Additional Cost (ETB)">
-                  <NumberField
-                    source="additional_cost"
-                    options={{ style: "currency", currency: "ETB" }}
-                  />
-                </Labeled>
-              </Grid>
-              <Grid item xs={6}>
-                <Labeled label="Total Cost (ETB)">
-                  <NumberField
-                    source="overall_cost"
-                    options={{ style: "currency", currency: "ETB" }}
-                  />
-                </Labeled>
-              </Grid>
-            </Grid>
-          </StyledPaper>
-        </Grid>
+       const { permission1, permission2, permission3 } = Permission(parsedRole);
 
-        {/* Dates Section */}
-        <Grid item xs={12} md={6}>
-          <StyledPaper>
-            <SectionHeader title="Dates" />
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Labeled label="Purchase Date">
-                  <DateField
-                    source="purchase_date"
-                    showTime
-                    sx={{ "& .RaDateField-root": { color: "text.primary" } }}
-                  />
-                </Labeled>
-              </Grid>
-              <Grid item xs={6}>
-                <Labeled label="Expiry Date">
-                  <DateField
-                    source="expire_date"
-                    showTime
-                    sx={{
-                      "& .RaDateField-root": {
-                        color:
-                          new Date(props.record?.expire_date) < new Date()
-                            ? "error.main"
-                            : "text.primary",
-                      },
-                    }}
-                  />
-                </Labeled>
-              </Grid>
-            </Grid>
-          </StyledPaper>
-        </Grid>
-      </Grid>
-    </SimpleShowLayout>
-  </Show>
-);
+    useEffect(() => {
+        const fetchSaleData = async () => {
+            try {
+                const response = await axios.get(`${serverHost}/aproductDetail/${id}`, {
+                    headers: {
+                        Authorization: token ? `Bearer ${token}` : "",
+                    },
+                });
+                // Assuming the API returns an array with the product as first element
+                setAproductDetail(response.data[0]);
+                console.log('fetched data ', response.data);
+            } catch (err) {
+                console.error('Error fetching product:', err);
+            }
+        };
+
+        fetchSaleData();
+    }, [id, serverHost, token]);
+
+    const handleBack = () => {
+        navigate(-1);
+    };
+
+    const handleEdit = () => {
+        if (aProductDetail) {
+            navigate(`/PurchaseList/${aProductDetail.purchase_id}/show`); // Navigate to edit page with ID
+        }
+    };
+
+    return (
+        <Show {...props} sx={{ maxWidth: 1000, margin: "0 auto" }}>
+            <SimpleShowLayout>
+                <Grid container spacing={3}>
+                    {/* Product Information Section */}
+                    <Grid item xs={12} md={6}>
+                        <StyledPaper>
+                            <SectionHeader title="Product Information" />
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <Labeled label="Product Name">
+                                        <TextField source="name" fullWidth />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Labeled label="Category">
+                                        <TextField source="categoryName" fullWidth />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Labeled label="Brand">
+                                        <TextField source="brand" fullWidth />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Labeled label="Type">
+                                        <TextField source="typeName" fullWidth />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Labeled label="Description">
+                                        <TextField source="description" fullWidth />
+                                    </Labeled>
+                                </Grid>
+                            </Grid>
+                        </StyledPaper>
+                    </Grid>
+
+                    {/* Inventory Details Section */}
+                    <Grid item xs={12} md={6}>
+                        <StyledPaper>
+                            <SectionHeader title="Inventory Details" />
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <Labeled label="Available Stock">
+                                        <NumberField
+                                            source="available_product"
+                                            sx={{ fontWeight: "bold", color: "success.main" }}
+                                        />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Labeled label="Sold">
+                                        <NumberField source="sold_product" />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Labeled label="Quantity">
+                                        <TextField source="quantity" />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Labeled label="Unit">
+                                        <TextField source="unit" />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Labeled label="Serial No.">
+                                        <TextField source="serial_number" />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Labeled label="Batch No.">
+                                        <TextField source="batch_number" />
+                                    </Labeled>
+                                </Grid>
+                            </Grid>
+                        </StyledPaper>
+                    </Grid>
+
+                    {/* Dates Section */}
+                    <Grid item xs={12} md={6}>
+                        <StyledPaper>
+                            <SectionHeader title="Dates" />
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <Labeled label="Purchase Date">
+                                        <DateField
+                                            source="purchase_date"
+                                            showTime
+                                            sx={{ "& .RaDateField-root": { color: "text.primary" } }}
+                                        />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Labeled label="Expiry Date">
+                                        <DateField
+                                            source="expire_date"
+                                            showTime
+                                        />
+                                    </Labeled>
+                                </Grid>
+                            </Grid>
+                        </StyledPaper>
+                    </Grid>
+
+                    {/* Financial Information Section */}
+
+                    {permission1 && (<Grid item xs={12} md={6}>
+                        <StyledPaper>
+                            <SectionHeader title="Financial Information" />
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <Labeled label="Purchase Price (ETB)">
+                                        <NumberField
+                                            source="purchase_price"
+                                            options={{ style: "currency", currency: "ETB" }}
+                                        />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Labeled label="Selling Price (ETB)">
+                                        <NumberField
+                                            source="selling_price"
+                                            options={{ style: "currency", currency: "ETB" }}
+                                            sx={{ fontWeight: "bold", color: "primary.main" }}
+                                        />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Labeled label="Additional Cost (ETB)">
+                                        <NumberField
+                                            source="additional_cost"
+                                            options={{ style: "currency", currency: "ETB" }}
+                                        />
+                                    </Labeled>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Labeled label="Total Cost (ETB)">
+                                        <NumberField
+                                            source="overall_cost"
+                                            options={{ style: "currency", currency: "ETB" }}
+                                        />
+                                    </Labeled>
+                                </Grid>
+                            </Grid>
+                        </StyledPaper>
+                    </Grid>)}
+                    
+
+                    {/* Supplier and Action Buttons Section */}
+                    <Grid item xs={6}>
+                        <StyledPaper>
+                            <Typography variant="subtitle1" gutterBottom>
+                                Supplier: {aProductDetail?.supplierName || 'N/A'}
+                            </Typography>
+                            <div className="flex justify-evenly mt-4 border rounded-lg p-1">
+                                <button onClick={handleBack} className="primaryBtn">Back</button>
+                                <button onClick={handleEdit} className="primaryBtn">Edit</button>
+                            </div>
+                        </StyledPaper>
+                    </Grid>
+                </Grid>
+            </SimpleShowLayout>
+        </Show>
+    );
+};
 
 const CreateProduct = (props) => {
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;

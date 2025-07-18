@@ -82,6 +82,7 @@ const {
   deleteProduct,
   updateProduct,
   addProduct,
+  aProductDetail,
 } = require("./functions/Inventory/PurchaseList/purchasedProductList");
 const {
   aPurchasePayments,
@@ -591,6 +592,8 @@ app.delete("/deleteOrder/:id", verifyToken, deleteOrder);
 app.get("/soldProducts", soldProducts);
 
 app.get("/purchasedProducts", purchasedProducts);
+
+app.get('/aproductDetail/:id', aProductDetail)// fetching product detail to make it ready for edit
 ///Financial********************
 app.get("/otherExpenses", otherExpenses);
 

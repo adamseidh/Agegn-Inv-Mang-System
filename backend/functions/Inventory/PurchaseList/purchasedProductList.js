@@ -261,6 +261,48 @@ const updateProduct = (req, res) => {
   });
 };
 
+
+const aProductDetail = (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+  SELECT pl.purchase_id , purch.id as purchase_id, s.name as supplierName FROM product_list pl
+  LEFT JOIN  purchase_list purch
+  ON pl.purchase_id = purch.id
+  LEFT JOIN supplier s
+  ON purch.supplier_id = s.id
+   WHERE pl.id = ? `;
+
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json({ error: err });
+    } else {
+      res.setHeader("Access-Control-Expose-Headers", "Content-Range");
+      res.json(results);
+    }
+  });
+};
+
+const deleteSalesProduct = (req, res) => {
+  const { id } = req.params;
+  console.log("sales id", id);
+
+  const query = "DELETE FROM sells_product WHERE id = ?";
+
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "data not found" });
+    }
+
+    res.json({ message: "data deleted successfully" });
+  });
+};
+
 const deleteProduct = (req, res) => {
   const { id } = req.params;
   console.log("product id", id);
@@ -287,4 +329,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   addProduct,
+  aProductDetail
 };
