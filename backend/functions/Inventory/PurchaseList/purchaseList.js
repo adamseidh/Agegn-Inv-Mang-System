@@ -4,8 +4,8 @@ const PurchaseList = (req, res) => {
   let { _sort, _order, _page, _limit, q, filter, range, sort } = req.query;
 
   // Defaults - changed to use created_at DESC when no sort is specified
-  _sort = _sort || "created_at"; // Default to created_at
-  _order = _order === "desc" ? "DESC" : _sort === "created_at" ? "DESC" : "ASC"; // Default to DESC for created_at
+  _sort = _sort || "created_at";
+  _order = _order === "desc" ? "DESC" : _sort === "created_at" ? "DESC" : "ASC";
   _page = parseInt(_page, 10) || 1;
   _limit = parseInt(_limit, 10) || 10;
   let offset = (_page - 1) * _limit;
@@ -36,7 +36,7 @@ const PurchaseList = (req, res) => {
 
   let whereClause = "WHERE 1 = 1";
   if (q) {
-    whereClause += ` AND (title LIKE '%${q}%' )`;
+    whereClause += ` AND (s.name LIKE '%${q}%' OR PL.id LIKE '%${q}%')`; // Changed to s.name and added search by ID
   }
 
   if (payment_status) {
@@ -53,22 +53,33 @@ const PurchaseList = (req, res) => {
     }
   }
 
-  // Updated valid sort columns to include created_at
-  const validSortColumns = ["id", "amount", "created_at"];
+  // Updated valid sort columns to include created_at and supplierName
+  const validSortColumns = ["id", "amount", "created_at", "supplierName"];
   if (!validSortColumns.includes(_sort)) {
     _sort = "created_at";
     _order = "DESC";
   }
 
-  // Special handling for created_at to ensure DESC order by default
-  if (_sort === "created_at" && !_order) {
-    _order = "DESC";
+  // Handle sorting column mapping
+  let sortColumn;
+  switch (_sort) {
+    case "supplierName":
+      sortColumn = "s.name";
+      break;
+    case "created_at":
+    case "amount":
+    case "id":
+      sortColumn = `PL.${_sort}`;
+      break;
+    default:
+      sortColumn = "PL.created_at";
   }
 
   const query = `
 SELECT 
   PL.*, 
-  s.name AS supplierName,u.name as user,
+  s.name AS supplierName,
+  u.name as user,
   CASE 
     WHEN SUM(CASE WHEN pp.payment_status != 'Completed' THEN 1 ELSE 0 END) > 0 THEN 'Not Completed'
     ELSE 'Completed'
@@ -85,16 +96,21 @@ LIMIT ${_limit} OFFSET ${offset}`;
 
   db.query(query, (err, results) => {
     if (err) {
-      console.log(err);
+      console.log("Error in query:", err);
       res.status(500).json({ error: err });
     } else {
-      const countQuery = `SELECT COUNT(*) AS total FROM purchase_list ${whereClause}`;
+      const countQuery = `
+        SELECT COUNT(DISTINCT PL.id) AS total 
+        FROM purchase_list PL
+        LEFT JOIN supplier s ON PL.supplier_id = s.id
+        ${whereClause.split("GROUP BY")[0]}`; // Remove GROUP BY for count query
+
       db.query(countQuery, (err, countResult) => {
         if (err) {
+          console.log("Error in count query:", err);
           res.status(500).json({ error: err });
         } else {
           const total = countResult[0].total;
-
           res.setHeader(
             "Content-Range",
             `purchase_list ${offset}-${offset + results.length}/${total}`

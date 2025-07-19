@@ -54,9 +54,12 @@ const PurchaseList = () => {
 
   const role = JSON.parse(localStorage.getItem("role")).role;
 
+  const PurchaseFilter = [
+    <TextInput label="Search: By Supplier" source="q" alwaysOn key="search" />,
+  ];
   return (
     <div>
-      <List actions={<PostListActions />}>
+      <List filters={PurchaseFilter} actions={<PostListActions />}>
         <DatagridConfigurable
           bulkActionButtons={<BulkDeleteButton mutationMode="pessimistic" />}
           rowClick="show"

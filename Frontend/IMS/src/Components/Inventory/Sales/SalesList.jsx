@@ -55,9 +55,13 @@ const SalesList = () => {
     </TopToolbar>
   );
 
+  const SalesFilter = [
+    <TextInput label="Search: By Customer" source="q" alwaysOn key="search" />,
+  ];
+
   return (
     <div>
-      <List actions={<PostListActions />}>
+      <List filters={SalesFilter} actions={<PostListActions />}>
         <DatagridConfigurable
           bulkActionButtons={<BulkDeleteButton mutationMode="pessimistic" />}
           rowClick="show"

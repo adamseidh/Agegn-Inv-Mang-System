@@ -36,7 +36,7 @@ const SellsList = (req, res) => {
 
   let whereClause = "WHERE 1 = 1";
   if (q) {
-    whereClause += ` AND (title LIKE '%${q}%' )`;
+    whereClause += ` AND (c.name LIKE '%${q}%' OR SL.id LIKE '%${q}%')`;
   }
 
   if (payment_status) {
@@ -53,7 +53,7 @@ const SellsList = (req, res) => {
     }
   }
 
-  const validSortColumns = ["id", "amount", "created_at"];
+  const validSortColumns = ["id", "amount", "created_at", "customerName"];
   if (!validSortColumns.includes(_sort)) {
     _sort = "created_at";
     _order = "DESC";
@@ -61,6 +61,21 @@ const SellsList = (req, res) => {
 
   // Add the main filtering condition
   whereClause += ` AND (SL.sells_source != 'Client' OR (SL.sells_source = 'Client' AND SL.sells_status = 'Completed'))`;
+
+  // Handle sorting column mapping
+  let sortColumn;
+  switch (_sort) {
+    case "customerName":
+      sortColumn = "c.name";
+      break;
+    case "created_at":
+    case "amount":
+    case "id":
+      sortColumn = `SL.${_sort}`;
+      break;
+    default:
+      sortColumn = "SL.created_at";
+  }
 
   const query = `
   SELECT 
@@ -78,17 +93,24 @@ const SellsList = (req, res) => {
   LEFT JOIN users u ON SL.userId = u.id
   ${whereClause}
   GROUP BY SL.id
-  ORDER BY SL.created_at DESC
+   ORDER BY SL.created_at DESC
   LIMIT ${_limit} OFFSET ${offset}`;
 
   db.query(query, (err, results) => {
     if (err) {
-      console.log("", err);
+      console.log("Error in query:", err);
       res.status(500).json({ error: err });
     } else {
-      const countQuery = `SELECT COUNT(*) AS total FROM sells_list SL ${whereClause}`;
+      const countQuery = `
+        SELECT COUNT(DISTINCT SL.id) AS total 
+        FROM sells_list SL
+        LEFT JOIN customers c ON SL.customer_id = c.id
+        LEFT JOIN sells_payment sp ON SL.id = sp.sells_id
+        ${whereClause}`;
+
       db.query(countQuery, (err, countResult) => {
         if (err) {
+          console.log("Error in count query:", err);
           res.status(500).json({ error: err });
         } else {
           const total = countResult[0].total;
