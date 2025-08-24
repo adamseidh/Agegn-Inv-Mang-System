@@ -31,6 +31,9 @@ function Checkout() {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [openPaymentTableMenu, setOpenPaymentTableMenu] = useState(null); // toggle for payment table
   const [isPaymentDetailOpen, setPaymentDetailOpen] = useState(false);
+  const [showDiscountMenu, setShowDiscountMenu] = useState(false);
+  const [globalDiscount, setGlobalDiscount] = useState("");
+  const [showGlobalDiscount, setShowGlobalDiscount] = useState(false);
 
   const [remark, setRemark] = useState();
   const userId = JSON.parse(localStorage.getItem("userId")).userId;
@@ -79,10 +82,13 @@ function Checkout() {
         if (item.id === productId) {
           // Check if new quantity exceeds available stock
           const quantity = Math.min(newQuantity, item.available_product);
+          
+          // Calculate total price based on discounted price if available
+          const discountedPrice = item.discountedPrice || item.selling_price;
           return {
             ...item,
             quantity,
-            totalPrice: quantity * item.selling_price,
+            totalPrice: quantity * discountedPrice,
           };
         }
         return item;
@@ -93,6 +99,81 @@ function Checkout() {
   // Function to remove product from cart
   const removeFromCart = (productId) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+  };
+
+  // Function to apply discount to a single item
+  const applyItemDiscount = (productId, discountPercentage) => {
+    setCart((prevCart) =>
+      prevCart.map((item) => {
+        if (item.id === productId) {
+          const discount = parseFloat(discountPercentage) || 0;
+          const discountDecimal = discount / 100;
+          const discountedPrice = item.selling_price * (1 - discountDecimal);
+          
+          return {
+            ...item,
+            discountPercentage: discount,
+            discountedPrice: discountedPrice,
+            totalPrice: item.quantity * discountedPrice,
+          };
+        }
+        return item;
+      })
+    );
+  };
+
+  // Function to apply global discount to all items
+  const applyGlobalDiscount = (discountPercentage) => {
+    const discount = parseFloat(discountPercentage) || 0;
+    setGlobalDiscount(discountPercentage);
+    
+    setCart((prevCart) =>
+      prevCart.map((item) => {
+        const discountDecimal = discount / 100;
+        const discountedPrice = item.selling_price * (1 - discountDecimal);
+        
+        return {
+          ...item,
+          discountPercentage: discount,
+          discountedPrice: discountedPrice,
+          totalPrice: item.quantity * discountedPrice,
+        };
+      })
+    );
+  };
+
+  // Function to remove discount from a single item
+  const removeItemDiscount = (productId) => {
+    setCart((prevCart) =>
+      prevCart.map((item) => {
+        if (item.id === productId) {
+          return {
+            ...item,
+            discountPercentage: 0,
+            discountedPrice: null,
+            totalPrice: item.quantity * item.selling_price,
+          };
+        }
+        return item;
+      })
+    );
+  };
+
+  // Function to remove global discount from all items
+  const removeGlobalDiscount = () => {
+    setGlobalDiscount("");
+    setShowGlobalDiscount(false);
+    
+    setCart((prevCart) =>
+      prevCart.map((item) => {
+        return {
+          ...item,
+          discountPercentage: 0,
+          discountedPrice: null,
+          totalPrice: item.quantity * item.selling_price,
+        };
+      })
+    );
   };
 
   useEffect(() => {
@@ -168,7 +249,16 @@ function Checkout() {
 
     // Create FormData object for file uploads
     const formData = new FormData();
-    formData.append("items", JSON.stringify(cart));
+    
+    // Prepare items with discounted prices if available
+    const itemsWithDiscount = cart.map(item => ({
+      ...item,
+      // Use discounted price if available, otherwise use selling price
+      selling_price: item.discountedPrice || item.selling_price,
+      discountPercentage: item.discountPercentage || 0
+    }));
+    
+    formData.append("items", JSON.stringify(itemsWithDiscount));
     formData.append("totalPrice", totalPrice);
     formData.append("totalItems", totalItems);
     formData.append("customer", customer);
@@ -233,9 +323,69 @@ function Checkout() {
           {/* Product List */}
           <div className="lg:w-3/5">
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold mb-6 pb-2 border-b border-primaryColor">
-                Product List ({cart.length} items)
-              </h2>
+              <div className="flex justify-between items-center mb-6 pb-2 border-b border-primaryColor">
+                <h2 className="text-2xl font-bold">
+                  Product List ({cart.length} items)
+                </h2>
+                
+                {cart.length > 0 && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowDiscountMenu(!showDiscountMenu)}
+                      className="text-gray-500 hover:text-gray-700 p-2"
+                    >
+                      <FaEllipsisV />
+                    </button>
+                    
+                    {showDiscountMenu && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                        <button
+                          onClick={() => {
+                            setShowGlobalDiscount(true);
+                            setShowDiscountMenu(false);
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Discount All
+                        </button>
+                        <button
+                          onClick={() => {
+                            // Enable individual discounts for all items
+                            setCart(prevCart => 
+                              prevCart.map(item => ({...item, showIndividualDiscount: true}))
+                            );
+                            setShowDiscountMenu(false);
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Discount Each
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {showGlobalDiscount && (
+                <div className="mb-4 p-4 bg-gray-100 rounded-lg flex items-center">
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={globalDiscount}
+                    onChange={(e) => applyGlobalDiscount(e.target.value)}
+                    placeholder="Discount %"
+                    className="w-24 px-3 py-2 border border-gray-300 rounded mr-2"
+                  />
+                  <span>%</span>
+                  <button
+                    onClick={removeGlobalDiscount}
+                    className="ml-4 px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
 
               {cart.length === 0 ? (
                 <div className="text-center py-8">
@@ -264,6 +414,45 @@ function Checkout() {
                           <p>Category: {item.categoryName}</p>
                           <p>Available: {item.available_product}</p>
                         </div>
+                        
+                        <div className="mt-2">
+                          {item.discountedPrice ? (
+                            <div className="flex items-center">
+                              <span className="text-red-500 line-through mr-2">
+                                {item.selling_price} birr
+                              </span>
+                              <span className="font-bold text-green-600">
+                                {item.discountedPrice.toFixed(2)} birr
+                              </span>
+                              <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                {item.discountPercentage}% off
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="font-bold">{item.selling_price} birr each</span>
+                          )}
+                        </div>
+                        
+                        {item.showIndividualDiscount && !showGlobalDiscount && (
+                          <div className="mt-2 flex items-center">
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={item.discountPercentage || ""}
+                              onChange={(e) => applyItemDiscount(item.id, e.target.value)}
+                              placeholder="Discount %"
+                              className="w-20 px-2 py-1 border border-gray-300 rounded mr-2"
+                            />
+                            <span>%</span>
+                            <button
+                              onClick={() => removeItemDiscount(item.id)}
+                              className="ml-2 px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex flex-col items-end">
@@ -296,10 +485,7 @@ function Checkout() {
                           </button>
                         </div>
 
-                        <p className="font-bold">{item.totalPrice} birr</p>
-                        <p className="text-sm text-gray-500">
-                          {item.selling_price} birr each
-                        </p>
+                        <p className="font-bold">{item.totalPrice.toFixed(2)} birr</p>
 
                         <button
                           onClick={() => removeFromCart(item.id)}
@@ -331,14 +517,14 @@ function Checkout() {
 
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>{totalPrice} birr</span>
+                  <span>{totalPrice.toFixed(2)} birr</span>
                 </div>
 
                 <div className="border-t border-gray-200 my-2"></div>
 
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
-                  <span>{totalPrice} birr</span>
+                  <span>{totalPrice.toFixed(2)} birr</span>
                 </div>
 
                 <div className="border p-2 rounded-lg">
