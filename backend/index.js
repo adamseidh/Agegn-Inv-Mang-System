@@ -210,6 +210,7 @@ const {
   showOfficeExpenseDetail,
   deleteOfficeExpenseDetail,
 } = require("./functions/Financial/officeExpnseDetail");
+const { StockCapital } = require("./functions/Financial/stock");
 
 const app = express();
 const PORT = 3000;
@@ -363,6 +364,9 @@ app.post("/productType", verifyToken, AddProductType);
 app.delete("/productType/:id", verifyToken, deleteProductType);
 
 app.get("/productTypeList", ProductTypeList);
+
+/// stock capital
+app.get("/StockCapital", verifyToken, StockCapital);
 
 //**** End of ProductType ******/
 //******************************
@@ -524,11 +528,7 @@ app.delete("/supplier/:id", verifyToken, deleteSupplier);
 //******************************
 
 //**************Sells  */
-app.post(
-  "/addSells",
-  upload.fields([{ name: "paymentImages" }]),
-  submitSale
-);
+app.post("/addSells", upload.fields([{ name: "paymentImages" }]), submitSale);
 
 app.put("/updateSale", verifyToken, updatSales);
 
@@ -593,7 +593,7 @@ app.get("/soldProducts", soldProducts);
 
 app.get("/purchasedProducts", purchasedProducts);
 
-app.get('/aproductDetail/:id', aProductDetail)// fetching product detail to make it ready for edit
+app.get("/aproductDetail/:id", aProductDetail); // fetching product detail to make it ready for edit
 ///Financial********************
 app.get("/otherExpenses", otherExpenses);
 

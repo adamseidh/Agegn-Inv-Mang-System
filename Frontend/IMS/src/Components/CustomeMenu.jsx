@@ -11,7 +11,7 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
-import GroupIcon from "@mui/icons-material/Group"; // Icon for Traders
+import GroupIcon from "@mui/icons-material/Group";
 import PriceCheckIcon from "@mui/icons-material/PriceCheck";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import AddCardIcon from "@mui/icons-material/AddCard";
@@ -28,6 +28,7 @@ import Shop2Icon from "@mui/icons-material/Shop2";
 import TypeSpecimenOutlinedIcon from "@mui/icons-material/TypeSpecimenOutlined";
 import InsightsIcon from "@mui/icons-material/Insights";
 import PaymentsIcon from "@mui/icons-material/Payments";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 
 import axios from "axios";
 import Permission from "../helpers/utils/permissions";
@@ -303,12 +304,21 @@ const CustomMenu = (props) => {
         />
       )}
       {openFinancial && permission1 && (
-        <MenuItemLink
-          to="/financialReport"
-          primaryText="Report"
-          leftIcon={<MonetizationOnIcon />} // Left Icon for Income
-          style={{ paddingLeft: 48 }}
-        />
+        <>
+          <MenuItemLink
+            to="/financialReport"
+            primaryText="Report"
+            leftIcon={<MonetizationOnIcon />} // Left Icon for Income
+            style={{ paddingLeft: 48 }}
+          />
+
+          <MenuItemLink
+            to="/stockCapital"
+            primaryText="Stok Capital"
+            leftIcon={<AccountBalanceWalletIcon />} // Left Icon for Income
+            style={{ paddingLeft: 48 }}
+          />
+        </>
       )}
       {openFinancial && permission2 && (
         <>

@@ -40,6 +40,7 @@ function SellProduct() {
         const response = await axios.get(`${serverHost}/ClientProducts`);
         setProducts(response.data);
         setFilteredProducts(response.data);
+        console.log("current data filter", response.data);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -56,9 +57,16 @@ function SellProduct() {
       setCurrentPage(1);
       setSearchPerformed(false);
     } else {
-      const filtered = products.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      console.log("Searching for:", searchTerm);
+      console.log("Products available:", products);
+
+      const filtered = products.filter((product) => {
+        console.log("Checking product:", product.name);
+        if (product.name == null) {
+          console.log("Product name is null,...", product);
+        }
+        product.name.toLowerCase().includes(searchTerm.toLowerCase());
+      });
       setFilteredProducts(filtered);
       setCurrentPage(1);
       setSearchPerformed(true);

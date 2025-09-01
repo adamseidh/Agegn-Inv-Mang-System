@@ -92,6 +92,7 @@ import {
   EditOfficeExpenseDetail,
   OfficeExpensesDetail,
 } from "./Components/Financial/officeExpense/officeExpenseDetail";
+import StockCapital from "./Components/Financial/stock/stockCapital";
 
 const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
 
@@ -232,6 +233,9 @@ const App = () => {
           <Route path="/financialReport" element={<FinancialReport />} />
         </CustomRoutes>
 
+        <CustomRoutes>
+          <Route path="/stockCapital" element={<StockCapital />} />
+        </CustomRoutes>
         <CustomRoutes>
           <Route path="/FinancialAnalaysis" element={<AnalysisPage />} />
         </CustomRoutes>
