@@ -1,5 +1,6 @@
 import React from "react";
 import logo from "../../../assets/Logo.jpg";
+
 const PrintInvoiceTemplate = ({ sale }) => {
   if (!sale || sale.length === 0) return null;
 
@@ -101,8 +102,27 @@ const PrintInvoiceTemplate = ({ sale }) => {
         maxWidth: "800px",
         margin: "0 auto",
         fontSize: "14px", // Reduced base font size
+        position: "relative", // For watermark positioning
       }}
     >
+      {/* Watermark */}
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%) rotate(-45deg)",
+          fontSize: "80px",
+          fontWeight: "bold",
+          color: "rgba(0, 0, 0, 0.1)",
+          zIndex: -1,
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+        }}
+      >
+        Attachment
+      </div>
+
       {/* Header with Logo */}
       <div
         style={{
@@ -167,6 +187,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
           <p style={{ margin: "3px 0" }}>
             Website: www.agegnbiomedicalengineering.com
           </p>
+          <p style={{ margin: "3px 0", fontWeight: "bold" }}>TIN: 0082798197</p>
         </div>
         <div style={{ textAlign: "right" }}>
           <h2
@@ -174,6 +195,12 @@ const PrintInvoiceTemplate = ({ sale }) => {
           >
             INVOICE
           </h2>
+
+          {/* Invoice Date */}
+          <div style={{ marginBottom: "5px" }}>
+            <p>Date: {formatDate(new Date())}</p>
+          </div>
+
           {/* Customer Info */}
           <div style={{ marginBottom: "5px" }}>
             <p>Customer: {sale[0].customerName}</p>
@@ -396,6 +423,9 @@ const PrintInvoiceTemplate = ({ sale }) => {
             <p style={{ margin: "5px 0", fontWeight: "600" }}>
               Agegn General Biomedical Engineering PLC
             </p>
+            {/* <p style={{ margin: "5px 0", fontWeight: "bold" }}>
+              TIN: 0082798197
+            </p> */}
           </div>
           <div style={{ textAlign: "right" }}>
             <p style={{ margin: "5px 0" }}>Signature</p>
