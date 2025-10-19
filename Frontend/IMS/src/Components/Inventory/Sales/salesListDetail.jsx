@@ -37,19 +37,30 @@ function SalesListDetail() {
   }, [id, serverHost]);
 
   console.log("sales data now", sale);
-  console.log("hie");
 
   const handlePrint = () => {
     const element = printRef.current;
     const opt = {
-      margin: 10,
+      margin: [15, 5, 15, 5],
       filename: `invoice_${sale[0].sells_id}.pdf`,
       image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      },
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+      },
+      pagebreak: {
+        mode: ["css", "legacy"],
+        avoid: ".table-row",
+      },
     };
 
-    // Generate PDF and open print dialog
+    // Generate PDF and open in new window for printing
     html2pdf()
       .set(opt)
       .from(element)
@@ -62,27 +73,54 @@ function SalesListDetail() {
           pdf.setFontSize(10);
           pdf.setTextColor(150);
           pdf.text(
-            "Page " + i + " of " + totalPages,
+            `Page ${i} of ${totalPages}`,
             pdf.internal.pageSize.getWidth() - 30,
             pdf.internal.pageSize.getHeight() - 10
           );
         }
       })
-      .save()
-      .then(() => {
-        // After saving, open print dialog
-        window.print();
+      .outputPdf("blob")
+      .then((blob) => {
+        // Create a blob URL and open in new window for printing
+        const blobUrl = URL.createObjectURL(blob);
+        const printWindow = window.open(blobUrl, "_blank");
+
+        // Wait for the PDF to load then trigger print
+        if (printWindow) {
+          printWindow.onload = () => {
+            // Small delay to ensure PDF is fully loaded
+            setTimeout(() => {
+              printWindow.print();
+            }, 500);
+          };
+        }
+      })
+      .catch((error) => {
+        console.error("Error generating PDF:", error);
+        alert("Error generating PDF for printing. Please try again.");
       });
   };
 
   const handleDownload = () => {
     const element = printRef.current;
     const opt = {
-      margin: 10,
+      margin: [15, 5, 15, 5],
       filename: `invoice_${sale[0].sells_id}.pdf`,
       image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      },
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+      },
+      pagebreak: {
+        mode: ["css", "legacy"],
+        avoid: ".table-row",
+      },
     };
 
     // Generate and download PDF directly
@@ -122,8 +160,15 @@ function SalesListDetail() {
                 onClick={handleDownload}
                 className="flex items-center gap-2 bg-primaryColor text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
               >
+                <FontAwesomeIcon icon={faDownload} />
+                Download PDF
+              </button>
+              <button
+                onClick={handlePrint}
+                className="flex items-center gap-2 bg-primaryColor text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
+              >
                 <FontAwesomeIcon icon={faPrint} />
-                Generate Invoice
+                Print Invoice
               </button>
             </div>
           </div>
@@ -156,17 +201,6 @@ function SalesListDetail() {
                     {new Date(sale[0].sellsDate).toLocaleDateString()}
                   </p>
                 </div>
-                {/* <div>
-                  <p className="text-gray-600">
-                    <span className="font-medium">Order ID:</span>{" "}
-                    {sale[0].sells_id}
-                  </p>
-                </div> */}
-                {/* <div>
-                  <p className="text-gray-600">
-                    <span className="font-medium">Items:</span> {sale.length}
-                  </p>
-                </div> */}
               </div>
             </div>
           </div>

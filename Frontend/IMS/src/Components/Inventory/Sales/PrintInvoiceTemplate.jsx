@@ -8,7 +8,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
   const formatDate = (dateString) => {
     const options = {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     };
     return new Date(dateString).toLocaleDateString("en-US", options);
@@ -98,15 +98,18 @@ const PrintInvoiceTemplate = ({ sale }) => {
     <div
       style={{
         fontFamily: "Arial, sans-serif",
-        padding: "10px 20px",
-        maxWidth: "800px",
+        padding: "15mm 10mm",
         margin: "0 auto",
-        fontSize: "14px", // Reduced base font size
-        position: "relative", // For watermark positioning
+        fontSize: "12px",
+        position: "relative",
+        width: "100%",
+        boxSizing: "border-box",
       }}
+      className="invoice-document"
     >
-      {/* Watermark */}
+      {/* Watermark - Only show on first page */}
       <div
+        className="watermark-first-page"
         style={{
           position: "absolute",
           top: "50%",
@@ -127,21 +130,21 @@ const PrintInvoiceTemplate = ({ sale }) => {
       <div
         style={{
           textAlign: "center",
-          marginBottom: "5px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
         }}
+        className="invoice-header"
       >
         {/* Logo with better error handling */}
         <div
           style={{
-            height: "80px",
-            width: "200px",
+            height: "130px",
+            width: "180px",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            marginBottom: "10px",
+            marginBottom: "8px",
           }}
         >
           <img
@@ -161,7 +164,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
         </div>
         <h1
           style={{
-            fontSize: "20px",
+            fontSize: "18px",
             fontWeight: "bold",
             marginBottom: "5px",
           }}
@@ -175,41 +178,53 @@ const PrintInvoiceTemplate = ({ sale }) => {
         style={{
           display: "flex",
           justifyContent: "space-between",
-          marginBottom: "30px",
+          marginBottom: "20px",
           borderBottom: "1px solid #eee",
-          paddingBottom: "20px",
+          paddingBottom: "15px",
+          gap: "20px",
         }}
+        className="invoice-info"
       >
-        <div>
-          <p style={{ margin: "3px 0" }}>Jimma, Oromia, Ethiopia</p>
-          <p style={{ margin: "3px 0" }}>Phone: +251 925 270 720</p>
-          <p style={{ margin: "3px 0" }}>Email: agegngeneralbme@gmail.com</p>
-          <p style={{ margin: "3px 0" }}>
+        <div style={{ flex: 1 }}>
+          <p style={{ margin: "2px 0", fontSize: "11px" }}>
+            Jimma, Oromia, Ethiopia
+          </p>
+          <p style={{ margin: "2px 0", fontSize: "11px" }}>
+            Phone: +251 925 270 720
+          </p>
+          <p style={{ margin: "2px 0", fontSize: "11px" }}>
+            Email: agegngeneralbme@gmail.com
+          </p>
+          <p style={{ margin: "2px 0", fontSize: "11px" }}>
             Website: www.agegnbiomedicalengineering.com
           </p>
-          <p style={{ margin: "3px 0", fontWeight: "bold" }}>TIN: 0082798197</p>
+          <p style={{ margin: "2px 0", fontWeight: "bold", fontSize: "11px" }}>
+            TIN: 0082798197
+          </p>
         </div>
-        <div style={{ textAlign: "right" }}>
+        <div style={{ textAlign: "right", flex: 1 }}>
           <h2
-            style={{ fontSize: "20px", fontWeight: "600", marginBottom: "5px" }}
+            style={{ fontSize: "16px", fontWeight: "600", marginBottom: "5px" }}
           >
             INVOICE
           </h2>
 
           {/* Invoice Date */}
-          <div style={{ marginBottom: "5px" }}>
-            <p>Date: {formatDate(new Date())}</p>
+          <div style={{ marginBottom: "3px" }}>
+            <p style={{ fontSize: "11px" }}>Date: {formatDate(new Date())}</p>
           </div>
 
           {/* Customer Info */}
-          <div style={{ marginBottom: "5px" }}>
-            <p>Customer: {sale[0].customerName}</p>
+          <div style={{ marginBottom: "3px" }}>
+            <p style={{ fontSize: "11px" }}>Customer: {sale[0].customerName}</p>
           </div>
-          <div style={{ marginBottom: "5px" }}>
-            <p>Phone: {sale[0].phone ? sale[0].phone : "__________"}</p>
+          <div style={{ marginBottom: "3px" }}>
+            <p style={{ fontSize: "11px" }}>
+              Phone: {sale[0].phone ? sale[0].phone : "__________"}
+            </p>
           </div>
-          <div style={{ marginBottom: "5px" }}>
-            <p>
+          <div style={{ marginBottom: "3px" }}>
+            <p style={{ fontSize: "11px" }}>
               TIN/Lett.No.:{" "}
               {sale[0].tin
                 ? sale[0].tin
@@ -219,153 +234,265 @@ const PrintInvoiceTemplate = ({ sale }) => {
             </p>
           </div>
 
-          <div style={{ marginBottom: "5px" }}>
-            <p>
+          <div style={{ marginBottom: "3px" }}>
+            <p style={{ fontSize: "11px" }}>
               Region:{" "}
               {sale[0].CustomerRegion ? sale[0].CustomerRegion : "__________"}
             </p>
           </div>
-          <div style={{ marginBottom: "5px" }}>
-            <p>Zone: {sale[0].zone ? sale[0].zone : "__________"}</p>
+          <div style={{ marginBottom: "3px" }}>
+            <p style={{ fontSize: "11px" }}>
+              Zone: {sale[0].zone ? sale[0].zone : "__________"}
+            </p>
           </div>
-          <div style={{ marginBottom: "5px" }}>
-            <p>
+          <div style={{ marginBottom: "3px" }}>
+            <p style={{ fontSize: "11px" }}>
               City: {sale[0].CustomerCity ? sale[0].CustomerCity : "__________"}
             </p>
           </div>
-          <p style={{ margin: "3px 0" }}>Fs No: {sale[0].FsNumber}</p>
-          <p style={{ margin: "3px 0" }}>Invoice #: {sale[0].sells_id}</p>
+          <p style={{ margin: "2px 0", fontSize: "11px" }}>
+            Fs No: {sale[0].FsNumber}
+          </p>
+          <p style={{ margin: "2px 0", fontSize: "11px" }}>
+            Invoice #: {sale[0].sells_id}
+          </p>
         </div>
       </div>
 
-      {/* Items Table */}
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          marginBottom: "30px",
-        }}
-      >
-        <thead style={{ backgroundColor: "#f5f5f5" }}>
-          <tr>
-            <th
-              style={{
-                padding: "10px",
-                textAlign: "left",
-                border: "1px solid #ddd",
-              }}
-            >
-              Product ID
-            </th>
-            <th
-              style={{
-                padding: "10px",
-                textAlign: "left",
-                border: "1px solid #ddd",
-              }}
-            >
-              Product Name
-            </th>
-            <th
-              style={{
-                padding: "10px",
-                textAlign: "left",
-                border: "1px solid #ddd",
-              }}
-            >
-              Batch/Ser. No.
-            </th>
-            <th
-              style={{
-                padding: "10px",
-                textAlign: "left",
-                border: "1px solid #ddd",
-              }}
-            >
-              Expire Date
-            </th>
-            <th
-              style={{
-                padding: "10px",
-                textAlign: "left",
-                border: "1px solid #ddd",
-              }}
-            >
-              Unit
-            </th>
-            <th
-              style={{
-                padding: "10px",
-                textAlign: "left",
-                border: "1px solid #ddd",
-              }}
-            >
-              Qty
-            </th>
-            <th
-              style={{
-                padding: "10px",
-                textAlign: "left",
-                border: "1px solid #ddd",
-              }}
-            >
-              Unit Price (birr)
-            </th>
-            <th
-              style={{
-                padding: "10px",
-                textAlign: "left",
-                border: "1px solid #ddd",
-              }}
-            >
-              Amount (birr)
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {sale.map((item, index) => (
-            <tr key={index}>
-              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                {item.product_id}
-              </td>
-              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                {item.productName}
-              </td>
-              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                {item.batchNo
-                  ? item.batchNo
-                  : item.SerialNo
-                  ? item.SerialNo
-                  : "__________"}
-              </td>
-              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                {item.expireDate
-                  ? formatDate(item.expireDate)
-                  : "____,____,____"}
-              </td>
-              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                {item.measurementUnit}
-              </td>
-              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                {item.quantity}
-              </td>
-              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                {item.unit_price.toFixed(2)}
-              </td>
-              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                {item.total_price.toFixed(2)}
-              </td>
+      {/* Items Table - Fixed width and column sizes */}
+      <div style={{ width: "100%", overflow: "hidden" }}>
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            marginBottom: "30px",
+            tableLayout: "fixed",
+          }}
+          className="invoice-table"
+        >
+          <thead style={{ backgroundColor: "#f5f5f5" }}>
+            <tr>
+              <th
+                style={{
+                  padding: "8px 4px",
+                  textAlign: "left",
+                  border: "1px solid #ddd",
+                  fontSize: "10px",
+                  fontWeight: "bold",
+                  width: "10%",
+                  wordWrap: "break-word",
+                }}
+              >
+                Product ID
+              </th>
+              <th
+                style={{
+                  padding: "8px 4px",
+                  textAlign: "left",
+                  border: "1px solid #ddd",
+                  fontSize: "10px",
+                  fontWeight: "bold",
+                  width: "20%",
+                  wordWrap: "break-word",
+                }}
+              >
+                Product Name
+              </th>
+              <th
+                style={{
+                  padding: "8px 4px",
+                  textAlign: "left",
+                  border: "1px solid #ddd",
+                  fontSize: "10px",
+                  fontWeight: "bold",
+                  width: "12%",
+                  wordWrap: "break-word",
+                }}
+              >
+                Batch/Ser. No.
+              </th>
+              <th
+                style={{
+                  padding: "8px 4px",
+                  textAlign: "left",
+                  border: "1px solid #ddd",
+                  fontSize: "10px",
+                  fontWeight: "bold",
+                  width: "12%",
+                  wordWrap: "break-word",
+                }}
+              >
+                Expire Date
+              </th>
+              <th
+                style={{
+                  padding: "8px 4px",
+                  textAlign: "left",
+                  border: "1px solid #ddd",
+                  fontSize: "10px",
+                  fontWeight: "bold",
+                  width: "8%",
+                  wordWrap: "break-word",
+                }}
+              >
+                Unit
+              </th>
+              <th
+                style={{
+                  padding: "8px 4px",
+                  textAlign: "left",
+                  border: "1px solid #ddd",
+                  fontSize: "10px",
+                  fontWeight: "bold",
+                  width: "8%",
+                  wordWrap: "break-word",
+                }}
+              >
+                Qty
+              </th>
+              <th
+                style={{
+                  padding: "8px 4px",
+                  textAlign: "left",
+                  border: "1px solid #ddd",
+                  fontSize: "10px",
+                  fontWeight: "bold",
+                  width: "15%",
+                  wordWrap: "break-word",
+                }}
+              >
+                Unit Price (birr)
+              </th>
+              <th
+                style={{
+                  padding: "8px 4px",
+                  textAlign: "left",
+                  border: "1px solid #ddd",
+                  fontSize: "10px",
+                  fontWeight: "bold",
+                  width: "15%",
+                  wordWrap: "break-word",
+                }}
+              >
+                Amount (birr)
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sale.map((item, index) => (
+              <tr key={index} className="table-row">
+                <td
+                  style={{
+                    padding: "8px 4px",
+                    border: "1px solid #ddd",
+                    fontSize: "10px",
+                    wordWrap: "break-word",
+                    overflow: "hidden",
+                  }}
+                >
+                  {item.product_id}
+                </td>
+                <td
+                  style={{
+                    padding: "8px 4px",
+                    border: "1px solid #ddd",
+                    fontSize: "10px",
+                    wordWrap: "break-word",
+                    overflow: "hidden",
+                  }}
+                >
+                  {item.productName}
+                </td>
+                <td
+                  style={{
+                    padding: "8px 4px",
+                    border: "1px solid #ddd",
+                    fontSize: "10px",
+                    wordWrap: "break-word",
+                    overflow: "hidden",
+                  }}
+                >
+                  {item.batchNo
+                    ? item.batchNo
+                    : item.SerialNo
+                    ? item.SerialNo
+                    : "__________"}
+                </td>
+                <td
+                  style={{
+                    padding: "8px 4px",
+                    border: "1px solid #ddd",
+                    fontSize: "10px",
+                    wordWrap: "break-word",
+                    overflow: "hidden",
+                  }}
+                >
+                  {item.expireDate
+                    ? formatDate(item.expireDate)
+                    : "_______,_____"}
+                </td>
+                <td
+                  style={{
+                    padding: "8px 4px",
+                    border: "1px solid #ddd",
+                    fontSize: "10px",
+                    wordWrap: "break-word",
+                    overflow: "hidden",
+                  }}
+                >
+                  {item.measurementUnit}
+                </td>
+                <td
+                  style={{
+                    padding: "8px 4px",
+                    border: "1px solid #ddd",
+                    fontSize: "10px",
+                    wordWrap: "break-word",
+                    overflow: "hidden",
+                    textAlign: "center",
+                  }}
+                >
+                  {item.quantity}
+                </td>
+                <td
+                  style={{
+                    padding: "8px 4px",
+                    border: "1px solid #ddd",
+                    fontSize: "10px",
+                    wordWrap: "break-word",
+                    overflow: "hidden",
+                    textAlign: "right",
+                  }}
+                >
+                  {item.unit_price.toFixed(2)}
+                </td>
+                <td
+                  style={{
+                    padding: "8px 4px",
+                    border: "1px solid #ddd",
+                    fontSize: "10px",
+                    wordWrap: "break-word",
+                    overflow: "hidden",
+                    textAlign: "right",
+                  }}
+                >
+                  {item.total_price.toFixed(2)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Totals */}
-      <div style={{ textAlign: "right", marginBottom: "40px" }}>
-        <p style={{ margin: "5px 0" }}>
+      <div
+        style={{ textAlign: "right", marginBottom: "40px" }}
+        className="invoice-totals"
+      >
+        <p style={{ margin: "5px 0", fontSize: "12px" }}>
           <strong>Subtotal:</strong> {Math.floor(subtotal)} birr
         </p>
-        <p style={{ margin: "5px 0", fontStyle: "italic" }}>
+        <p style={{ margin: "5px 0", fontStyle: "italic", fontSize: "11px" }}>
           (Amount in words: {subtotalInWords} birr)
         </p>
       </div>
@@ -377,18 +504,21 @@ const PrintInvoiceTemplate = ({ sale }) => {
           borderTop: "1px solid #eee",
           paddingTop: "20px",
         }}
+        className="confirmation-section"
       >
-        <p style={{ marginBottom: "30px" }}>
+        <p style={{ marginBottom: "30px", fontSize: "12px" }}>
           I, _________________________, hereby confirm that I have received the
           above-listed products in good condition, and acknowledge receipt with
           my signature.
         </p>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div>
-            <p style={{ margin: "5px 0" }}>Customer Signature</p>
+            <p style={{ margin: "5px 0", fontSize: "12px" }}>
+              Customer Signature
+            </p>
             <div
               style={{
-                height: "50px",
+                height: "40px",
                 borderBottom: "1px solid #999",
                 width: "200px",
                 margin: "10px 0",
@@ -396,10 +526,10 @@ const PrintInvoiceTemplate = ({ sale }) => {
             ></div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <p style={{ margin: "5px 0" }}>Date</p>
+            <p style={{ margin: "5px 0", fontSize: "12px" }}>Date</p>
             <div
               style={{
-                height: "50px",
+                height: "40px",
                 borderBottom: "1px solid #999",
                 width: "200px",
                 margin: "10px 0",
@@ -414,24 +544,23 @@ const PrintInvoiceTemplate = ({ sale }) => {
         style={{
           borderTop: "1px solid #eee",
           paddingTop: "20px",
-          marginTop: "40px",
         }}
+        className="invoice-footer"
       >
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div>
-            <p style={{ margin: "5px 0" }}>Thank you for your business!</p>
-            <p style={{ margin: "5px 0", fontWeight: "600" }}>
+            <p style={{ margin: "5px 0", fontSize: "12px" }}>
+              Thank you for your business!
+            </p>
+            <p style={{ margin: "5px 0", fontWeight: "600", fontSize: "12px" }}>
               Agegn General Biomedical Engineering PLC
             </p>
-            {/* <p style={{ margin: "5px 0", fontWeight: "bold" }}>
-              TIN: 0082798197
-            </p> */}
           </div>
           <div style={{ textAlign: "right" }}>
-            <p style={{ margin: "5px 0" }}>Signature</p>
+            <p style={{ margin: "5px 0", fontSize: "12px" }}>Signature</p>
             <div
               style={{
-                height: "50px",
+                height: "40px",
                 borderBottom: "1px solid #999",
                 width: "200px",
                 margin: "10px 0",
