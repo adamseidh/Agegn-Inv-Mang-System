@@ -9,6 +9,7 @@ const submitSale = (req, res) => {
     totalItems,
     customer,
     remark,
+    FsNumber,
     sales_source,
     userId,
     payments,
@@ -16,7 +17,7 @@ const submitSale = (req, res) => {
 
   // Helper function to safely parse data
   const safeParse = (data) => {
-    if (typeof data === 'string') {
+    if (typeof data === "string") {
       try {
         return JSON.parse(data);
       } catch (e) {
@@ -61,12 +62,13 @@ const submitSale = (req, res) => {
 
     // 1. Insert into sells_list
     db.query(
-      "INSERT INTO sells_list (customer_id, total_items, total_price, remark, sells_source, order_confirmation, sells_status, userId) VALUES (?,?,?,?,?,?,?,?)",
+      "INSERT INTO sells_list (customer_id, total_items, total_price, remark,FsNumber, sells_source, order_confirmation, sells_status, userId) VALUES (?,?,?,?,?,?,?,?,?)",
       [
         customer,
         totalItems,
         totalPrice,
         the_remark,
+        FsNumber,
         sells_source,
         order_confirmation,
         sells_status,
@@ -182,8 +184,16 @@ const submitSale = (req, res) => {
 };
 
 const updatSales = (req, res) => {
-  const { items, totalPrice, totalItems, customer, remark, userId, saleId } =
-    req.body;
+  const {
+    items,
+    totalPrice,
+    totalItems,
+    customer,
+    remark,
+    FsNumber,
+    userId,
+    saleId,
+  } = req.body;
 
   console.log("saleId", saleId);
   console.log("sales data", items);
@@ -193,9 +203,9 @@ const updatSales = (req, res) => {
   // Dynamically build the query and values based on whether customer is provided
   let updateSellsListQuery = `
     UPDATE sells_list 
-    SET total_items = ?, total_price = ?, remark = ?
+    SET total_items = ?, total_price = ?, remark = ?, FsNumber = ?
   `;
-  let values = [totalItems, totalPrice, remark];
+  let values = [totalItems, totalPrice, remark, FsNumber];
 
   if (customer !== undefined && customer !== null && customer !== "") {
     updateSellsListQuery = `
@@ -261,7 +271,7 @@ const fetchSellsProducts = (req, res) => {
   const { id } = req.params;
 
   const query = `
-  SELECT sp.* , c.name as customerName, c.phone,c.zone , c.region as CustomerRegion, c.wereda_or_city as CustomerCity, c.tin, c.letter_no as  CustomerLetterNo, sl.created_at as sellsDate, i.name as productName, PL.expire_date as expireDate, PL.batch_number as batchNo , PL.serial_number as SerialNo, i.unit as measurementUnit FROM sells_product sp 
+  SELECT sp.* , c.name as customerName, c.phone,c.zone , c.region as CustomerRegion, c.wereda_or_city as CustomerCity, c.tin, c.letter_no as  CustomerLetterNo, sl.created_at as sellsDate, sl.FsNumber, sl.remark, i.name as productName, PL.expire_date as expireDate, PL.batch_number as batchNo , PL.serial_number as SerialNo, i.unit as measurementUnit FROM sells_product sp 
   LEFT JOIN sells_list sl
   ON sp.sells_id = sl.id
   LEFT JOIN customers c

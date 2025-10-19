@@ -233,7 +233,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
               City: {sale[0].CustomerCity ? sale[0].CustomerCity : "__________"}
             </p>
           </div>
-
+          <p style={{ margin: "3px 0" }}>Fs No: {sale[0].FsNumber}</p>
           <p style={{ margin: "3px 0" }}>Invoice #: {sale[0].sells_id}</p>
         </div>
       </div>

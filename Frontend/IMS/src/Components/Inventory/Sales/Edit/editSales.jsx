@@ -37,12 +37,14 @@ function EditSales() {
     }
   }, []);
   const { permission1, permission2, permission3 } = Permission(role);
-
+  console.log("here is fs number: ", location.state?.FsNumber);
+  console.log("here is customer ", location.state?.customer);
   // Store initial data to compare changes
   const initialData = useRef({
     salesData: location.state?.salesData || [],
     customer: location.state?.customer || "",
     remark: location.state?.remark || "",
+    FsNumber: location.state?.FsNumber || "",
   });
 
   const [salesData, setSalesData] = useState(initialData.current.salesData);
@@ -60,21 +62,23 @@ function EditSales() {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [openPaymentTableMenu, setOpenPaymentTableMenu] = useState(null);
   const [isPaymentDetailOpen, setPaymentDetailOpen] = useState(false);
-  const [remark, setRemark] = useState(initialData.current.remark);
+  const [remark, setRemark] = useState(salesData[0]?.remark || "");
+  const [FsNumber, setFsNumber] = useState(salesData[0]?.FsNumber || "");
   const userId = JSON.parse(localStorage.getItem("userId")).userId;
   const [saleId, setSaleId] = useState(location.state?.saleId || "");
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
 
+  // Check for changes whenever relevant state changes
   // Check for changes whenever relevant state changes
   useEffect(() => {
     const dataChanged =
       JSON.stringify(salesData) !==
         JSON.stringify(initialData.current.salesData) ||
       customer !== initialData.current.customer ||
-      remark !== initialData.current.remark;
-
+      remark !== initialData.current.remark ||
+      FsNumber !== initialData.current.FsNumber;
     setHasChanges(dataChanged);
-  }, [salesData, customer, remark]);
+  }, [salesData, customer, remark, FsNumber]);
 
   const handlePaymentMenuToggle = (index) => {
     setOpenPaymentTableMenu(openPaymentTableMenu === index ? null : index);
@@ -175,18 +179,25 @@ function EditSales() {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
+  // In the useEffect that loads initial data, add FsNumber:
   useEffect(() => {
     const getToken = localStorage.getItem("token");
     const token = JSON.parse(getToken)?.token;
 
-    // Load initial data if coming from edit
     if (location.state?.saleData) {
-      const { items, customer, remark, saleId } = location.state.saleData;
+      const { items, customer, remark, FsNumber, saleId } =
+        location.state.saleData;
       setSalesData(items);
       setCustomer(customer);
       setRemark(remark);
+      setFsNumber(FsNumber);
       setSaleId(saleId);
-      initialData.current = { salesData: items, customer, remark };
+      initialData.current = {
+        salesData: items,
+        customer,
+        remark,
+        FsNumber,
+      };
     }
   }, [location.state]);
 
@@ -261,6 +272,7 @@ function EditSales() {
       remark: remark || "",
       userId: userId,
       saleId: saleId,
+      FsNumber: FsNumber,
     };
 
     try {
@@ -279,6 +291,7 @@ function EditSales() {
           salesData: [...salesData],
           customer,
           remark,
+          FsNumber,
         };
         setHasChanges(false);
         navigate("/salesList", {
@@ -454,7 +467,8 @@ function EditSales() {
                         <option value="">--Select--</option>
                         {customers.map((customer) => (
                           <option key={customer.id} value={customer.id}>
-                            {customer.name}
+                            {customer.name}({customer.zone}{" "}
+                            {customer.wereda_or_city} {customer.tin})
                           </option>
                         ))}
                       </select>
@@ -467,7 +481,19 @@ function EditSales() {
                     </button>
                   </div>
 
-                  <p>Customer: {customerName}</p>
+                  <p className="mb-6">Customer: {customerName}</p>
+
+                  <div className="relative">
+                    <input
+                      type="text"
+                      className="primaryInput peer"
+                      placeholder=" "
+                      value={FsNumber}
+                      onChange={(e) => setFsNumber(e.target.value)}
+                      required
+                    />
+                    <label className="inputLabel">Update FsNumber</label>
+                  </div>
 
                   <div className="relative">
                     <input

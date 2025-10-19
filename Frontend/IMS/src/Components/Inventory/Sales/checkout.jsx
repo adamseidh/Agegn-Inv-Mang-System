@@ -36,6 +36,7 @@ function Checkout() {
   const [showGlobalDiscount, setShowGlobalDiscount] = useState(false);
 
   const [remark, setRemark] = useState();
+  const [FsNumber, setFsNumber] = useState();
   const userId = JSON.parse(localStorage.getItem("userId")).userId;
   const [role, setRole] = useState(null);
 
@@ -82,7 +83,7 @@ function Checkout() {
         if (item.id === productId) {
           // Check if new quantity exceeds available stock
           const quantity = Math.min(newQuantity, item.available_product);
-          
+
           // Calculate total price based on discounted price if available
           const discountedPrice = item.discountedPrice || item.selling_price;
           return {
@@ -109,7 +110,7 @@ function Checkout() {
           const discount = parseFloat(discountPercentage) || 0;
           const discountDecimal = discount / 100;
           const discountedPrice = item.selling_price * (1 - discountDecimal);
-          
+
           return {
             ...item,
             discountPercentage: discount,
@@ -126,12 +127,12 @@ function Checkout() {
   const applyGlobalDiscount = (discountPercentage) => {
     const discount = parseFloat(discountPercentage) || 0;
     setGlobalDiscount(discountPercentage);
-    
+
     setCart((prevCart) =>
       prevCart.map((item) => {
         const discountDecimal = discount / 100;
         const discountedPrice = item.selling_price * (1 - discountDecimal);
-        
+
         return {
           ...item,
           discountPercentage: discount,
@@ -163,7 +164,7 @@ function Checkout() {
   const removeGlobalDiscount = () => {
     setGlobalDiscount("");
     setShowGlobalDiscount(false);
-    
+
     setCart((prevCart) =>
       prevCart.map((item) => {
         return {
@@ -233,6 +234,11 @@ function Checkout() {
       return;
     }
 
+    if (!FsNumber) {
+      setError("Please insert Fs No.");
+      return;
+    }
+
     if (cart.length === 0) return;
 
     setIsSubmitting(true);
@@ -249,20 +255,21 @@ function Checkout() {
 
     // Create FormData object for file uploads
     const formData = new FormData();
-    
+
     // Prepare items with discounted prices if available
-    const itemsWithDiscount = cart.map(item => ({
+    const itemsWithDiscount = cart.map((item) => ({
       ...item,
       // Use discounted price if available, otherwise use selling price
       selling_price: item.discountedPrice || item.selling_price,
-      discountPercentage: item.discountPercentage || 0
+      discountPercentage: item.discountPercentage || 0,
     }));
-    
+
     formData.append("items", JSON.stringify(itemsWithDiscount));
     formData.append("totalPrice", totalPrice);
     formData.append("totalItems", totalItems);
     formData.append("customer", customer);
     formData.append("remark", remark || "");
+    formData.append("FsNumber", FsNumber || "");
     formData.append("userId", userId);
     formData.append("payments", JSON.stringify(payments));
 
@@ -327,7 +334,7 @@ function Checkout() {
                 <h2 className="text-2xl font-bold">
                   Product List ({cart.length} items)
                 </h2>
-                
+
                 {cart.length > 0 && (
                   <div className="relative">
                     <button
@@ -336,7 +343,7 @@ function Checkout() {
                     >
                       <FaEllipsisV />
                     </button>
-                    
+
                     {showDiscountMenu && (
                       <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
                         <button
@@ -351,8 +358,11 @@ function Checkout() {
                         <button
                           onClick={() => {
                             // Enable individual discounts for all items
-                            setCart(prevCart => 
-                              prevCart.map(item => ({...item, showIndividualDiscount: true}))
+                            setCart((prevCart) =>
+                              prevCart.map((item) => ({
+                                ...item,
+                                showIndividualDiscount: true,
+                              }))
                             );
                             setShowDiscountMenu(false);
                           }}
@@ -414,7 +424,7 @@ function Checkout() {
                           <p>Category: {item.categoryName}</p>
                           <p>Available: {item.available_product}</p>
                         </div>
-                        
+
                         <div className="mt-2">
                           {item.discountedPrice ? (
                             <div className="flex items-center">
@@ -429,10 +439,12 @@ function Checkout() {
                               </span>
                             </div>
                           ) : (
-                            <span className="font-bold">{item.selling_price} birr each</span>
+                            <span className="font-bold">
+                              {item.selling_price} birr each
+                            </span>
                           )}
                         </div>
-                        
+
                         {item.showIndividualDiscount && !showGlobalDiscount && (
                           <div className="mt-2 flex items-center">
                             <input
@@ -440,7 +452,9 @@ function Checkout() {
                               min="0"
                               max="100"
                               value={item.discountPercentage || ""}
-                              onChange={(e) => applyItemDiscount(item.id, e.target.value)}
+                              onChange={(e) =>
+                                applyItemDiscount(item.id, e.target.value)
+                              }
                               placeholder="Discount %"
                               className="w-20 px-2 py-1 border border-gray-300 rounded mr-2"
                             />
@@ -485,7 +499,9 @@ function Checkout() {
                           </button>
                         </div>
 
-                        <p className="font-bold">{item.totalPrice.toFixed(2)} birr</p>
+                        <p className="font-bold">
+                          {item.totalPrice.toFixed(2)} birr
+                        </p>
 
                         <button
                           onClick={() => removeFromCart(item.id)}
@@ -540,7 +556,8 @@ function Checkout() {
                         <option value="">--Select--</option>
                         {customers.map((customer) => (
                           <option key={customer.id} value={customer.id}>
-                            {customer.name}
+                            {customer.name}({customer.zone}{" "}
+                            {customer.wereda_or_city} {customer.tin})
                           </option>
                         ))}
                       </select>
@@ -560,9 +577,20 @@ function Checkout() {
                       placeholder=" "
                       value={remark}
                       onChange={(e) => setRemark(e.target.value)}
-                      required
                     />
                     <label className="inputLabel">Remark</label>
+                  </div>
+
+                  <div className="relative">
+                    <input
+                      type="text"
+                      className="primaryInput peer"
+                      placeholder=" "
+                      value={FsNumber}
+                      onChange={(e) => setFsNumber(e.target.value)}
+                      required
+                    />
+                    <label className="inputLabel">Fs No.</label>
                   </div>
                 </div>
 

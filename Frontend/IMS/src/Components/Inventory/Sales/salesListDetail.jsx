@@ -146,6 +146,12 @@ function SalesListDetail() {
                 </div>
                 <div>
                   <p className="text-gray-600">
+                    <span className="font-medium">Fs No:</span>{" "}
+                    {sale[0].FsNumber}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-600">
                     <span className="font-medium">Date:</span>{" "}
                     {new Date(sale[0].sellsDate).toLocaleDateString()}
                   </p>
