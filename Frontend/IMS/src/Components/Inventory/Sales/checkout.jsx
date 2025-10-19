@@ -18,7 +18,7 @@ function Checkout() {
 
   const [cart, setCart] = useState(() => {
     return (
-      location.state?.cart || JSON.parse(localStorage.getItem("cart")) || []
+      location.state?.cart || JSON.parse(sessionStorage.getItem("cart")) || []
     );
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -178,7 +178,7 @@ function Checkout() {
   };
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    sessionStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
   const fetchCustomers = () => {
@@ -292,7 +292,7 @@ function Checkout() {
             saleId: response.data.saleId,
           },
         });
-        localStorage.setItem("cart", JSON.stringify([]));
+        sessionStorage.setItem("cart", JSON.stringify([]));
       } else {
         setError("Failed to process your order. Please try again.");
       }

@@ -13,7 +13,7 @@ import ProductListModal from "./ProuctListModal";
 
 function SellProduct() {
   const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem("cart");
+    const savedCart = sessionStorage.getItem("cart");
     return savedCart ? JSON.parse(savedCart) : [];
   });
   const [products, setProducts] = useState([]);
@@ -30,7 +30,7 @@ function SellProduct() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    sessionStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
   useEffect(() => {
