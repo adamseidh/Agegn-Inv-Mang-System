@@ -98,7 +98,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
     <div
       style={{
         fontFamily: "Arial, sans-serif",
-        padding: "15mm 10mm",
+        padding: "0mm 10mm",
         margin: "0 auto",
         fontSize: "12px",
         position: "relative",
@@ -144,7 +144,6 @@ const PrintInvoiceTemplate = ({ sale }) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            marginBottom: "8px",
           }}
         >
           <img
@@ -500,7 +499,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
       {/* Confirmation Section */}
       <div
         style={{
-          marginBottom: "40px",
+          marginBottom: "20px",
           borderTop: "1px solid #eee",
           paddingTop: "20px",
         }}
@@ -521,7 +520,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
                 height: "40px",
                 borderBottom: "1px solid #999",
                 width: "200px",
-                margin: "10px 0",
+                margin: "5px 0",
               }}
             ></div>
           </div>
@@ -532,7 +531,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
                 height: "40px",
                 borderBottom: "1px solid #999",
                 width: "200px",
-                margin: "10px 0",
+                margin: "5px 0",
               }}
             ></div>
           </div>
@@ -540,13 +539,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
       </div>
 
       {/* Footer */}
-      <div
-        style={{
-          borderTop: "1px solid #eee",
-          paddingTop: "20px",
-        }}
-        className="invoice-footer"
-      >
+      <div className="invoice-footer">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div>
             <p style={{ margin: "5px 0", fontSize: "12px" }}>
@@ -563,7 +556,7 @@ const PrintInvoiceTemplate = ({ sale }) => {
                 height: "40px",
                 borderBottom: "1px solid #999",
                 width: "200px",
-                margin: "10px 0",
+                margin: "5px 0",
               }}
             ></div>
           </div>
