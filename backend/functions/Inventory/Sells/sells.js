@@ -121,8 +121,8 @@ const submitSale = (req, res) => {
                 payment.payment_type === "Paid" ? "Completed" : "Not Completed",
                 req.files["paymentImages"] && req.files["paymentImages"][index]
                   ? `${serverHost}/images/${path.basename(
-                      req.files["paymentImages"][index].path
-                    )}`
+                    req.files["paymentImages"][index].path
+                  )}`
                   : null,
               ]);
 

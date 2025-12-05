@@ -64,20 +64,22 @@ const Dashboard = () => {
       <Welcome />
 
       {/* Cards grid - only shown for permission1 */}
-      {permission1 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-1 mb-4">
-          <TotalProductsCard />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-1 mb-4">
+
+        {permission1 && (<>
           <TotalSuppliersCard />
           <TotalCustomersCard />
-          <ExpiredProducts />
-          <EmptyProducts />
-          <UnderStrockProduct />
           <UpComingPaymentDates />
-          <ReachedDuePayments />
+          <ReachedDuePayments /></>)}
+        <TotalProductsCard />
+        <ExpiredProducts />
+        <EmptyProducts />
+        <UnderStrockProduct />
+
+        {permission2 && (<>
           <SalesUpComingPaymentDates />
-          <SalesReachedDuePayments />
-        </div>
-      )}
+          <SalesReachedDuePayments /></>)}
+      </div>
 
       {/* Chart - only shown for permission1 */}
       {permission1 && <IncomeExpenseChart />}

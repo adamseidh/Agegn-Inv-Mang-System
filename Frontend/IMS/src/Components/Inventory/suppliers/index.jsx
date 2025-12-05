@@ -33,18 +33,9 @@ import {
 import { Grid } from "@mui/material";
 
 // Filter component for the list
-const FilterData = (props) => (
-  <Filter {...props}>
-    <SelectInput
-      label="Complain Status"
-      source="complain_status"
-      choices={[
-        { id: "Replied", name: "Replied" },
-        { id: "Not Replied", name: "Not Replied" },
-      ]}
-    />
-  </Filter>
-);
+const SuppliersFilter = [
+  <TextInput label="Search Supplier" source="q" alwaysOn key="search" />,
+];
 
 const Supplier = () => {
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
@@ -56,12 +47,12 @@ const Supplier = () => {
       {/**<SelectColumnsButton /> */}
       {/**<FilterButton /> */}
       <CreateButton />
-      {/** <ExportButton /> */}
+      <ExportButton />
     </TopToolbar>
   );
   return (
     <div>
-      <List actions={<PostListActions />}>
+      <List filters={SuppliersFilter} actions={<PostListActions />}>
         <DatagridConfigurable
           bulkActionButtons={<BulkDeleteButton mutationMode="pessimistic" />}
           rowClick="show"

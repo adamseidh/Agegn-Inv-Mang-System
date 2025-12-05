@@ -228,8 +228,8 @@ const PrintInvoiceTemplate = ({ sale }) => {
               {sale[0].tin
                 ? sale[0].tin
                 : sale[0].CustomerLetterNo
-                ? sale[0].CustomerLetterNo
-                : "__________"}
+                  ? sale[0].CustomerLetterNo
+                  : "__________"}
             </p>
           </div>
 
@@ -414,8 +414,8 @@ const PrintInvoiceTemplate = ({ sale }) => {
                   {item.batchNo
                     ? item.batchNo
                     : item.SerialNo
-                    ? item.SerialNo
-                    : "__________"}
+                      ? item.SerialNo
+                      : "__________"}
                 </td>
                 <td
                   style={{

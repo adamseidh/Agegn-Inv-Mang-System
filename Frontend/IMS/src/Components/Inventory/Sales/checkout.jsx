@@ -300,7 +300,7 @@ function Checkout() {
       console.error("Order submission error:", err);
       setError(
         err.response?.data?.message ||
-          "Failed to process your order. Please try again."
+        "Failed to process your order. Please try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -594,7 +594,7 @@ function Checkout() {
                   </div>
                 </div>
 
-                {permission1 && (
+                {permission2 && (
                   <>
                     {/**payment section */}
                     <div className="mt-8">
@@ -719,11 +719,10 @@ function Checkout() {
                 <button
                   onClick={handleSubmit}
                   disabled={cart.length === 0 || isSubmitting}
-                  className={`w-full py-3 rounded-full text-white font-bold mt-6 transition-opacity bg-primaryColor ${
-                    cart.length === 0 || isSubmitting
+                  className={`w-full py-3 rounded-full text-white font-bold mt-6 transition-opacity bg-primaryColor ${cart.length === 0 || isSubmitting
                       ? "opacity-50 cursor-not-allowed"
                       : "hover:opacity-90"
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <span className="flex items-center justify-center">

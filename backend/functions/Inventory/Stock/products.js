@@ -135,6 +135,7 @@ const Products = (req, res) => {
 
 const ClientProducts = (req, res) => {
   // Base query with available and sold product calculations
+  console.log("client products called");
   let baseQuery = `
       SELECT 
         p.*,  
@@ -168,6 +169,7 @@ const ClientProducts = (req, res) => {
 
   db.query(query, (err, results) => {
     if (err) {
+      console.log("error", err);
       res.status(500).json({ error: err });
     } else {
       // Count query needs to match the same filtering conditions
@@ -179,6 +181,7 @@ const ClientProducts = (req, res) => {
 
       db.query(countQuery, (err, countResult) => {
         if (err) {
+          console.log("error", err);
           res.status(500).json({ error: err });
         } else {
           const total = countResult[0].total;

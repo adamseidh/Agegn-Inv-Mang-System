@@ -41,6 +41,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Grid } from "@mui/material";
 import NumberInputStyle from "../../../helpers/functions/numberInputStyle";
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const SalesList = () => {
   const navigate = useNavigate();
@@ -56,7 +57,12 @@ const SalesList = () => {
   );
 
   const SalesFilter = [
-    <TextInput label="Search: By Customer" source="q" alwaysOn key="search" />,
+    <TextInput
+      label={<span><span style={{ fontFamily: "FontAwesome" }}>&#xF002;</span><span> By Customer or Inv.No.</span></span>}
+      source="q"
+      alwaysOn
+      key="search"
+    />
   ];
 
   return (
@@ -67,6 +73,7 @@ const SalesList = () => {
           rowClick="show"
         >
           <TextField source="customerName" label="Customer" />
+          <TextField source="id" label="Inv. No." />
           <TextField source="payment_status" label="Payemnt Status" />
           <NumberField source="not_completed_amount" label="Un-Paid Amount" />
           <TextField source="remark" label="Remark" />

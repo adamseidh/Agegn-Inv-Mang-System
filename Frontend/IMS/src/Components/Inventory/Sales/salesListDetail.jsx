@@ -10,6 +10,7 @@ import {
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import PrintInvoiceTemplate from "./PrintInvoiceTemplate";
+import FormattedDate from "../../../helpers/functions/FormattedDate";
 
 function SalesListDetail() {
   const { id } = useParams();
@@ -25,6 +26,7 @@ function SalesListDetail() {
       try {
         setLoading(true);
         const response = await axios.get(`${serverHost}/salesList/${id}`);
+        console.log("fetched sale data", response.data);
         setSale(response.data);
         setLoading(false);
       } catch (err) {
@@ -182,11 +184,24 @@ function SalesListDetail() {
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
                 Order Information
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
                   <p className="text-gray-600">
                     <span className="font-medium">Customer:</span>{" "}
                     {sale[0].customerName}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-gray-600">
+                    <span className="font-medium">Cust. TIN:</span>{" "}
+                    {sale[0].tin}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-600">
+                    <span className="font-medium">Inv. No:</span>{" "}
+                    {sale[0].sells_id}
                   </p>
                 </div>
                 <div>
@@ -217,6 +232,12 @@ function SalesListDetail() {
                     Product Name
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Bach/Ser.No.
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Exp. Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Unit
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -243,6 +264,22 @@ function SalesListDetail() {
                         {item.productName}
                       </div>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {item.batchNo
+                          ? item.batchNo
+                          : item.SerialNo
+                            ? item.SerialNo
+                            : "N/A"}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {item.expireDate
+                          ? FormattedDate(item.expireDate)
+                          : "N/A"}
+                      </div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {item.measurementUnit}
                     </td>
@@ -261,7 +298,7 @@ function SalesListDetail() {
               <tfoot className="bg-gray-50">
                 <tr>
                   <td
-                    colSpan="4"
+                    colSpan="7"
                     className="px-6 py-3 text-right text-sm font-medium text-gray-500 uppercase"
                   >
                     Subtotal
