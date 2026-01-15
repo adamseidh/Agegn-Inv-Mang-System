@@ -720,8 +720,8 @@ function Checkout() {
                   onClick={handleSubmit}
                   disabled={cart.length === 0 || isSubmitting}
                   className={`w-full py-3 rounded-full text-white font-bold mt-6 transition-opacity bg-primaryColor ${cart.length === 0 || isSubmitting
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:opacity-90"
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:opacity-90"
                     }`}
                 >
                   {isSubmitting ? (

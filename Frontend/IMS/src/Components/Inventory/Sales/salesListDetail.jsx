@@ -11,6 +11,7 @@ import axios from "axios";
 import html2pdf from "html2pdf.js";
 import PrintInvoiceTemplate from "./PrintInvoiceTemplate";
 import FormattedDate from "../../../helpers/functions/FormattedDate";
+import Permission from "../../../helpers/utils/permissions";
 
 function SalesListDetail() {
   const { id } = useParams();
@@ -20,6 +21,26 @@ function SalesListDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const serverHost = import.meta.env.VITE_REACT_APP_SERVER;
+  const userId = JSON.parse(localStorage.getItem("userId")).userId;
+  const [role, setRole] = useState(null);
+
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    const storedRole = localStorage.getItem("role");
+    const storedToken = localStorage.getItem("token");
+
+    if (storedUserId && storedRole && storedToken) {
+      const parsedUserId = JSON.parse(storedUserId).userId;
+      const parsedRole = JSON.parse(storedRole).role;
+      const token = JSON.parse(storedToken).token;
+
+      setRole(parsedRole);
+
+      console.log("User Role:", parsedRole);
+    }
+  }, []);
+  const { permission1, permission2, permission3 } = Permission(role);
 
   useEffect(() => {
     const fetchSaleData = async () => {
@@ -151,13 +172,13 @@ function SalesListDetail() {
           </button>
           <div className="flex items-center gap-4">
             <div className="flex gap-2">
-              <button
+              {permission1 && (<button
                 onClick={handleEdit}
                 className="flex items-center gap-2 bg-primaryColor text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
               >
                 <FontAwesomeIcon icon={faEdit} />
                 Edit Sales
-              </button>
+              </button>)}
               <button
                 onClick={handleDownload}
                 className="flex items-center gap-2 bg-primaryColor text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"

@@ -49,11 +49,31 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Permission from "../../../helpers/utils/permissions";
 
 
 const SalesList = () => {
   const navigate = useNavigate();
+
   const role = JSON.parse(localStorage.getItem("role")).role;
+  const userId = JSON.parse(localStorage.getItem("userId")).userId;
+
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    const storedRole = localStorage.getItem("role");
+    const storedToken = localStorage.getItem("token");
+
+    if (storedUserId && storedRole && storedToken) {
+      const parsedUserId = JSON.parse(storedUserId).userId;
+      const parsedRole = JSON.parse(storedRole).role;
+      const token = JSON.parse(storedToken).token;
+
+
+      console.log("User Role:", parsedRole);
+    }
+  }, []);
+  const { permission1, permission2, permission3 } = Permission(role);
 
   const PostListActions = () => (
     <TopToolbar>
@@ -80,7 +100,7 @@ const SalesList = () => {
     <div>
       <List filters={SalesFilter} actions={<PostListActions />}>
         <DatagridConfigurable
-          bulkActionButtons={<BulkDeleteButton mutationMode="pessimistic" />}
+          bulkActionButtons={permission1 ? <BulkDeleteButton mutationMode="pessimistic" /> : false}
           rowClick="show"
         >
           <TextField source="customerName" label="Customer" />

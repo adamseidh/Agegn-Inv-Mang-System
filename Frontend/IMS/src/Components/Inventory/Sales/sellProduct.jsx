@@ -59,6 +59,19 @@ function SellProduct() {
       const filtered = products.filter((product) =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
+
+      /**
+       * 
+       * cod to show no products found message
+       *   products.forEach((product, index) => {
+        if (!product?.name) {
+          console.log("Product with null/empty name found:", {
+            index,
+            product,
+          });
+        }
+      });
+       */
       setFilteredProducts(filtered);
       setCurrentPage(1);
       setSearchPerformed(true);
@@ -221,11 +234,10 @@ function SellProduct() {
                     <button
                       onClick={() => paginate(Math.max(1, currentPage - 1))}
                       disabled={currentPage === 1}
-                      className={`px-3 py-2 rounded-l-md border border-gray-300 ${
-                        currentPage === 1
-                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          : "bg-white text-primaryColor hover:bg-gray-50"
-                      }`}
+                      className={`px-3 py-2 rounded-l-md border border-gray-300 ${currentPage === 1
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-primaryColor hover:bg-gray-50"
+                        }`}
                     >
                       <FontAwesomeIcon icon={faChevronLeft} />
                     </button>
@@ -246,11 +258,10 @@ function SellProduct() {
                         <button
                           key={pageNumber}
                           onClick={() => paginate(pageNumber)}
-                          className={`px-4 py-2 border-t border-b border-gray-300 ${
-                            currentPage === pageNumber
-                              ? "bg-primaryColor text-white"
-                              : "bg-white text-primaryColor hover:bg-gray-50"
-                          }`}
+                          className={`px-4 py-2 border-t border-b border-gray-300 ${currentPage === pageNumber
+                            ? "bg-primaryColor text-white"
+                            : "bg-white text-primaryColor hover:bg-gray-50"
+                            }`}
                         >
                           {pageNumber}
                         </button>
@@ -266,11 +277,10 @@ function SellProduct() {
                     {totalPages > 5 && currentPage < totalPages - 2 && (
                       <button
                         onClick={() => paginate(totalPages)}
-                        className={`px-4 py-2 border-t border-b border-gray-300 ${
-                          currentPage === totalPages
-                            ? "bg-primaryColor text-white"
-                            : "bg-white text-primaryColor hover:bg-gray-50"
-                        }`}
+                        className={`px-4 py-2 border-t border-b border-gray-300 ${currentPage === totalPages
+                          ? "bg-primaryColor text-white"
+                          : "bg-white text-primaryColor hover:bg-gray-50"
+                          }`}
                       >
                         {totalPages}
                       </button>
@@ -281,11 +291,10 @@ function SellProduct() {
                         paginate(Math.min(totalPages, currentPage + 1))
                       }
                       disabled={currentPage === totalPages}
-                      className={`px-3 py-2 rounded-r-md border border-gray-300 ${
-                        currentPage === totalPages
-                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          : "bg-white text-primaryColor hover:bg-gray-50"
-                      }`}
+                      className={`px-3 py-2 rounded-r-md border border-gray-300 ${currentPage === totalPages
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-primaryColor hover:bg-gray-50"
+                        }`}
                     >
                       <FontAwesomeIcon icon={faChevronRight} />
                     </button>
