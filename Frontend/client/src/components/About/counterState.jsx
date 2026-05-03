@@ -17,9 +17,9 @@ export default function CounterState() {
     const fetchData = async () => {
       try {
         const customersResponse = await axios.get(
-          `${serverHost}/customersCount`
+          `${serverHost}/customersCount?companyId=13`
         );
-        const partnersResponse = await axios.get(`${serverHost}/supplierCount`);
+        const partnersResponse = await axios.get(`${serverHost}/supplierCount?companyId=13`);
 
         setCustomersCount(customersResponse.data.length);
         setPartnersCount(partnersResponse.data.length);
